@@ -515,4 +515,4 @@ export class EnhancedGeminiService {
   }
 }
 
-export const enhancedGeminiService = new EnhancedGeminiService(process.env.GEMINI_API_KEY)
+export const enhancedGeminiService = new EnhancedGeminiService(process.env.NEXT_PUBLIC_GEMINI_API_KEY)
