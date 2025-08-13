@@ -1,0 +1,9 @@
+{
+  "description": "I want to renovate my small bathroom. It's about 6 square metres and needs new tiles, a new toilet, basin, and shower. The room is in a 1980s house in Manchester. The existing tiles are old and need removing, and I think the plumbing might need some updates.",
+  "projectType": "renovation", 
+  "location": "Manchester",
+  "area": 6,
+  "complexity": "standard",
+  "quality_tier": "mid_range",
+  "season": "autumn"
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Test</title>
+</head>
+<body style="padding: 20px; font-family: Arial;">
+    <h1>Pure HTML Interactive Test</h1>
+    
+    <div style="margin: 20px 0;">
+        <p>Count: <span id="count">0</span></p>
+        <button onclick="incrementCount()" style="padding: 10px; background: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Increment Count
+        </button>
+    </div>
+    
+    <div>
+        <input type="text" id="textInput" placeholder="Type something..." style="padding: 5px; margin: 10px 0; width: 200px;">
+        <p>You typed: <span id="output"></span></p>
+    </div>
+    
+    <div style="margin: 20px 0;">
+        <input type="file" id="fileInput" multiple accept="image/*">
+        <p id="fileList"></p>
+    </div>
+
+    <script>
+        let count = 0;
+        
+        function incrementCount() {
+            count++;
+            document.getElementById('count').textContent = count;
+        }
+        
+        document.getElementById('textInput').addEventListener('input', function(e) {
+            document.getElementById('output').textContent = e.target.value;
+        });
+        
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            const names = [];
+            for (let i = 0; i < files.length; i++) {
+                names.push(files[i].name);
+            }
+            document.getElementById('fileList').textContent = files.length > 0 ? 
+                'Selected ' + files.length + ' files: ' + names.join(', ') : 
+                'No files selected';
+        });
+    </script>
+</body>
+</html>
