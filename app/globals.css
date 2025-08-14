@@ -118,5 +118,23 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Force color scheme for Android devices */
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Prevent Android from auto-inverting colors */
+  html {
+    color-scheme: light;
+  }
+  
+  /* Force specific text colors that Android can't override */
+  .text-navy-900, .text-grey-700, .text-grey-800 {
+    color: rgb(30 41 59) !important; /* Force dark text */
+  }
+  
+  /* Ensure background stays orange */
+  [style*="backgroundColor: '#FF6B35'"] {
+    background-color: #FF6B35 !important;
   }
 }
