@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import * as Sentry from '@sentry/nextjs'
 
 interface ProjectData {
   description: string
@@ -60,10 +61,30 @@ export default function ProjectUploadClient({ onAnalysisComplete, onAnalysisStar
       const errors: FileError[] = []
       const newPreviews: { url: string; type: string }[] = []
       
+      // Log file selection
+      Sentry.addBreadcrumb({
+        category: 'ui',
+        message: `User selected ${files.length} files`,
+        level: 'info',
+        data: {
+          fileCount: files.length,
+          fileTypes: files.map(f => f.type)
+        }
+      })
+      
       files.forEach(file => {
         const error = validateFile(file)
         if (error) {
           errors.push({ fileName: file.name, error })
+          // Log validation errors
+          Sentry.captureMessage('File validation failed', 'warning', {
+            extra: {
+              fileName: file.name,
+              fileType: file.type,
+              fileSize: file.size,
+              error: error
+            }
+          })
         } else {
           validFiles.push(file)
           const fileType = file.type.startsWith('video/') ? 'video' : 'image'
@@ -116,6 +137,19 @@ export default function ProjectUploadClient({ onAnalysisComplete, onAnalysisStar
 
         if (uploadError) {
           console.error('Supabase upload error:', uploadError)
+          // Capture Supabase errors
+          Sentry.captureException(uploadError, {
+            tags: {
+              component: 'ProjectUpload',
+              service: 'supabase'
+            },
+            extra: {
+              fileName: image.name,
+              fileSize: image.size,
+              fileType: image.type,
+              bucket: 'project-uploads'
+            }
+          })
           throw uploadError
         }
 
@@ -149,8 +183,26 @@ export default function ProjectUploadClient({ onAnalysisComplete, onAnalysisStar
       if (analysisResponse.ok) {
         const analysis = await analysisResponse.json()
         console.log('AI Analysis:', analysis)
+        // Log successful analysis
+        Sentry.addBreadcrumb({
+          category: 'api',
+          message: 'Analysis completed successfully',
+          level: 'info',
+          data: {
+            projectType: projectData.projectType,
+            imageCount: uploadedImageUrls.length
+          }
+        })
         onAnalysisComplete(analysis)
       } else {
+        const errorText = await analysisResponse.text()
+        Sentry.captureMessage('AI Analysis failed', 'error', {
+          extra: {
+            status: analysisResponse.status,
+            response: errorText,
+            projectType: projectData.projectType
+          }
+        })
         alert('Analysis failed. Please try again.')
       }
       
@@ -162,6 +214,21 @@ export default function ProjectUploadClient({ onAnalysisComplete, onAnalysisStar
       setPreviewUrls([])
     } catch (error: any) {
       console.error('Error uploading project:', error)
+      
+      // Capture any uncaught errors
+      Sentry.captureException(error, {
+        tags: {
+          component: 'ProjectUpload',
+          action: 'submit'
+        },
+        extra: {
+          projectType: projectData.projectType,
+          description: projectData.description?.substring(0, 100),
+          imageCount: projectData.images.length
+        },
+        fingerprint: ['project-upload', error?.message]
+      })
+      
       const errorMessage = error?.message || 'Unknown error'
       alert(`Error uploading project: ${errorMessage}. Please check console for details.`)
     } finally {

@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import GeminiService from '@/lib/ai/gemini.service'
+import * as Sentry from '@sentry/nextjs'
 
 export async function POST(request: NextRequest) {
   try {
+    // Log API request
+    Sentry.addBreadcrumb({
+      category: 'api',
+      message: 'Project analysis requested',
+      level: 'info',
+      data: {
+        endpoint: '/api/analyze',
+        method: 'POST'
+      }
+    });
     const body = await request.json()
     const { 
       description, 
@@ -19,6 +30,9 @@ export async function POST(request: NextRequest) {
     } = body
 
     if (!description || !projectType) {
+      Sentry.captureMessage('Missing required fields in analyze API', 'warning', {
+        extra: { hasDescription: !!description, hasProjectType: !!projectType }
+      });
       return NextResponse.json(
         { error: 'Description and project type are required' },
         { status: 400 }
@@ -56,6 +70,20 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Enhanced analysis error:', error)
+    
+    // Capture error in Sentry with context
+    Sentry.captureException(error, {
+      tags: {
+        api_endpoint: 'analyze',
+        project_type: body?.projectType
+      },
+      extra: {
+        hasImages: !!(body?.imageUrls?.length),
+        isFollowUp: body?.isFollowUp,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+      }
+    });
+    
     return NextResponse.json(
       { 
         error: 'Failed to analyze project',

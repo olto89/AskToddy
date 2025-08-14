@@ -19,6 +19,7 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
+    "@sentry/nextjs": "^10.5.0",
     "@supabase/supabase-js": "^2.55.0",
     "@types/cheerio": "^0.22.35",
     "cheerio": "^1.1.2",
