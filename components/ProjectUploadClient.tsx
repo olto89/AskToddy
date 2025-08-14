@@ -115,6 +115,7 @@ export default function ProjectUploadClient({ onAnalysisComplete, onAnalysisStar
           .upload(filePath, image)
 
         if (uploadError) {
+          console.error('Supabase upload error:', uploadError)
           throw uploadError
         }
 
@@ -159,9 +160,10 @@ export default function ProjectUploadClient({ onAnalysisComplete, onAnalysisStar
         images: []
       })
       setPreviewUrls([])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading project:', error)
-      alert('Error uploading project. Please try again.')
+      const errorMessage = error?.message || 'Unknown error'
+      alert(`Error uploading project: ${errorMessage}. Please check console for details.`)
     } finally {
       setUploading(false)
     }
