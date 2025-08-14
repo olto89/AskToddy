@@ -15,6 +15,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AskToddy - AI Quotes for DIYers",
   description: "Get instant AI-powered quotes and estimates for your DIY and building projects",
+  other: {
+    'color-scheme': 'light',
+  },
+};
+
+export const viewport = {
+  themeColor: '#FF6B35',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({
@@ -24,10 +32,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning data-theme="light">
-      <head>
-        <meta name="color-scheme" content="light" />
-        <meta name="theme-color" content="#FF6B35" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
