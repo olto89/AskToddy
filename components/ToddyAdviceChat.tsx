@@ -122,31 +122,31 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   return (
-    <div className={`flex flex-col h-[600px] bg-white rounded-lg border-2 border-primary-300 shadow-xl ${className}`}>
+    <div className={`flex flex-col h-[500px] sm:h-[600px] bg-white rounded-lg border-2 border-primary-300 shadow-xl ${className}`}>
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] rounded-xl p-4 ${
+              className={`max-w-[90%] sm:max-w-[80%] rounded-xl p-3 sm:p-4 ${
                 message.role === 'user'
                   ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-sm'
                   : 'bg-primary-50 border border-primary-100 text-navy-900 shadow-sm'
               }`}
             >
               {message.role === 'assistant' && (
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                     T
                   </div>
-                  <span className="font-semibold text-primary-700">Toddy</span>
+                  <span className="font-semibold text-primary-700 text-sm sm:text-base">Toddy</span>
                 </div>
               )}
-              <div className="whitespace-pre-wrap leading-relaxed">{message.content}</div>
-              <div className="text-xs mt-3 opacity-60">
+              <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">{message.content}</div>
+              <div className="text-xs mt-2 sm:mt-3 opacity-60">
                 {message.timestamp.toLocaleTimeString()}
               </div>
             </div>
@@ -154,14 +154,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-primary-50 border border-primary-100 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+            <div className="bg-primary-50 border border-primary-100 rounded-xl p-3 sm:p-4 shadow-sm">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                   T
                 </div>
-                <span className="font-semibold text-primary-700">Toddy is thinking...</span>
+                <span className="font-semibold text-primary-700 text-sm sm:text-base">Toddy is thinking...</span>
               </div>
-              <div className="flex gap-1 mt-3">
+              <div className="flex gap-1 mt-2 sm:mt-3">
                 <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                 <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                 <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
@@ -174,14 +174,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
 
       {/* Example Questions */}
       {messages.length === 1 && (
-        <div className="px-6 py-4 border-t border-primary-200 bg-primary-50">
-          <p className="text-sm text-grey-600 mb-3 font-medium">Try asking:</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 border-t border-primary-200 bg-primary-50">
+          <p className="text-xs sm:text-sm text-grey-600 mb-2 sm:mb-3 font-medium">Try asking:</p>
+          <div className="flex flex-wrap gap-1 sm:gap-2">
             {exampleQuestions.map((question, index) => (
               <button
                 key={index}
                 onClick={() => handleExampleClick(question)}
-                className="text-sm px-3 py-2 bg-white border border-primary-200 text-grey-700 rounded-lg hover:bg-primary-100 hover:border-primary-300 hover:text-primary-700 transition-colors"
+                className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-primary-200 text-grey-700 rounded-lg hover:bg-primary-100 hover:border-primary-300 hover:text-primary-700 transition-colors"
               >
                 {question}
               </button>
@@ -191,30 +191,35 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       )}
 
       {/* Input Area */}
-      <div className="p-6 border-t border-primary-200 bg-white">
-        <div className="flex gap-3">
+      <div className="p-3 sm:p-6 border-t border-primary-200 bg-white">
+        <div className="flex gap-2 sm:gap-3">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask Toddy about tools, materials, or building advice..."
-            className="flex-1 px-4 py-3 border border-grey-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-grey-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm sm:text-base"
             rows={2}
             disabled={isLoading}
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base ${
               !input.trim() || isLoading
                 ? 'bg-grey-300 text-grey-500 cursor-not-allowed'
                 : 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white hover:from-primary-600 hover:to-secondary-600'
             }`}
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              'Send'
+              <span className="hidden sm:inline">Send</span>
+              <span className="sm:hidden">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </span>
             )}
           </button>
         </div>
