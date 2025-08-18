@@ -36,6 +36,15 @@ export async function GET() {
     environment: environment || 'not set',
     contentfulAPIWorking: contentfulWorking,
     heroTitle: heroTitle,
-    contentSource: heroTitle.includes('hello test') ? 'CMS' : 'Unknown'
+    contentSource: heroTitle.includes('hello test') ? 'CMS with test' : 'CMS without test',
+    instructions: [
+      '1. Go to Contentful dashboard',
+      '2. Click Content tab',
+      '3. Click on Homepage entry',
+      '4. Change Hero Title to include "hello test"',
+      '5. Click Publish',
+      '6. Wait 60 seconds or redeploy on Vercel',
+      '7. Check this endpoint again to verify'
+    ]
   })
 }

@@ -102,6 +102,12 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                       <h2 className="text-3xl font-bold text-navy-900 mb-4">
                         {homepageContent.heroTitle}
                       </h2>
+                      {/* Debug: Show if content is from CMS */}
+                      {process.env.NODE_ENV === 'development' && (
+                        <p className="text-xs text-gray-500">
+                          [Debug: {homepageContent.heroTitle.includes('hello test') ? 'FROM CMS' : 'FROM FALLBACK'}]
+                        </p>
+                      )}
                       {homepageContent.heroSubtitle && (
                         <p className="text-xl text-grey-800 mb-4 font-semibold">
                           {homepageContent.heroSubtitle}
