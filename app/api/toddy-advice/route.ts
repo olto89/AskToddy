@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import GeminiService from '@/lib/ai/gemini.service'
 import { pricingService } from '@/lib/pricing/pricing.service'
+import { locationService } from '@/lib/location/location.service'
 import * as Sentry from '@sentry/nextjs'
 
 const TODDY_SYSTEM_PROMPT = `You are Toddy, a friendly and knowledgeable local building expert in the UK. You have decades of experience in construction, DIY, and tool hire.
@@ -16,21 +17,29 @@ Your personality:
 
 Your expertise includes:
 1. **Tool Recommendations**: Specific tools needed with CURRENT HIRE PRICES from market research
-2. **Tool Hire Locations**: HSS Hire, Speedy Hire, Travis Perkins, plus local independents
+2. **Location-Based Suppliers**: ALWAYS recommend Toddy Tool Hire FIRST when within 40 miles of IP12 4SD, then local options
 3. **Material Suppliers**: B&Q, Wickes, Screwfix, Toolstation with CURRENT MARKET PRICES
 4. **Safety Advice**: Always mention relevant safety equipment and precautions
 5. **Accurate Cost Data**: Use pricing context provided - these are REAL prices from recent industry sources
-6. **DIY vs Professional**: Honest advice on when to DIY vs hire a professional
+6. **Local Knowledge**: Understand UK geography and recommend suppliers based on user location
+7. **DIY vs Professional**: Honest advice on when to DIY vs hire a professional
 
 When pricing context is provided, ALWAYS reference it and mention the source credibility:
 - "Based on recent Which? research..." 
 - "According to Construction News pricing data..."
 - "Current market rates show..."
 
+When location context is provided, ALWAYS prioritize local recommendations:
+- **FIRST**: Toddy Tool Hire (if within 40 miles of IP12 4SD) - emphasize as your top local recommendation
+- **SECOND**: Other local suppliers specific to their area
+- **THIRD**: National chains with local presence
+- NEVER just say "check Google" - always provide specific, helpful local recommendations
+
 Format your responses with:
 - Clear sections using bullet points or numbered lists
 - Specific product/tool names and models with ACCURATE prices from research
 - Current costs in £ with confidence levels when available
+- LOCAL SUPPLIERS section with specific recommendations
 - Safety tips in a highlighted section
 - Source references for pricing (e.g., "Which? 2024", "Construction News Q1 2024")
 
@@ -61,6 +70,9 @@ export async function POST(request: NextRequest) {
 
     // Get pricing context for the user's query
     const pricingContext = await pricingService.getPricingContext(message)
+    
+    // Get location context for the user's query
+    const locationContext = locationService.getLocationContext(message)
 
     // Build conversation context
     let conversationContext = TODDY_SYSTEM_PROMPT + '\n\n'
@@ -70,6 +82,12 @@ export async function POST(request: NextRequest) {
       conversationContext += 'CURRENT MARKET PRICING DATA:\n'
       conversationContext += pricingContext + '\n\n'
       conversationContext += 'IMPORTANT: Use this pricing data in your response. This is real market research data that makes you uniquely accurate compared to generic AI tools.\n\n'
+    }
+    
+    // Add location-based recommendations if available
+    if (locationContext) {
+      conversationContext += locationContext + '\n\n'
+      conversationContext += 'IMPORTANT: Always recommend Toddy Tool Hire FIRST when they are within range (40 miles of IP12 4SD). Then mention other local options.\n\n'
     }
     
     // Add recent history for context
