@@ -39,6 +39,21 @@ export class GeminiService {
     }
   }
 
+  async generateContent(prompt: string): Promise<string> {
+    if (!this.model) {
+      return "I'm currently offline, but I'd be happy to help! For tool hire, try HSS Hire or Speedy Hire. For materials, B&Q and Wickes are great local options."
+    }
+
+    try {
+      const result = await this.model.generateContent(prompt)
+      const response = await result.response
+      return response.text()
+    } catch (error) {
+      console.error('Gemini API error:', error)
+      return "Sorry mate, having a technical issue. For quick help: HSS Hire for tools, B&Q for materials, and always wear safety gear!"
+    }
+  }
+
   async analyzeProject(
     description: string,
     projectType: string,

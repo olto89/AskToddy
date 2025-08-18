@@ -6,10 +6,15 @@ import AnalysisResults from '@/components/AnalysisResults'
 import { ProjectAnalysis } from '@/lib/ai/gemini.service'
 import { HomepageContent, UploadFormContent } from '@/lib/contentful'
 
-// Import ProjectUpload with SSR disabled
+// Import components with SSR disabled
 const ProjectUpload = dynamic(() => import('@/components/ProjectUploadWithCMS'), {
   ssr: false,
   loading: () => <div className="max-w-4xl mx-auto p-8 text-center">Loading upload form...</div>
+})
+
+const ToddyAdviceChat = dynamic(() => import('@/components/ToddyAdviceChat'), {
+  ssr: false,
+  loading: () => <div className="max-w-4xl mx-auto p-8 text-center">Loading chat...</div>
 })
 
 interface HomepageClientProps {
@@ -21,6 +26,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
   const [currentAnalysis, setCurrentAnalysis] = useState<ProjectAnalysis | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [showUploadForm, setShowUploadForm] = useState(true)
+  const [activeTab, setActiveTab] = useState<'advice' | 'checker'>('advice')
 
   const handleAnalysisComplete = (analysis: ProjectAnalysis) => {
     setCurrentAnalysis(analysis)
@@ -142,17 +148,67 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                 </div>
               </div>
               
+              {/* Tabbed Interface */}
               <div className="bg-gradient-to-br from-white to-primary-50 border-2 border-primary-200 rounded-2xl shadow-2xl relative overflow-hidden">
-                {/* Subtle background pattern - with pointer-events-none to allow clicks through */}
-                <div className="absolute inset-0 opacity-5 pointer-events-none">
-                  <div className="absolute top-4 right-4 w-16 h-16 bg-primary-500 rounded-full"></div>
-                  <div className="absolute bottom-8 left-8 w-12 h-12 bg-secondary-500 rounded-full"></div>
-                  <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-primary-400 rounded-full"></div>
+                {/* Tab Headers */}
+                <div className="flex border-b border-primary-200 bg-white/80 backdrop-blur-sm">
+                  <button
+                    onClick={() => setActiveTab('advice')}
+                    className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
+                      activeTab === 'advice'
+                        ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-md'
+                        : 'text-grey-700 hover:bg-primary-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      <span>Toddy Advice</span>
+                      <span className="ml-2 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">NEW</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('checker')}
+                    className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
+                      activeTab === 'checker'
+                        ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-md'
+                        : 'text-grey-700 hover:bg-primary-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>Project Checker</span>
+                    </div>
+                  </button>
                 </div>
-                <ProjectUpload 
-                  onAnalysisComplete={handleAnalysisComplete}
-                  onAnalysisStart={handleAnalysisStart}
-                />
+
+                {/* Tab Content */}
+                <div className="relative">
+                  {/* Subtle background pattern - with pointer-events-none to allow clicks through */}
+                  <div className="absolute inset-0 opacity-5 pointer-events-none">
+                    <div className="absolute top-4 right-4 w-16 h-16 bg-primary-500 rounded-full"></div>
+                    <div className="absolute bottom-8 left-8 w-12 h-12 bg-secondary-500 rounded-full"></div>
+                    <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-primary-400 rounded-full"></div>
+                  </div>
+                  
+                  {activeTab === 'advice' ? (
+                    <div className="p-6">
+                      <div className="mb-4 text-center">
+                        <h3 className="text-2xl font-bold text-navy-900 mb-2">Ask Toddy Anything</h3>
+                        <p className="text-grey-700">Get expert advice on tools, materials, and building projects</p>
+                      </div>
+                      <ToddyAdviceChat />
+                    </div>
+                  ) : (
+                    <ProjectUpload 
+                      onAnalysisComplete={handleAnalysisComplete}
+                      onAnalysisStart={handleAnalysisStart}
+                    />
+                  )}
+                </div>
               </div>
 
               {/* Features Section from CMS */}
