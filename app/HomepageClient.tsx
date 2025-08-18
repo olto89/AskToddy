@@ -81,7 +81,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg p-1">
-                <img src="/toddy-character.svg" alt="Toddy" className="w-full h-full object-contain" />
+                <img src="/toddy-character.png" alt="Toddy" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white font-heading">AskToddy</h1>
@@ -142,9 +142,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                     <div className="w-full max-w-md bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl p-8 flex items-center justify-center">
                       <div className="text-center">
                         <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-                          <div className="w-full h-full bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                            T
-                          </div>
+                          <img src="/toddy-hero.png" alt="Ask Toddy" className="w-full h-full object-contain rounded-full" />
                         </div>
                         <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">ASK ME ANYTHING ABOUT</h3>
                         <h4 className="text-lg font-semibold text-navy-900 font-heading">TOOLS AND CONSTRUCTION</h4>
