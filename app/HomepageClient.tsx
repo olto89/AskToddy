@@ -98,11 +98,14 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
           {showUploadForm && (
             <>
               {/* Hero Section with CMS Content */}
-              <div className="bg-white rounded-xl shadow-sm border border-primary-200 p-8 mb-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="bg-gradient-to-r from-white via-primary-50 to-secondary-50 border-2 border-primary-300 rounded-2xl shadow-2xl p-8 mb-8 overflow-hidden relative">
+                {/* Decorative background elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-400/20 to-secondary-400/20 rounded-full -translate-y-16 translate-x-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-secondary-300/20 to-primary-300/20 rounded-full translate-y-12 -translate-x-12"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-4xl font-bold text-navy-900 mb-4 leading-tight font-heading">
+                      <h2 className="text-3xl font-bold text-navy-900 mb-4 font-heading">
                         {homepageContent.heroTitle}
                       </h2>
                       {/* Debug: Show if content is from CMS */}
@@ -112,43 +115,41 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                         </p>
                       )}
                       {homepageContent.heroSubtitle && (
-                        <p className="text-xl text-grey-700 mb-4 font-medium">
+                        <p className="text-xl text-grey-800 mb-4 font-semibold">
                           {homepageContent.heroSubtitle}
                         </p>
                       )}
-                      <p className="text-lg text-grey-600 mb-6 leading-relaxed">
+                      <p className="text-lg text-grey-700 mb-6">
                         {homepageContent.heroDescription}
                       </p>
                     </div>
                     {homepageContent.features && homepageContent.features.length > 0 && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-wrap gap-4">
                         {homepageContent.features.map((feature, index) => (
-                          <div key={index} className="flex items-center gap-3 p-3 bg-primary-50 rounded-lg border border-primary-100">
-                            <div className="w-2 h-2 bg-primary-500 rounded-full flex-shrink-0"></div>
-                            <span className="text-navy-700 font-medium text-sm">{feature.title}</span>
+                          <div key={index} className="flex items-center gap-2 group">
+                            <div className="w-2 h-2 bg-primary-500 rounded-full group-hover:scale-125 transition-transform"></div>
+                            <span className="text-grey-700 font-medium">{feature.title}</span>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
                   <div className="flex justify-center lg:justify-end">
-                    <div className="w-full max-w-md bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl p-8 flex items-center justify-center border border-primary-100">
-                      <div className="text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">Professional Analysis</h3>
-                        <p className="text-sm text-grey-600">AI-powered construction estimates</p>
-                      </div>
-                    </div>
+                    <img 
+                      src="/hero-construction.png" 
+                      alt="Construction and DIY illustration"
+                      className="w-full max-w-md h-auto"
+                      onError={(e) => {
+                        // Hide image if not found
+                        e.currentTarget.style.display = 'none'
+                      }}
+                    />
                   </div>
                 </div>
               </div>
               
               {/* Tabbed Interface */}
-              <div className="bg-white rounded-xl shadow-sm border border-primary-200 overflow-hidden">
+              <div className="bg-gradient-to-br from-white to-primary-50 border-2 border-primary-200 rounded-2xl shadow-2xl relative overflow-hidden">
                 {/* Tab Headers */}
                 <div className="flex border-b border-primary-200">
                   <button
@@ -185,20 +186,27 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                 </div>
 
                 {/* Tab Content */}
-                <div className="bg-primary-50">
+                <div className="relative">
+                  {/* Subtle background pattern - with pointer-events-none to allow clicks through */}
+                  <div className="absolute inset-0 opacity-5 pointer-events-none">
+                    <div className="absolute top-4 right-4 w-16 h-16 bg-primary-500 rounded-full"></div>
+                    <div className="absolute bottom-8 left-8 w-12 h-12 bg-secondary-500 rounded-full"></div>
+                    <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-primary-400 rounded-full"></div>
+                  </div>
+                  
                   {activeTab === 'advice' ? (
                     <div className="p-6">
-                      <div className="mb-6 text-center">
-                        <h3 className="text-2xl font-bold text-navy-900 mb-2 font-heading">Expert Construction Advice</h3>
-                        <p className="text-grey-600">Get professional guidance on tools, materials, and building projects</p>
+                      <div className="mb-4 text-center">
+                        <h3 className="text-2xl font-bold text-navy-900 mb-2 font-heading">Ask Toddy Anything</h3>
+                        <p className="text-grey-700">Get expert advice on tools, materials, and building projects</p>
                       </div>
                       <ToddyAdviceChat />
                     </div>
                   ) : (
                     <div className="p-6">
-                      <div className="mb-6 text-center">
+                      <div className="mb-4 text-center">
                         <h3 className="text-2xl font-bold text-navy-900 mb-2 font-heading">Project Analysis</h3>
-                        <p className="text-grey-600">Upload photos for instant AI-powered cost estimates and recommendations</p>
+                        <p className="text-grey-700">Upload photos for instant AI-powered cost estimates and recommendations</p>
                       </div>
                       <ProjectUpload 
                         onAnalysisComplete={handleAnalysisComplete}
@@ -217,7 +225,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {homepageContent.features.map((feature, index) => (
-                      <div key={index} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+                      <div key={index} className="bg-white rounded-2xl shadow-2xl border border-primary-200 p-6 hover:shadow-3xl hover:scale-105 transition-all duration-300">
                         {feature.icon && (
                           <div className="text-4xl mb-4">{feature.icon}</div>
                         )}
