@@ -156,8 +156,8 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                     onClick={() => setActiveTab('advice')}
                     className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
                       activeTab === 'advice'
-                        ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-md'
-                        : 'text-grey-700 hover:bg-primary-50'
+                        ? 'bg-primary-500 text-white shadow-md border-b-4 border-orange-600'
+                        : 'text-navy-900 hover:bg-primary-50 hover:text-primary-600'
                     }`}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -165,15 +165,17 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                       <span>Toddy Advice</span>
-                      <span className="ml-2 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">NEW</span>
+                      <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                        activeTab === 'advice' ? 'bg-green-400 text-white' : 'bg-green-500 text-white'
+                      }`}>NEW</span>
                     </div>
                   </button>
                   <button
                     onClick={() => setActiveTab('checker')}
                     className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
                       activeTab === 'checker'
-                        ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-md'
-                        : 'text-grey-700 hover:bg-primary-50'
+                        ? 'bg-primary-500 text-white shadow-md border-b-4 border-orange-600'
+                        : 'text-navy-900 hover:bg-primary-50 hover:text-primary-600'
                     }`}
                   >
                     <div className="flex items-center justify-center gap-2">
