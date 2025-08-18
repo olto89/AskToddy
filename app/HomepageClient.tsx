@@ -75,30 +75,21 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
   }
 
   return (
-    <div className="min-h-screen bg-primary-50">
-      <header className="bg-white border-b border-primary-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 008 10.172V5L8 4z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-navy-900 font-heading">AskToddy</h1>
-                <p className="text-sm text-grey-600 font-medium">Professional Construction Analysis</p>
-              </div>
-            </div>
-            {!showUploadForm && (
-              <button
-                onClick={handleNewProject}
-                className="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all duration-200 font-medium shadow-sm"
-              >
-                New Project
-              </button>
-            )}
+    <div className="min-h-screen" style={{backgroundColor: '#FF6B35'}}>
+      <header className="py-8 px-8">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div>
+            <h1 className="text-6xl font-black text-navy-900 tracking-tight font-heading">AskToddy</h1>
+            <p className="text-xl text-grey-800 mt-3 font-medium">The Local Expert That Never Leaves Your Side</p>
           </div>
+          {!showUploadForm && (
+            <button
+              onClick={handleNewProject}
+              className="px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              New Project
+            </button>
+          )}
         </div>
       </header>
       
@@ -221,26 +212,19 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
               {/* Features Section from CMS */}
               {homepageContent.features && homepageContent.features.length > 0 && (
                 <div className="mt-12">
-                  <div className="text-center mb-10">
-                    <h3 className="text-3xl font-bold text-navy-900 mb-4 font-heading">
-                      {homepageContent.featuresTitle || 'Why Choose AskToddy'}
-                    </h3>
-                    <p className="text-lg text-grey-600 max-w-2xl mx-auto">
-                      Professional construction analysis powered by AI and real market data
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <h3 className="text-2xl font-bold text-center mb-8 text-white font-heading">
+                    {homepageContent.featuresTitle || 'Why Choose AskToddy'}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {homepageContent.features.map((feature, index) => (
-                      <div key={index} className="bg-white rounded-xl shadow-sm border border-primary-200 p-6 hover:shadow-md transition-shadow">
+                      <div key={index} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
                         {feature.icon && (
-                          <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
-                            <span className="text-2xl">{feature.icon}</span>
-                          </div>
+                          <div className="text-4xl mb-4">{feature.icon}</div>
                         )}
-                        <h4 className="text-xl font-semibold mb-3 text-navy-900 font-heading">
+                        <h4 className="text-xl font-semibold mb-2 text-navy-900 font-heading">
                           {feature.title}
                         </h4>
-                        <p className="text-grey-600 leading-relaxed">
+                        <p className="text-grey-600">
                           {feature.description}
                         </p>
                       </div>
