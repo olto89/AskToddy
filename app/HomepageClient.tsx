@@ -142,7 +142,9 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                     <div className="w-full max-w-md bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl p-8 flex items-center justify-center">
                       <div className="text-center">
                         <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-                          <img src="/toddy-hero.svg" alt="Ask Toddy" className="w-full h-full object-contain" />
+                          <div className="w-full h-full bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                            T
+                          </div>
                         </div>
                         <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">ASK ME ANYTHING ABOUT</h3>
                         <h4 className="text-lg font-semibold text-navy-900 font-heading">TOOLS AND CONSTRUCTION</h4>
