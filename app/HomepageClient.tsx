@@ -123,9 +123,14 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                           {homepageContent.heroSubtitle}
                         </p>
                       )}
-                      <p className="text-lg text-grey-600 mb-6 leading-relaxed">
-                        {homepageContent.heroDescription}
-                      </p>
+                      <div className="text-lg text-grey-600 mb-6 leading-relaxed">
+                        <p className="mb-4">
+                          Get <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">instant quotes</span>, <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">AI powered analysis</span>, and <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">detailed breakdowns</span> for your construction projects with <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">professional advice</span> from experienced tradespeople.
+                        </p>
+                        <p className="text-base">
+                          {homepageContent.heroDescription}
+                        </p>
+                      </div>
                     </div>
                     {homepageContent.features && homepageContent.features.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -213,53 +218,6 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                       />
                     </div>
                   )}
-                </div>
-              </div>
-
-              {/* Feature Boxes */}
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Instant Quotes */}
-                <div className="bg-white rounded-xl shadow-2xl border-2 border-primary-300 p-6 hover:shadow-3xl hover:scale-105 transition-all duration-300">
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">Instant Quotes</h3>
-                  <p className="text-grey-600 text-sm">Get immediate cost estimates for your construction projects</p>
-                </div>
-
-                {/* AI Powered Analysis */}
-                <div className="bg-white rounded-xl shadow-2xl border-2 border-primary-300 p-6 hover:shadow-3xl hover:scale-105 transition-all duration-300">
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">AI Powered Analysis</h3>
-                  <p className="text-grey-600 text-sm">Smart analysis of your project photos and requirements</p>
-                </div>
-
-                {/* Detailed Breakdowns */}
-                <div className="bg-white rounded-xl shadow-2xl border-2 border-primary-300 p-6 hover:shadow-3xl hover:scale-105 transition-all duration-300">
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">Detailed Breakdowns</h3>
-                  <p className="text-grey-600 text-sm">Comprehensive cost and material breakdowns for planning</p>
-                </div>
-
-                {/* Professional Advice */}
-                <div className="bg-white rounded-xl shadow-2xl border-2 border-primary-300 p-6 hover:shadow-3xl hover:scale-105 transition-all duration-300">
-                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">Professional Advice</h3>
-                  <p className="text-grey-600 text-sm">Expert guidance from experienced construction professionals</p>
                 </div>
               </div>
 

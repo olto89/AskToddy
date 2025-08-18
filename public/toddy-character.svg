@@ -1,49 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="toddy-character">
-  <defs>
-    <style>
-      .toddy-face { fill: #2C3E50; }
-      .toddy-skin { fill: #F5F5F5; }
-    </style>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="toddy-character">
+  <!-- Improved Toddy Character matching the provided images -->
   
-  <!-- Toddy Character based on the provided image -->
   <!-- Flat cap -->
-  <path class="toddy-face" d="M80 120 C80 80, 120 60, 200 60 C280 60, 320 80, 320 120 C330 130, 340 140, 340 150 C340 160, 330 170, 320 170 L80 170 C70 170, 60 160, 60 150 C60 140, 70 130, 80 120 Z"/>
+  <path fill="#000" d="M40 70 C40 45, 60 35, 100 35 C140 35, 160 45, 160 70 C165 75, 170 80, 170 85 C170 90, 165 95, 160 95 L40 95 C35 95, 30 90, 30 85 C30 80, 35 75, 40 70 Z"/>
   
   <!-- Face outline -->
-  <ellipse class="toddy-skin" cx="200" cy="220" rx="90" ry="110"/>
+  <ellipse fill="#f8f8f8" cx="100" cy="120" rx="55" ry="65"/>
   
-  <!-- Glasses frame -->
-  <g fill="none" stroke="#2C3E50" stroke-width="6">
+  <!-- Glasses frames - thicker and more prominent -->
+  <g fill="none" stroke="#000" stroke-width="4">
     <!-- Left lens -->
-    <circle cx="170" cy="200" r="25"/>
+    <circle cx="85" cy="105" r="18"/>
     <!-- Right lens -->
-    <circle cx="230" cy="200" r="25"/>
+    <circle cx="115" cy="105" r="18"/>
     <!-- Bridge -->
-    <line x1="195" y1="200" x2="205" y1="200"/>
+    <line x1="97" y1="105" x2="103" y1="105"/>
     <!-- Left arm -->
-    <line x1="145" y1="200" x2="120" y1="195"/>
+    <line x1="67" y1="105" x2="50" y1="102"/>
     <!-- Right arm -->
-    <line x1="255" y1="200" x2="280" y1="195"/>
+    <line x1="133" y1="105" x2="150" y1="102"/>
   </g>
   
-  <!-- Eyes -->
-  <circle class="toddy-face" cx="170" cy="200" r="12"/>
-  <circle class="toddy-face" cx="230" cy="200" r="12"/>
-  <circle fill="white" cx="173" cy="197" r="3"/>
-  <circle fill="white" cx="233" cy="197" r="3"/>
+  <!-- Eyes behind glasses -->
+  <ellipse fill="#000" cx="85" cy="105" rx="8" ry="10"/>
+  <ellipse fill="#000" cx="115" cy="105" rx="8" ry="10"/>
+  <circle fill="white" cx="87" cy="103" r="2"/>
+  <circle fill="white" cx="117" cy="103" r="2"/>
   
   <!-- Nose -->
-  <ellipse class="toddy-face" cx="200" cy="220" rx="8" ry="12"/>
+  <path fill="none" stroke="#000" stroke-width="2" d="M100 115 L98 125 L102 125"/>
   
-  <!-- Mouth -->
-  <path fill="none" stroke="#2C3E50" stroke-width="4" stroke-linecap="round" d="M180 250 Q200 270 220 250"/>
+  <!-- Mouth - friendly smile -->
+  <path fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" d="M88 140 Q100 150 112 140"/>
   
   <!-- Ears -->
-  <ellipse class="toddy-skin" cx="130" cy="210" rx="15" ry="20"/>
-  <ellipse class="toddy-skin" cx="270" cy="210" rx="15" ry="20"/>
+  <ellipse fill="#f8f8f8" cx="65" cy="115" rx="8" ry="12"/>
+  <ellipse fill="#f8f8f8" cx="135" cy="115" rx="8" ry="12"/>
   
   <!-- Shirt collar -->
-  <path class="toddy-face" d="M140 320 Q200 340 260 320 L260 360 Q200 380 140 360 Z"/>
-  <path fill="none" stroke="#2C3E50" stroke-width="3" d="M140 320 Q200 300 260 320"/>
+  <path fill="#000" d="M70 180 Q100 190 130 180 L130 200 Q100 210 70 200 Z"/>
+  <path fill="none" stroke="#000" stroke-width="2" d="M70 180 Q100 170 130 180"/>
+  
+  <!-- Cap peak/visor -->
+  <ellipse fill="#000" cx="100" cy="95" rx="35" ry="8"/>
 </svg>
