@@ -50,5 +50,9 @@
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"
+  },
+  "overrides": {
+    "glob": "^10.0.0",
+    "inflight": "npm:@isaacs/inflight@^1.0.6"
   }
 }
