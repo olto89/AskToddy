@@ -207,8 +207,8 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
             disabled={!input.trim() || isLoading}
             className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 ${
               !input.trim() || isLoading
-                ? 'bg-grey-400 text-grey-200 cursor-not-allowed'
-                : 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white hover:from-primary-600 hover:to-secondary-600 transform hover:scale-105 shadow-md'
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-orange-500 text-white hover:bg-orange-600 transform hover:scale-105 shadow-md'
             }`}
           >
             {isLoading ? (
