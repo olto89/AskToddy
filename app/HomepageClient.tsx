@@ -141,13 +141,11 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                   <div className="flex justify-center lg:justify-end">
                     <div className="w-full max-w-md bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl p-8 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
+                        <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                          <img src="/toddy-hero.svg" alt="Ask Toddy" className="w-full h-full object-contain" />
                         </div>
-                        <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">Professional Analysis</h3>
-                        <p className="text-sm text-grey-600">AI-powered construction estimates</p>
+                        <h3 className="text-lg font-semibold text-navy-900 mb-2 font-heading">ASK ME ANYTHING ABOUT</h3>
+                        <h4 className="text-lg font-semibold text-navy-900 font-heading">TOOLS AND CONSTRUCTION</h4>
                       </div>
                     </div>
                   </div>
