@@ -75,108 +75,116 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
   }
 
   return (
-    <div className="min-h-screen" style={{backgroundColor: '#FF6B35'}}>
-      <header className="py-8 px-8">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div>
-            <h1 className="text-6xl font-black text-navy-900 tracking-tight">AskToddy</h1>
-            <p className="text-xl text-grey-800 mt-3 font-medium">The Local Expert That Never Leaves Your Side</p>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 008 10.172V5L8 4z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">AskToddy</h1>
+                <p className="text-sm text-gray-600 font-medium">Professional Construction Analysis</p>
+              </div>
+            </div>
+            {!showUploadForm && (
+              <button
+                onClick={handleNewProject}
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium shadow-sm"
+              >
+                New Project
+              </button>
+            )}
           </div>
-          {!showUploadForm && (
-            <button
-              onClick={handleNewProject}
-              className="px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              New Project
-            </button>
-          )}
         </div>
       </header>
       
-      <main className="pb-16">
-        <div className="max-w-7xl mx-auto px-8">
+      <main className="py-8">
+        <div className="max-w-7xl mx-auto px-6">
           {showUploadForm && (
             <>
               {/* Hero Section with CMS Content */}
-              <div className="bg-gradient-to-r from-white via-primary-50 to-secondary-50 border-2 border-primary-300 rounded-2xl shadow-2xl p-8 mb-8 overflow-hidden relative">
-                {/* Decorative background elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-400/20 to-secondary-400/20 rounded-full -translate-y-16 translate-x-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-secondary-300/20 to-primary-300/20 rounded-full translate-y-12 -translate-x-12"></div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-3xl font-bold text-navy-900 mb-4">
+                      <h2 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
                         {homepageContent.heroTitle}
                       </h2>
                       {/* Debug: Show if content is from CMS */}
                       {process.env.NODE_ENV === 'development' && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 mb-2">
                           [Debug: {homepageContent.heroTitle.includes('hello test') ? 'FROM CMS' : 'FROM FALLBACK'}]
                         </p>
                       )}
                       {homepageContent.heroSubtitle && (
-                        <p className="text-xl text-grey-800 mb-4 font-semibold">
+                        <p className="text-xl text-gray-600 mb-4 font-medium">
                           {homepageContent.heroSubtitle}
                         </p>
                       )}
-                      <p className="text-lg text-grey-700 mb-6">
+                      <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                         {homepageContent.heroDescription}
                       </p>
                     </div>
                     {homepageContent.features && homepageContent.features.length > 0 && (
-                      <div className="flex flex-wrap gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {homepageContent.features.map((feature, index) => (
-                          <div key={index} className="flex items-center gap-2 group">
-                            <div className="w-2 h-2 bg-primary-500 rounded-full group-hover:scale-125 transition-transform"></div>
-                            <span className="text-grey-700 font-medium">{feature.title}</span>
+                          <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                            <span className="text-gray-700 font-medium text-sm">{feature.title}</span>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
                   <div className="flex justify-center lg:justify-end">
-                    <img 
-                      src="/hero-construction.png" 
-                      alt="Construction and DIY illustration"
-                      className="w-full max-w-md h-auto"
-                      onError={(e) => {
-                        // Hide image if not found
-                        e.currentTarget.style.display = 'none'
-                      }}
-                    />
+                    <div className="w-full max-w-md bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-20 h-20 bg-blue-600 rounded-xl mx-auto mb-4 flex items-center justify-center">
+                          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Professional Analysis</h3>
+                        <p className="text-sm text-gray-600">AI-powered construction estimates</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               
               {/* Tabbed Interface */}
-              <div className="bg-gradient-to-br from-white to-primary-50 border-2 border-primary-200 rounded-2xl shadow-2xl relative overflow-hidden">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 {/* Tab Headers */}
-                <div className="flex border-b border-primary-200 bg-white/80 backdrop-blur-sm">
+                <div className="flex border-b border-gray-200">
                   <button
                     onClick={() => setActiveTab('advice')}
-                    className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
+                    className={`flex-1 py-4 px-6 font-medium transition-colors duration-200 ${
                       activeTab === 'advice'
-                        ? 'bg-white text-primary-500 shadow-md border-b-4 border-primary-500'
-                        : 'text-navy-900 hover:bg-primary-50 hover:text-primary-600'
+                        ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-3">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                       <span>Toddy Advice</span>
-                      <span className="ml-2 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full">NEW</span>
+                      <span className="ml-2 px-2 py-1 bg-emerald-500 text-white text-xs rounded-full font-medium">NEW</span>
                     </div>
                   </button>
                   <button
                     onClick={() => setActiveTab('checker')}
-                    className={`flex-1 py-4 px-6 font-semibold transition-all duration-300 ${
+                    className={`flex-1 py-4 px-6 font-medium transition-colors duration-200 ${
                       activeTab === 'checker'
-                        ? 'bg-white text-primary-500 shadow-md border-b-4 border-primary-500'
-                        : 'text-navy-900 hover:bg-primary-50 hover:text-primary-600'
+                        ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-3">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -186,27 +194,26 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                 </div>
 
                 {/* Tab Content */}
-                <div className="relative">
-                  {/* Subtle background pattern - with pointer-events-none to allow clicks through */}
-                  <div className="absolute inset-0 opacity-5 pointer-events-none">
-                    <div className="absolute top-4 right-4 w-16 h-16 bg-primary-500 rounded-full"></div>
-                    <div className="absolute bottom-8 left-8 w-12 h-12 bg-secondary-500 rounded-full"></div>
-                    <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-primary-400 rounded-full"></div>
-                  </div>
-                  
+                <div className="bg-gray-50">
                   {activeTab === 'advice' ? (
                     <div className="p-6">
-                      <div className="mb-4 text-center">
-                        <h3 className="text-2xl font-bold text-navy-900 mb-2">Ask Toddy Anything</h3>
-                        <p className="text-grey-700">Get expert advice on tools, materials, and building projects</p>
+                      <div className="mb-6 text-center">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Expert Construction Advice</h3>
+                        <p className="text-gray-600">Get professional guidance on tools, materials, and building projects</p>
                       </div>
                       <ToddyAdviceChat />
                     </div>
                   ) : (
-                    <ProjectUpload 
-                      onAnalysisComplete={handleAnalysisComplete}
-                      onAnalysisStart={handleAnalysisStart}
-                    />
+                    <div className="p-6">
+                      <div className="mb-6 text-center">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Project Analysis</h3>
+                        <p className="text-gray-600">Upload photos for instant AI-powered cost estimates and recommendations</p>
+                      </div>
+                      <ProjectUpload 
+                        onAnalysisComplete={handleAnalysisComplete}
+                        onAnalysisStart={handleAnalysisStart}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -214,19 +221,26 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
               {/* Features Section from CMS */}
               {homepageContent.features && homepageContent.features.length > 0 && (
                 <div className="mt-12">
-                  <h3 className="text-2xl font-bold text-center mb-8 text-white">
-                    {homepageContent.featuresTitle || 'Why Choose AskToddy'}
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center mb-10">
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                      {homepageContent.featuresTitle || 'Why Choose AskToddy'}
+                    </h3>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                      Professional construction analysis powered by AI and real market data
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {homepageContent.features.map((feature, index) => (
-                      <div key={index} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+                      <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
                         {feature.icon && (
-                          <div className="text-4xl mb-4">{feature.icon}</div>
+                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <span className="text-2xl">{feature.icon}</span>
+                          </div>
                         )}
-                        <h4 className="text-xl font-semibold mb-2 text-navy-900">
+                        <h4 className="text-xl font-semibold mb-3 text-gray-900">
                           {feature.title}
                         </h4>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 leading-relaxed">
                           {feature.description}
                         </p>
                       </div>

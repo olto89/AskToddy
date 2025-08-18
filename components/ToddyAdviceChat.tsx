@@ -122,31 +122,31 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   return (
-    <div className={`flex flex-col h-[600px] ${className}`}>
+    <div className={`flex flex-col h-[600px] bg-white rounded-lg border border-gray-200 ${className}`}>
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-white to-primary-50/30">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] rounded-lg p-4 ${
+              className={`max-w-[80%] rounded-xl p-4 ${
                 message.role === 'user'
-                  ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white'
-                  : 'bg-white border border-grey-200 text-navy-900 shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-gray-50 border border-gray-100 text-gray-900 shadow-sm'
               }`}
             >
               {message.role === 'assistant' && (
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                     T
                   </div>
-                  <span className="font-semibold text-primary-600">Toddy</span>
+                  <span className="font-semibold text-blue-700">Toddy</span>
                 </div>
               )}
-              <div className="whitespace-pre-wrap">{message.content}</div>
-              <div className="text-xs mt-2 opacity-70">
+              <div className="whitespace-pre-wrap leading-relaxed">{message.content}</div>
+              <div className="text-xs mt-3 opacity-60">
                 {message.timestamp.toLocaleTimeString()}
               </div>
             </div>
@@ -154,17 +154,17 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white border border-grey-200 rounded-lg p-4 shadow-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                   T
                 </div>
-                <span className="font-semibold text-primary-600">Toddy is thinking...</span>
+                <span className="font-semibold text-blue-700">Toddy is thinking...</span>
               </div>
-              <div className="flex gap-1 mt-2">
-                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              <div className="flex gap-1 mt-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
             </div>
           </div>
@@ -174,14 +174,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
 
       {/* Example Questions */}
       {messages.length === 1 && (
-        <div className="px-4 py-2 border-t border-grey-200 bg-grey-50">
-          <p className="text-xs text-grey-600 mb-2">Try asking:</p>
+        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <p className="text-sm text-gray-600 mb-3 font-medium">Try asking:</p>
           <div className="flex flex-wrap gap-2">
             {exampleQuestions.map((question, index) => (
               <button
                 key={index}
                 onClick={() => handleExampleClick(question)}
-                className="text-xs px-3 py-1.5 bg-white border border-primary-200 text-primary-600 rounded-full hover:bg-primary-50 transition-colors"
+                className="text-sm px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors"
               >
                 {question}
               </button>
@@ -191,24 +191,24 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       )}
 
       {/* Input Area */}
-      <div className="p-4 border-t border-grey-200 bg-white">
-        <div className="flex gap-2">
+      <div className="p-6 border-t border-gray-200 bg-white">
+        <div className="flex gap-3">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask Toddy about tools, materials, or building advice..."
-            className="flex-1 px-4 py-2 border border-grey-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             rows={2}
             disabled={isLoading}
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 ${
+            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
               !input.trim() || isLoading
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-orange-500 text-white hover:bg-orange-600 transform hover:scale-105 shadow-md'
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
             {isLoading ? (
