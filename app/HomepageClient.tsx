@@ -123,20 +123,15 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                           {homepageContent.heroSubtitle}
                         </p>
                       )}
-                      <div className="text-lg text-grey-600 mb-6 leading-relaxed">
-                        <p className="mb-4">
-                          Get <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">instant quotes</span>, <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">AI powered analysis</span>, and <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">detailed breakdowns</span> for your construction projects with <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg border border-primary-300 font-medium">professional advice</span> from experienced tradespeople.
-                        </p>
-                        <p className="text-base">
-                          {homepageContent.heroDescription}
-                        </p>
-                      </div>
+                      <p className="text-lg text-grey-600 mb-6 leading-relaxed">
+                        {homepageContent.heroDescription}
+                      </p>
                     </div>
                     {homepageContent.features && homepageContent.features.length > 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {homepageContent.features.map((feature, index) => (
-                          <div key={index} className="flex items-center gap-3 p-3 bg-primary-50 rounded-lg">
-                            <div className="w-2 h-2 bg-primary-500 rounded-full flex-shrink-0"></div>
+                          <div key={index} className="flex items-center gap-3 p-4 bg-white border-2 border-primary-300 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                            <div className="w-3 h-3 bg-primary-500 rounded-full flex-shrink-0"></div>
                             <span className="text-navy-700 font-medium text-sm">{feature.title}</span>
                           </div>
                         ))}
