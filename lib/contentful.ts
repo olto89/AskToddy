@@ -16,8 +16,7 @@ const client = createClient({
   accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN || '',
   environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master',
   // Add cache control
-  host: 'cdn.contentful.com',
-  removeUnresolved: true
+  host: 'cdn.contentful.com'
 })
 
 // Type definitions for your content
