@@ -14,7 +14,10 @@ export const CONTENT_TYPES = {
 const client = createClient({
   space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
   accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN || '',
-  environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master'
+  environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master',
+  // Add cache control
+  host: 'cdn.contentful.com',
+  removeUnresolved: true
 })
 
 // Type definitions for your content
