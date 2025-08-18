@@ -19,7 +19,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     {
       id: '1',
       role: 'assistant',
-      content: "G'day! I'm Toddy, your local building expert. I can help you with:\n\n🔨 Tool recommendations for any job\n🏪 Where to hire or buy tools locally\n📦 Material suppliers and estimates\n👷 Finding trusted builders\n💡 DIY advice and safety tips\n\nWhat project are you working on today?",
+      content: "G'day! I'm Toddy, your local building expert with access to REAL UK market pricing data! I can help you with:\n\n🔨 Tool recommendations with CURRENT hire prices\n🏪 Where to hire tools with accurate daily rates\n📦 Material costs from recent industry research\n💷 Project estimates based on Which? & Construction News data\n👷 Finding trusted builders & suppliers\n💡 DIY advice with realistic budgets\n\n✨ Unlike generic AI tools, my pricing comes from legitimate UK sources like Which?, Construction News, and trade publications - giving you accurate, researched costs!\n\nWhat project are you working on today?",
       timestamp: new Date()
     }
   ])
@@ -111,10 +111,10 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   const exampleQuestions = [
-    "What tools do I need to build a deck?",
-    "Where can I hire a concrete mixer locally?",
-    "How much timber for a 3x4m shed?",
-    "Best paint for bathroom walls?"
+    "What's the current hire price for a concrete mixer?",
+    "How much does composite decking cost per sqm?",
+    "Tool hire costs for building a deck?",
+    "Current timber prices in the UK?"
   ]
 
   const handleExampleClick = (question: string) => {
