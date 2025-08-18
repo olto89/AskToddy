@@ -76,24 +76,24 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
 
   return (
     <div className="min-h-screen" style={{backgroundColor: '#FF6B35'}}>
-      <header className="bg-white border-b border-primary-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <header className="py-6" style={{backgroundColor: '#FF6B35'}}>
+        <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                <svg className="w-7 h-7 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 008 10.172V5L8 4z" />
                 </svg>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-navy-900 font-heading">AskToddy</h1>
-                <p className="text-sm text-grey-600 font-medium">Professional Construction Analysis</p>
+                <h1 className="text-3xl font-bold text-white font-heading">AskToddy</h1>
+                <p className="text-sm text-white/90 font-medium">Professional Construction Analysis</p>
               </div>
             </div>
             {!showUploadForm && (
               <button
                 onClick={handleNewProject}
-                className="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-colors duration-200 font-medium shadow-sm"
+                className="px-6 py-2.5 bg-white text-primary-600 rounded-lg hover:bg-white/90 transition-colors duration-200 font-medium shadow-lg"
               >
                 New Project
               </button>
@@ -107,7 +107,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
           {showUploadForm && (
             <>
               {/* Hero Section with CMS Content */}
-              <div className="bg-white rounded-xl shadow-sm border border-primary-200 p-8 mb-8">
+              <div className="bg-white rounded-xl shadow-2xl border-2 border-primary-300 p-8 mb-8 hover:shadow-3xl transition-shadow duration-300">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6">
                     <div>
@@ -157,7 +157,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
               </div>
               
               {/* Tabbed Interface */}
-              <div className="bg-white rounded-xl shadow-sm border border-primary-200 overflow-hidden">
+              <div className="bg-white rounded-xl shadow-2xl border-2 border-primary-300 overflow-hidden hover:shadow-3xl transition-shadow duration-300">
                 {/* Tab Headers */}
                 <div className="flex border-b border-primary-200">
                   <button
@@ -231,7 +231,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {homepageContent.features.map((feature, index) => (
-                      <div key={index} className="bg-white rounded-xl shadow-sm border border-primary-200 p-6 hover:shadow-md transition-shadow">
+                      <div key={index} className="bg-white rounded-xl shadow-2xl border-2 border-primary-300 p-6 hover:shadow-3xl hover:scale-105 transition-all duration-300">
                         {feature.icon && (
                           <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
                             <span className="text-2xl">{feature.icon}</span>
