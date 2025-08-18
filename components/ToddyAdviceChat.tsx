@@ -19,7 +19,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     {
       id: '1',
       role: 'assistant',
-      content: "G'day! I'm Toddy, your local building expert with access to REAL UK market pricing data! I can help you with:\n\n🔨 Tool recommendations with CURRENT hire prices\n🏪 Where to hire tools with accurate daily rates\n📦 Material costs from recent industry research\n💷 Project estimates based on Which? & Construction News data\n👷 Finding trusted builders & suppliers\n💡 DIY advice with realistic budgets\n\n✨ Unlike generic AI tools, my pricing comes from legitimate UK sources like Which?, Construction News, and trade publications - giving you accurate, researched costs!\n\nWhat project are you working on today?",
+      content: "Alright! I'm Toddy, your local building expert with access to REAL UK market pricing data! I can help you with:\n\n🔨 Tool recommendations with CURRENT hire prices\n🏪 Where to hire tools with proper daily rates\n📦 Material costs from recent industry research\n💷 Project estimates based on Which? & Construction News data\n👷 Finding trusted builders & suppliers\n💡 DIY advice with realistic budgets\n\n✨ Unlike generic AI tools, my pricing comes from proper UK sources like Which?, Construction News, and trade publications - giving you accurate, researched costs!\n\nWhat are you looking to get sorted then?",
       timestamp: new Date()
     }
   ])
