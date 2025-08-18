@@ -122,7 +122,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   return (
-    <div className={`flex flex-col h-[600px] bg-white rounded-lg border border-gray-200 ${className}`}>
+    <div className={`flex flex-col h-[600px] bg-white rounded-lg border border-primary-200 ${className}`}>
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((message) => (
@@ -133,16 +133,16 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
             <div
               className={`max-w-[80%] rounded-xl p-4 ${
                 message.role === 'user'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-gray-50 border border-gray-100 text-gray-900 shadow-sm'
+                  ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-sm'
+                  : 'bg-primary-50 border border-primary-100 text-navy-900 shadow-sm'
               }`}
             >
               {message.role === 'assistant' && (
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                     T
                   </div>
-                  <span className="font-semibold text-blue-700">Toddy</span>
+                  <span className="font-semibold text-primary-700">Toddy</span>
                 </div>
               )}
               <div className="whitespace-pre-wrap leading-relaxed">{message.content}</div>
@@ -154,17 +154,17 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 shadow-sm">
+            <div className="bg-primary-50 border border-primary-100 rounded-xl p-4 shadow-sm">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                   T
                 </div>
-                <span className="font-semibold text-blue-700">Toddy is thinking...</span>
+                <span className="font-semibold text-primary-700">Toddy is thinking...</span>
               </div>
               <div className="flex gap-1 mt-3">
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
             </div>
           </div>
@@ -174,14 +174,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
 
       {/* Example Questions */}
       {messages.length === 1 && (
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <p className="text-sm text-gray-600 mb-3 font-medium">Try asking:</p>
+        <div className="px-6 py-4 border-t border-primary-200 bg-primary-50">
+          <p className="text-sm text-grey-600 mb-3 font-medium">Try asking:</p>
           <div className="flex flex-wrap gap-2">
             {exampleQuestions.map((question, index) => (
               <button
                 key={index}
                 onClick={() => handleExampleClick(question)}
-                className="text-sm px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors"
+                className="text-sm px-3 py-2 bg-white border border-primary-200 text-grey-700 rounded-lg hover:bg-primary-100 hover:border-primary-300 hover:text-primary-700 transition-colors"
               >
                 {question}
               </button>
@@ -191,14 +191,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       )}
 
       {/* Input Area */}
-      <div className="p-6 border-t border-gray-200 bg-white">
+      <div className="p-6 border-t border-primary-200 bg-white">
         <div className="flex gap-3">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask Toddy about tools, materials, or building advice..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            className="flex-1 px-4 py-3 border border-grey-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             rows={2}
             disabled={isLoading}
           />
@@ -207,8 +207,8 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
             disabled={!input.trim() || isLoading}
             className={`px-6 py-3 rounded-lg font-medium transition-colors ${
               !input.trim() || isLoading
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                ? 'bg-grey-300 text-grey-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white hover:from-primary-600 hover:to-secondary-600'
             }`}
           >
             {isLoading ? (
