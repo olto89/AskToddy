@@ -281,23 +281,110 @@ export default function AnalysisResults({ analysis, isLoading, onAskFollowUp }: 
 
           {activeTab === 'contractors' && (
             <div className="space-y-6">
-              <h3 className="font-semibold text-lg">Professional Help</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {tradeRecommendations.map((trade, index) => (
-                  <div key={index} className="border border-primary-200 bg-gradient-to-br from-white to-primary-50 rounded-lg p-4 hover:shadow-lg transition-all duration-300 group">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <span className="text-2xl group-hover:scale-110 transition-transform duration-200">{trade.icon}</span>
-                      <div>
-                        <p className="font-medium text-navy-800">{trade.trade}</p>
-                        <p className="text-sm text-grey-600">Best for: {trade.when}</p>
-                      </div>
-                    </div>
-                    <button className="text-primary-600 font-medium text-sm hover:text-primary-700 transition-colors group-hover:translate-x-1 duration-200">
-                      Find local {trade.trade.toLowerCase()}s →
-                    </button>
+              <h3 className="font-semibold text-lg">
+                {(analysis as any)?.recommendedContractors ? 'Recommended Local Contractors' : 'Professional Help'}
+              </h3>
+              
+              {/* Show actual contractor recommendations if available */}
+              {(analysis as any)?.recommendedContractors && (analysis as any).recommendedContractors.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-sm text-green-800">
+                      ✅ Found {(analysis as any).recommendedContractors.length} highly-rated contractors near {(analysis as any).contractorSearchLocation}
+                    </p>
                   </div>
-                ))}
-              </div>
+                  
+                  <div className="space-y-4">
+                    {(analysis as any).recommendedContractors.map((contractor: any, index: number) => (
+                      <div key={index} className="border border-primary-200 bg-gradient-to-br from-white to-primary-50 rounded-lg p-4 hover:shadow-lg transition-all duration-300">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-navy-800 text-lg">{contractor.name}</h4>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <div className="flex items-center">
+                                <span className="text-yellow-400 text-sm">★</span>
+                                <span className="font-medium text-sm ml-1">{contractor.rating}/5</span>
+                              </div>
+                              <span className="text-grey-500 text-sm">({contractor.reviewCount} reviews)</span>
+                              {contractor.verified && (
+                                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Verified</span>
+                              )}
+                            </div>
+                            <p className="text-sm text-grey-600 mt-1">{contractor.location.address}</p>
+                          </div>
+                          {contractor.openNow !== undefined && (
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              contractor.openNow ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                              {contractor.openNow ? 'Open Now' : 'Closed'}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {contractor.trades.map((trade: string, tradeIndex: number) => (
+                            <span key={tradeIndex} className="bg-primary-100 text-primary-800 text-xs px-2 py-1 rounded-full">
+                              {trade}
+                            </span>
+                          ))}
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex space-x-3">
+                            {contractor.contact.phone && (
+                              <a 
+                                href={`tel:${contractor.contact.phone}`}
+                                className="text-primary-600 font-medium text-sm hover:text-primary-700 transition-colors flex items-center"
+                              >
+                                📞 Call
+                              </a>
+                            )}
+                            {contractor.contact.website && (
+                              <a 
+                                href={contractor.contact.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary-600 font-medium text-sm hover:text-primary-700 transition-colors flex items-center"
+                              >
+                                🌐 Website
+                              </a>
+                            )}
+                          </div>
+                          <span className="text-xs text-grey-500">{contractor.source}</span>
+                        </div>
+                        
+                        {/* Show recent reviews if available */}
+                        {contractor.reviews && contractor.reviews.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-grey-200">
+                            <p className="text-xs text-grey-600 mb-2">Recent review:</p>
+                            <p className="text-sm text-grey-700 italic">"{contractor.reviews[0].text.slice(0, 100)}..."</p>
+                            <p className="text-xs text-grey-500 mt-1">- {contractor.reviews[0].author}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                /* Fallback to generic recommendations */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {tradeRecommendations.map((trade, index) => (
+                    <div key={index} className="border border-primary-200 bg-gradient-to-br from-white to-primary-50 rounded-lg p-4 hover:shadow-lg transition-all duration-300 group">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <span className="text-2xl group-hover:scale-110 transition-transform duration-200">{trade.icon}</span>
+                        <div>
+                          <p className="font-medium text-navy-800">{trade.trade}</p>
+                          <p className="text-sm text-grey-600">Best for: {trade.when}</p>
+                        </div>
+                      </div>
+                      <button className="text-primary-600 font-medium text-sm hover:text-primary-700 transition-colors group-hover:translate-x-1 duration-200">
+                        Find local {trade.trade.toLowerCase()}s →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <div className="bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-200 rounded-lg p-4">
                 <p className="text-sm text-navy-800">
                   💼 Always get 3+ quotes and check references before hiring

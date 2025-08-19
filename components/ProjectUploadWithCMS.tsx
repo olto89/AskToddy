@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import * as Sentry from '@sentry/nextjs'
+// import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 import { getUploadFormContent, UploadFormContent } from '@/lib/contentful'
 
 interface ProjectData {
   description: string
   projectType: string
+  postcode: string
   images: File[]
 }
 
@@ -60,6 +61,7 @@ export default function ProjectUploadWithCMS({ onAnalysisComplete, onAnalysisSta
   const [projectData, setProjectData] = useState<ProjectData>({
     description: '',
     projectType: 'renovation',
+    postcode: '',
     images: []
   })
   const [uploading, setUploading] = useState(false)
@@ -117,30 +119,30 @@ export default function ProjectUploadWithCMS({ onAnalysisComplete, onAnalysisSta
       const errors: FileError[] = []
       const newPreviews: { url: string; type: string }[] = []
       
-      // Log file selection
-      Sentry.addBreadcrumb({
-        category: 'ui',
-        message: `User selected ${files.length} files`,
-        level: 'info',
-        data: {
-          fileCount: files.length,
-          fileTypes: files.map(f => f.type)
-        }
-      })
+      // Log file selection - temporarily disabled
+      // Sentry.addBreadcrumb({
+      //   category: 'ui',
+      //   message: `User selected ${files.length} files`,
+      //   level: 'info',
+      //   data: {
+      //     fileCount: files.length,
+      //     fileTypes: files.map(f => f.type)
+      //   }
+      // })
       
       files.forEach(file => {
         const error = validateFile(file)
         if (error) {
           errors.push({ fileName: file.name, error })
-          // Log validation errors
-          Sentry.captureMessage('File validation failed', 'warning', {
-            extra: {
-              fileName: file.name,
-              fileType: file.type,
-              fileSize: file.size,
-              error: error
-            }
-          })
+          // Log validation errors - temporarily disabled
+          // Sentry.captureMessage('File validation failed', 'warning', {
+          //   extra: {
+          //     fileName: file.name,
+          //     fileType: file.type,
+          //     fileSize: file.size,
+          //     error: error
+          //   }
+          // })
         } else {
           validFiles.push(file)
           const fileType = file.type.startsWith('video/') ? 'video' : 'image'
@@ -204,19 +206,19 @@ export default function ProjectUploadWithCMS({ onAnalysisComplete, onAnalysisSta
 
         if (uploadError) {
           console.error('Supabase upload error:', uploadError)
-          // Capture Supabase errors
-          Sentry.captureException(uploadError, {
-            tags: {
-              component: 'ProjectUpload',
-              service: 'supabase'
-            },
-            extra: {
-              fileName: image.name,
-              fileSize: image.size,
-              fileType: image.type,
-              bucket: 'project-uploads'
-            }
-          })
+          // Capture Supabase errors - temporarily disabled
+          // Sentry.captureException(uploadError, {
+          //   tags: {
+          //     component: 'ProjectUpload',
+          //     service: 'supabase'
+          //   },
+          //   extra: {
+          //     fileName: image.name,
+          //     fileSize: image.size,
+          //     fileType: image.type,
+          //     bucket: 'project-uploads'
+          //   }
+          // })
           throw uploadError
         }
 
@@ -240,6 +242,7 @@ export default function ProjectUploadWithCMS({ onAnalysisComplete, onAnalysisSta
         body: JSON.stringify({
           description: projectData.description,
           projectType: projectData.projectType,
+          postcode: projectData.postcode,
           imageUrls: uploadedImageUrls
         })
       })
@@ -247,51 +250,52 @@ export default function ProjectUploadWithCMS({ onAnalysisComplete, onAnalysisSta
       if (analysisResponse.ok) {
         const analysis = await analysisResponse.json()
         console.log('AI Analysis:', analysis)
-        // Log successful analysis
-        Sentry.addBreadcrumb({
-          category: 'api',
-          message: 'Analysis completed successfully',
-          level: 'info',
-          data: {
-            projectType: projectData.projectType,
-            imageCount: uploadedImageUrls.length
-          }
-        })
+        // Log successful analysis - temporarily disabled
+        // Sentry.addBreadcrumb({
+        //   category: 'api',
+        //   message: 'Analysis completed successfully',
+        //   level: 'info',
+        //   data: {
+        //     projectType: projectData.projectType,
+        //     imageCount: uploadedImageUrls.length
+        //   }
+        // })
         onAnalysisComplete(analysis)
       } else {
         const errorText = await analysisResponse.text()
-        Sentry.captureMessage('AI Analysis failed', 'error', {
-          extra: {
-            status: analysisResponse.status,
-            response: errorText,
-            projectType: projectData.projectType
-          }
-        })
+        // Sentry.captureMessage('AI Analysis failed', 'error', {
+        //   extra: {
+        //     status: analysisResponse.status,
+        //     response: errorText,
+        //     projectType: projectData.projectType
+        //   }
+        // })
         alert('Analysis failed. Please try again.')
       }
       
       setProjectData({
         description: '',
         projectType: content.projectTypes[0]?.value || 'renovation',
+        postcode: '',
         images: []
       })
       setPreviewUrls([])
     } catch (error: any) {
       console.error('Error uploading project:', error)
       
-      // Capture any uncaught errors
-      Sentry.captureException(error, {
-        tags: {
-          component: 'ProjectUpload',
-          action: 'submit'
-        },
-        extra: {
-          projectType: projectData.projectType,
-          description: projectData.description?.substring(0, 100),
-          imageCount: projectData.images.length
-        },
-        fingerprint: ['project-upload', error?.message]
-      })
+      // Capture any uncaught errors - temporarily disabled
+      // Sentry.captureException(error, {
+      //   tags: {
+      //     component: 'ProjectUpload',
+      //     action: 'submit'
+      //   },
+      //   extra: {
+      //     projectType: projectData.projectType,
+      //     description: projectData.description?.substring(0, 100),
+      //     imageCount: projectData.images.length
+      //   },
+      //   fingerprint: ['project-upload', error?.message]
+      // })
       
       const errorMessage = error?.message || 'Unknown error'
       alert(`Error uploading project: ${errorMessage}. Please check console for details.`)
@@ -336,6 +340,24 @@ export default function ProjectUploadWithCMS({ onAnalysisComplete, onAnalysisSta
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-navy-800 mb-2">
+            Postcode
+          </label>
+          <input
+            type="text"
+            value={projectData.postcode}
+            onChange={(e) => setProjectData({ ...projectData, postcode: e.target.value.toUpperCase() })}
+            className="w-full px-4 py-2 border border-grey-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            placeholder="e.g. SW1A 1AA"
+            pattern="[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}"
+            title="Please enter a valid UK postcode"
+          />
+          <p className="text-xs text-grey-600 mt-1">
+            We'll use this to find local contractors for your project
+          </p>
         </div>
 
         <div>
