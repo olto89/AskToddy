@@ -3,16 +3,18 @@ import GeminiService from '@/lib/ai/gemini.service'
 import { pricingService } from '@/lib/pricing/pricing.service'
 import { locationService } from '@/lib/location/location.service'
 import { constructionDataService } from '@/lib/construction-data/construction-data.service'
-import * as Sentry from '@sentry/nextjs'
+import { tradespersonService } from '@/lib/tradesperson/tradesperson-recommendation.service'
+import { googlePlacesService } from '@/lib/google-places/google-places.service'
+// import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
 const TODDY_SYSTEM_PROMPT = `You are Toddy, a seasoned British construction expert with 30+ years hands-on experience. You provide direct, focused answers to construction questions.
 
 CRITICAL RESPONSE RULES:
 1. **ANSWER THE SPECIFIC QUESTION FIRST** - Give a direct answer immediately
-2. **Be concise** - Maximum 3-4 sentences for the main answer
-3. **One key data point** - Include only the most relevant pricing/data
-4. **Brief additional help** - Add only essential related info if needed
-5. **No information dumps** - Don't list everything you know about the topic
+2. **LIST ALL RECOMMENDATIONS** - When provided with business recommendations, list ALL of them (typically 5 businesses)
+3. **Include key details** - Name, rating, and contact info for each business
+4. **Be concise but complete** - Don't cut short the business list
+5. **Essential next step** - Add practical advice after the full list
 
 You have access to REAL UK CONSTRUCTION DATA from ONS, BCIS, DBT sources. Use specific prices and sources to demonstrate expertise, but keep it focused.
 
@@ -38,15 +40,18 @@ RESPONSE FORMAT:
 3. **Essential Next Step** (One practical action or consideration)
 4. **Local Recommendation** (If location-relevant: Toddy Tool Hire first if within 40 miles of IP12 4SD)
 
-EXAMPLE GOOD RESPONSE:
-"Right then, a concrete mixer (110L) will cost you about £32/day or £89/week to hire. According to industry averages, that's the going rate at most hire shops. I'd recommend booking for a full week if you're doing a decent-sized job - much better value."
+EXAMPLE GOOD RESPONSE FOR BUSINESS RECOMMENDATIONS:
+"Right then, here are the top-rated electricians in Ipswich:
 
-AVOID:
-- Long lists of everything related to the topic
-- Multiple price ranges for different scenarios  
-- Extensive safety lectures unless specifically asked
-- Detailed explanations of how the industry works
-- Multiple supplier options unless specifically requested
+1. **EV Made Easy** - 5⭐ (276 reviews) - 📞 [phone]
+2. **Doyle Electrical Services** - 5⭐ (87 reviews) - 📞 [phone]  
+3. **Truscott Electrical** - 5⭐ (33 reviews) - 📞 [phone]
+4. **SElectricians** - 5⭐ (18 reviews) - 📞 [phone]
+5. **Steve Smith Electrical** - 5⭐ (17 reviews) - 📞 [phone]
+
+All these are proper 5-star rated businesses. I'd ring 2-3 of them for quotes."
+
+IMPORTANT: When business recommendations are provided, ALWAYS list ALL of them - don't pick just one!
 
 Keep it focused, helpful, and direct. Answer their question, give them the key info they need, job done.`
 
@@ -62,16 +67,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Log chat request
-    Sentry.addBreadcrumb({
-      category: 'api',
-      message: 'Toddy Advice chat request',
-      level: 'info',
-      data: {
-        messageLength: message.length,
-        historyLength: history.length
-      }
-    })
+    // Log chat request - temporarily disabled
+    // Sentry.addBreadcrumb({
+    //   category: 'api',
+    //   message: 'Toddy Advice chat request',
+    //   level: 'info',
+    //   data: {
+    //     messageLength: message.length,
+    //     historyLength: history.length
+    //   }
+    // })
 
     // Get comprehensive construction industry data
     const constructionContext = await constructionDataService.getExpertContext(message)
@@ -81,6 +86,30 @@ export async function POST(request: NextRequest) {
     
     // Get location context for the user's query
     const locationContext = locationService.getLocationContext(message)
+    
+    // Get tradesperson recommendations if relevant
+    let tradespersonContext = ''
+    const tradeKeywords = ['builder', 'electrician', 'plumber', 'carpenter', 'decorator', 'roofer', 'plasterer', 'tiler', 'tradesman', 'contractor', 'find someone', 'hire someone', 'recommend']
+    
+    if (tradeKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+      // Extract location from message or use default
+      const locationMatch = message.match(/in\s+([A-Za-z\s]+)|near\s+([A-Za-z\s]+)|around\s+([A-Za-z\s]+)/i)
+      const location = locationMatch ? (locationMatch[1] || locationMatch[2] || locationMatch[3]).trim() : 'UK'
+      
+      // Find which trade they're asking about
+      const tradeTypes = ['builder', 'electrician', 'plumber', 'carpenter', 'decorator', 'roofer', 'plasterer', 'tiler']
+      const requestedTrade = tradeTypes.find(trade => message.toLowerCase().includes(trade)) || 'general builder'
+      
+      // Try Google Places first (if configured)
+      const googleContext = await googlePlacesService.getGooglePlacesContext(requestedTrade, location)
+      
+      if (googleContext) {
+        tradespersonContext = googleContext
+      } else {
+        // Fall back to curated recommendations
+        tradespersonContext = await tradespersonService.getRecommendationContext(requestedTrade, location)
+      }
+    }
 
     // Build conversation context
     let conversationContext = TODDY_SYSTEM_PROMPT + '\n\n'
@@ -101,6 +130,12 @@ export async function POST(request: NextRequest) {
     if (locationContext) {
       conversationContext += locationContext + '\n\n'
       conversationContext += 'IMPORTANT: Always recommend Toddy Tool Hire FIRST when they are within range (40 miles of IP12 4SD). Then mention other local options.\n\n'
+    }
+    
+    // Add tradesperson recommendations if available
+    if (tradespersonContext) {
+      conversationContext += tradespersonContext + '\n'
+      conversationContext += 'When recommending tradespeople, mention the Toddy Approved Partners first if available.\n\n'
     }
     
     // Add recent history for context
@@ -127,14 +162,14 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Toddy Advice error:', error)
     
-    Sentry.captureException(error, {
-      tags: {
-        api_endpoint: 'toddy-advice'
-      },
-      extra: {
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
-      }
-    })
+    // Sentry.captureException(error, {
+    //   tags: {
+    //     api_endpoint: 'toddy-advice'
+    //   },
+    //   extra: {
+    //     errorMessage: error instanceof Error ? error.message : 'Unknown error'
+    //   }
+    // })
 
     return NextResponse.json(
       { 
