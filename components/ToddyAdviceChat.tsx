@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import * as Sentry from '@sentry/nextjs'
+// import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
 interface Message {
   id: string
@@ -50,15 +50,15 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     setIsLoading(true)
 
     try {
-      // Log chat interaction
-      Sentry.addBreadcrumb({
-        category: 'chat',
-        message: 'User sent message to Toddy Advice',
-        level: 'info',
-        data: {
-          messageLength: input.length
-        }
-      })
+      // Log chat interaction - temporarily disabled
+      // Sentry.addBreadcrumb({
+      //   category: 'chat',
+      //   message: 'User sent message to Toddy Advice',
+      //   level: 'info',
+      //   data: {
+      //     messageLength: input.length
+      //   }
+      // })
 
       const response = await fetch('/api/toddy-advice', {
         method: 'POST',
@@ -85,11 +85,11 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       }
     } catch (error) {
       console.error('Chat error:', error)
-      Sentry.captureException(error, {
-        tags: {
-          component: 'ToddyAdviceChat'
-        }
-      })
+      // Sentry.captureException(error, {
+      //   tags: {
+      //     component: 'ToddyAdviceChat'
+      //   }
+      // })
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
