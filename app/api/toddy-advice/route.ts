@@ -5,6 +5,7 @@ import { locationService } from '@/lib/location/location.service'
 import { constructionDataService } from '@/lib/construction-data/construction-data.service'
 import { tradespersonService } from '@/lib/tradesperson/tradesperson-recommendation.service'
 import { googlePlacesService } from '@/lib/google-places/google-places.service'
+import { YouTubeTutorialService } from '@/lib/youtube/youtube-tutorial.service'
 // import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
 const TODDY_SYSTEM_PROMPT = `You are Toddy, a seasoned British construction expert with 30+ years hands-on experience. You provide direct, focused answers to construction questions.
@@ -36,9 +37,10 @@ Your deep expertise includes:
 
 RESPONSE FORMAT:
 1. **Direct Answer** (1-2 sentences answering exactly what they asked)
-2. **Key Price/Data** (One specific, relevant data point with source)
-3. **Essential Next Step** (One practical action or consideration)
-4. **Local Recommendation** (If location-relevant: Toddy Tool Hire first if within 40 miles of IP12 4SD)
+2. **Key Price/Data** (One specific, relevant data point with source)  
+3. **Video Tutorials** (If asking how to use tools, include YouTube links provided)
+4. **Essential Next Step** (One practical action or consideration)
+5. **Local Recommendation** (If location-relevant: Toddy Tool Hire first if within 40 miles of IP12 4SD)
 
 EXAMPLE GOOD RESPONSE FOR BUSINESS RECOMMENDATIONS:
 "Right then, here are the top-rated electricians in Ipswich:
@@ -110,6 +112,9 @@ export async function POST(request: NextRequest) {
         tradespersonContext = await tradespersonService.getRecommendationContext(requestedTrade, location)
       }
     }
+    
+    // Get YouTube tutorial recommendations if relevant
+    const tutorialContext = YouTubeTutorialService.generateTutorialRecommendations(message)
 
     // Build conversation context
     let conversationContext = TODDY_SYSTEM_PROMPT + '\n\n'
@@ -136,6 +141,12 @@ export async function POST(request: NextRequest) {
     if (tradespersonContext) {
       conversationContext += tradespersonContext + '\n'
       conversationContext += 'When recommending tradespeople, mention the Toddy Approved Partners first if available.\n\n'
+    }
+    
+    // Add YouTube tutorial recommendations if available
+    if (tutorialContext) {
+      conversationContext += tutorialContext + '\n'
+      conversationContext += 'IMPORTANT: When tool tutorials are provided, include them in your response to help users learn proper usage.\n\n'
     }
     
     // Add recent history for context
