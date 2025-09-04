@@ -24,6 +24,12 @@ export interface ToolExpertise {
     recommendation: 'rent' | 'buy' | 'depends'
   }
   jobSuitability: JobSuitability[]
+  learningResources: {
+    whatToLookFor: string[]
+    manufacturerGuides?: string[]
+    searchTerms: string[]
+    avoidContent: string[]
+  }
 }
 
 export interface ToolAlternative {
@@ -373,7 +379,33 @@ export class ToolExpertiseService {
         { jobType: 'Paving stone cutting', suitabilityScore: 9, whyBest: 'Diamond disc cuts stone cleanly' },
         { jobType: 'Bolt removal', suitabilityScore: 9, whyBest: 'Fastest way to cut through seized bolts' },
         { jobType: 'Paint removal', suitabilityScore: 7, whyBest: 'Wire brush attachment removes paint', limitations: 'Very messy, consider chemical stripping' }
-      ]
+      ],
+      learningResources: {
+        whatToLookFor: [
+          'Proper grip technique and stance',
+          'Correct disc selection for material',
+          'Safety equipment demonstration',
+          'Common mistakes and how to avoid them',
+          'Disc changing procedure'
+        ],
+        manufacturerGuides: [
+          'Bosch angle grinder safety manual',
+          'DeWalt cutting disc selection guide',
+          'Makita maintenance procedures'
+        ],
+        searchTerms: [
+          'angle grinder safety techniques',
+          'how to change angle grinder disc safely',
+          'angle grinder cutting techniques',
+          'professional metalwork cutting'
+        ],
+        avoidContent: [
+          'Videos without safety equipment',
+          'Removing safety guards',
+          'Unsafe cutting positions',
+          'Poor quality demonstration videos'
+        ]
+      }
     })
 
     // Circular Saw Expertise
@@ -1550,6 +1582,12 @@ export class ToolExpertiseService {
       // Add safety highlight
       if (tool.safetyRequirements.length > 0) {
         context += `**Safety:** ${tool.safetyRequirements[0]}\n`
+      }
+
+      // Add learning resources if available
+      if (tool.learningResources) {
+        context += `**Learning:** Look for videos showing: ${tool.learningResources.whatToLookFor[0]}\n`
+        context += `**Search:** "${tool.learningResources.searchTerms[0]}" on YouTube\n`
       }
       
       context += `\n`
