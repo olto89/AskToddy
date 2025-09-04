@@ -310,11 +310,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything... or upload photos/videos of your job!"
-                className="w-full px-4 py-3 pr-20 rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-4 pr-20 rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder-gray-500 leading-relaxed"
                 style={{
                   backgroundColor: '#f9fafb',
                   border: '1px solid #e2e6ea',
-                  focusBorderColor: '#FF6B35'
+                  focusBorderColor: '#FF6B35',
+                  lineHeight: '1.5',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = '#FF6B35'
@@ -342,7 +345,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
               
               {/* Character count for long messages */}
               {input.length > 200 && (
-                <span className="absolute bottom-1 right-20 text-xs text-gray-400">
+                <span className="absolute bottom-2 right-20 text-xs text-gray-400">
                   {input.length}/1000
                 </span>
               )}
