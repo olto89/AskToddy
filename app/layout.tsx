@@ -13,8 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AskToddy - AI Quotes for DIYers",
-  description: "Get instant AI-powered quotes and estimates for your DIY and building projects",
+  title: "AskToddy - Construction & DIY Expert",
+  description: "Professional construction advice, tool recommendations, and cost estimates powered by AI",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "AskToddy",
+  },
   other: {
     'color-scheme': 'light',
   },
@@ -23,6 +29,11 @@ export const metadata: Metadata = {
 export const viewport = {
   themeColor: '#FF6B35',
   colorScheme: 'light',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -33,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning data-theme="light">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased font-body`}
         suppressHydrationWarning
       >
         {children}

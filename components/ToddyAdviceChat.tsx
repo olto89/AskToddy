@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-// import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
 interface Message {
   id: string
@@ -19,13 +18,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     {
       id: '1',
       role: 'assistant',
-      content: "Alright! I'm Toddy, your local building expert with access to REAL UK market pricing data! I can help you with:\n\n🔨 Tool recommendations with CURRENT hire prices\n🏪 Where to hire tools with proper daily rates\n📦 Material costs from recent industry research\n💷 Project estimates based on Which? & Construction News data\n👷 Finding trusted builders & suppliers\n💡 DIY advice with realistic budgets\n\n✨ Unlike generic AI tools, my pricing comes from proper UK sources like Which?, Construction News, and trade publications - giving you accurate, researched costs!\n\nWhat are you looking to get sorted then?",
+      content: "Hi! I'm Toddy 👋\n\nI can help you with:\n• Tool hire prices & recommendations\n• Material costs & suppliers\n• DIY project guidance\n• Professional building advice\n\nWhat would you like to know?",
       timestamp: new Date()
     }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -34,6 +34,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto'
+      inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 120) + 'px'
+    }
+  }, [input])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
@@ -50,16 +58,6 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     setIsLoading(true)
 
     try {
-      // Log chat interaction - temporarily disabled
-      // Sentry.addBreadcrumb({
-      //   category: 'chat',
-      //   message: 'User sent message to Toddy Advice',
-      //   level: 'info',
-      //   data: {
-      //     messageLength: input.length
-      //   }
-      // })
-
       const response = await fetch('/api/toddy-advice', {
         method: 'POST',
         headers: {
@@ -67,7 +65,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         },
         body: JSON.stringify({
           message: input.trim(),
-          history: messages.slice(-6) // Send last 6 messages for context
+          history: messages.slice(-6)
         })
       })
 
@@ -85,16 +83,11 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       }
     } catch (error) {
       console.error('Chat error:', error)
-      // Sentry.captureException(error, {
-      //   tags: {
-      //     component: 'ToddyAdviceChat'
-      //   }
-      // })
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "Sorry mate, I'm having a bit of trouble connecting right now. Give it another go in a moment!",
+        content: "Sorry, I'm having connection issues. Please try again.",
         timestamp: new Date()
       }
       setMessages(prev => [...prev, errorMessage])
@@ -111,119 +104,171 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   const exampleQuestions = [
-    "What's the current hire price for a concrete mixer?",
-    "How much does composite decking cost per sqm?",
-    "Tool hire costs for building a deck?",
-    "Current timber prices in the UK?"
+    "Tool hire prices",
+    "Decking costs",
+    "Bathroom renovation",
+    "Best concrete mixer"
   ]
 
   const handleExampleClick = (question: string) => {
     setInput(question)
+    inputRef.current?.focus()
   }
 
   return (
-    <div className={`flex flex-col h-[500px] sm:h-[600px] bg-white rounded-lg border-2 border-primary-300 shadow-xl ${className}`}>
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[90%] sm:max-w-[80%] rounded-xl p-3 sm:p-4 ${
-                message.role === 'user'
-                  ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-sm'
-                  : 'bg-primary-50 border border-primary-100 text-navy-900 shadow-sm'
-              }`}
-            >
-              {message.role === 'assistant' && (
-                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm">
-                    T
+    <div className={`h-full flex flex-col ${className}`}>
+      {/* Messages Area - Scrollable */}
+      <div className="flex-1 overflow-y-auto pb-2">
+        <div className="px-4 py-4 space-y-4 max-w-3xl mx-auto">
+          {messages.map((message) => (
+            <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`flex gap-3 max-w-[85%] sm:max-w-[75%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                {/* Avatar */}
+                <div className="flex-shrink-0">
+                  {message.role === 'assistant' ? (
+                    <div style={{background: 'linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)'}} className="w-8 h-8 rounded-full flex items-center justify-center shadow-md">
+                      <span className="text-white font-bold text-sm">T</span>
+                    </div>
+                  ) : (
+                    <div style={{background: 'linear-gradient(135deg, #2C3E50 0%, #34495E 100%)'}} className="w-8 h-8 rounded-full flex items-center justify-center shadow-md">
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Message bubble */}
+                <div 
+                  className={`px-4 py-3 rounded-2xl shadow-sm ${
+                    message.role === 'user' 
+                      ? '' 
+                      : 'bg-white'
+                  }`}
+                  style={message.role === 'user' ? {
+                    background: 'linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)',
+                    color: 'white'
+                  } : {
+                    border: '1px solid #e2e6ea'
+                  }}
+                >
+                  <div className={`text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words select-text ${message.role === 'user' ? 'text-white' : 'text-gray-900'}`}>
+                    {message.content}
                   </div>
-                  <span className="font-semibold text-primary-700 text-sm sm:text-base">Toddy</span>
+                  <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-white/70' : 'text-gray-500'}`}>
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
                 </div>
-              )}
-              <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">{message.content}</div>
-              <div className="text-xs mt-2 sm:mt-3 opacity-60">
-                {message.timestamp.toLocaleTimeString()}
               </div>
             </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-primary-50 border border-primary-100 rounded-xl p-3 sm:p-4 shadow-sm">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm">
-                  T
+          ))}
+          
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="flex gap-3 max-w-[85%]">
+                <div style={{background: 'linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)'}} className="w-8 h-8 rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-white font-bold text-sm">T</span>
                 </div>
-                <span className="font-semibold text-primary-700 text-sm sm:text-base">Toddy is thinking...</span>
-              </div>
-              <div className="flex gap-1 mt-2 sm:mt-3">
-                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="px-4 py-3 bg-white rounded-2xl shadow-sm" style={{border: '1px solid #e2e6ea'}}>
+                  <div className="flex gap-1.5">
+                    <span className="w-2 h-2 rounded-full animate-bounce" style={{backgroundColor: '#FF6B35', animationDelay: '0ms'}}></span>
+                    <span className="w-2 h-2 rounded-full animate-bounce" style={{backgroundColor: '#FF6B35', animationDelay: '150ms'}}></span>
+                    <span className="w-2 h-2 rounded-full animate-bounce" style={{backgroundColor: '#FF6B35', animationDelay: '300ms'}}></span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      {/* Example Questions */}
-      {messages.length === 1 && (
-        <div className="px-3 sm:px-6 py-3 sm:py-4 border-t border-primary-200 bg-primary-50">
-          <p className="text-xs sm:text-sm text-grey-600 mb-2 sm:mb-3 font-medium">Try asking:</p>
-          <div className="flex flex-wrap gap-1 sm:gap-2">
-            {exampleQuestions.map((question, index) => (
-              <button
-                key={index}
-                onClick={() => handleExampleClick(question)}
-                className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2 bg-white border border-primary-200 text-grey-700 rounded-lg hover:bg-primary-100 hover:border-primary-300 hover:text-primary-700 transition-colors"
-              >
-                {question}
-              </button>
-            ))}
+      {/* Suggested Questions - Only show at start */}
+      {messages.length === 1 && !isLoading && (
+        <div className="px-4 py-3" style={{background: 'linear-gradient(to top, #ffffff 0%, #f9fafb 100%)'}}>
+          <div className="max-w-3xl mx-auto">
+            <p className="text-xs text-gray-600 mb-2 font-medium">Quick questions:</p>
+            <div className="flex flex-wrap gap-2">
+              {exampleQuestions.map((question, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleExampleClick(question)}
+                  className="px-3 py-2 bg-white rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-all active:scale-95"
+                  style={{
+                    border: '1px solid #ffbfa8',
+                    color: '#FF6B35'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#fff7f3'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#ffffff'
+                  }}
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Input Area */}
-      <div className="p-3 sm:p-6 border-t border-primary-200 bg-white">
-        <div className="flex gap-2 sm:gap-3">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask Toddy about tools, materials, or building advice..."
-            className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-grey-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm sm:text-base"
-            rows={2}
-            disabled={isLoading}
-          />
-          <button
-            onClick={handleSend}
-            disabled={!input.trim() || isLoading}
-            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-colors text-sm sm:text-base ${
-              !input.trim() || isLoading
-                ? 'bg-grey-300 text-grey-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white hover:from-primary-600 hover:to-secondary-600'
-            }`}
-          >
-            {isLoading ? (
-              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <>
-                <span className="hidden sm:inline">Send</span>
-                <span className="sm:hidden">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
+      {/* Input Area - Fixed at bottom, mobile-optimized */}
+      <div className="bg-white px-4 py-3 shadow-lg" style={{borderTop: '1px solid #e2e6ea'}}>
+        <div className="max-w-3xl mx-auto">
+          <div className="flex gap-2 items-end">
+            <div className="flex-1 relative">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask me anything..."
+                className="w-full px-4 py-3 pr-12 rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder-gray-500"
+                style={{
+                  backgroundColor: '#f9fafb',
+                  border: '1px solid #e2e6ea',
+                  focusBorderColor: '#FF6B35'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#FF6B35'
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(255, 107, 53, 0.1)'
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#e2e6ea'
+                  e.currentTarget.style.boxShadow = 'none'
+                }}
+                rows={1}
+                disabled={isLoading}
+              />
+              {/* Character count for long messages */}
+              {input.length > 200 && (
+                <span className="absolute bottom-1 right-12 text-xs text-gray-400">
+                  {input.length}/1000
                 </span>
-              </>
-            )}
-          </button>
+              )}
+            </div>
+            <button
+              onClick={handleSend}
+              disabled={!input.trim() || isLoading}
+              className="p-3 rounded-full transition-all transform active:scale-95 shadow-md hover:shadow-lg"
+              style={{
+                background: !input.trim() || isLoading 
+                  ? '#e2e6ea' 
+                  : 'linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)',
+                color: !input.trim() || isLoading ? '#9ca4af' : 'white'
+              }}
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
