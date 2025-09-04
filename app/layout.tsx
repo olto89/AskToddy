@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "AskToddy",
   },
   other: {
@@ -27,8 +27,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: '#FF6B35',
-  colorScheme: 'light',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FF6B35' },
+    { color: '#FF6B35' }
+  ],
+  colorScheme: 'light only',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -43,6 +46,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning data-theme="light">
+      <head>
+        <meta name="theme-color" content="#FF6B35" />
+        <meta name="msapplication-navbutton-color" content="#FF6B35" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-body`}
         suppressHydrationWarning
