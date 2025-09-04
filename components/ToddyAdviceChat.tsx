@@ -7,6 +7,7 @@ interface Message {
   role: 'user' | 'assistant'
   content: string
   timestamp: Date
+  images?: string[]
 }
 
 interface ToddyAdviceChatProps {
@@ -18,14 +19,16 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     {
       id: '1',
       role: 'assistant',
-      content: "Hi! I'm Toddy 👋\n\nI can help you with:\n• Tool hire prices & recommendations\n• Material costs & suppliers\n• DIY project guidance\n• Professional building advice\n\nWhat would you like to know?",
+      content: "Hi! I'm Toddy 👋\n\nI can help you with:\n• Tool hire prices & recommendations\n• Material costs & suppliers\n• DIY project guidance\n• Professional building advice\n\nWhat would you like to know? You can also upload photos or videos of your job!",
       timestamp: new Date()
     }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -43,18 +46,52 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     }
   }, [input])
 
+  const handleImageUpload = async (files: FileList) => {
+    const validFiles = Array.from(files).filter(file => {
+      const isValidImage = file.type.startsWith('image/') || file.type.startsWith('video/')
+      const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB limit
+      return isValidImage && isValidSize
+    })
+
+    if (validFiles.length === 0) {
+      alert('Please upload valid image or video files under 10MB')
+      return
+    }
+
+    const newImageUrls: string[] = []
+    for (const file of validFiles.slice(0, 4)) { // Limit to 4 files
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          newImageUrls.push(e.target.result as string)
+          if (newImageUrls.length === validFiles.length) {
+            setUploadedImages(prev => [...prev, ...newImageUrls])
+          }
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index))
+  }
+
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return
+    if ((!input.trim() && uploadedImages.length === 0) || isLoading) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input.trim(),
-      timestamp: new Date()
+      content: input.trim() || (uploadedImages.length > 0 ? `Uploaded ${uploadedImages.length} image(s)` : ''),
+      timestamp: new Date(),
+      images: uploadedImages.length > 0 ? [...uploadedImages] : undefined
     }
 
     setMessages(prev => [...prev, userMessage])
+    const currentImages = [...uploadedImages]
     setInput('')
+    setUploadedImages([])
     setIsLoading(true)
 
     try {
@@ -65,7 +102,8 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         },
         body: JSON.stringify({
           message: input.trim(),
-          history: messages.slice(-6)
+          history: messages.slice(-6),
+          imageUrls: currentImages
         })
       })
 
@@ -152,6 +190,21 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                     border: '1px solid #e2e6ea'
                   }}
                 >
+                  {/* Images if present */}
+                  {message.images && message.images.length > 0 && (
+                    <div className="mb-3 grid grid-cols-2 gap-2">
+                      {message.images.map((imageUrl, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={imageUrl}
+                            alt={`Uploaded image ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
                   <div className={`text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words select-text ${message.role === 'user' ? 'text-white' : 'text-gray-900'}`}>
                     {message.content}
                   </div>
@@ -217,6 +270,27 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       {/* Input Area - Fixed at bottom, mobile-optimized */}
       <div className="bg-white px-4 py-3 shadow-lg" style={{borderTop: '1px solid #e2e6ea'}}>
         <div className="max-w-3xl mx-auto">
+          {/* Image previews */}
+          {uploadedImages.length > 0 && (
+            <div className="mb-3 flex gap-2 flex-wrap">
+              {uploadedImages.map((imageUrl, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={imageUrl}
+                    alt={`Upload ${index + 1}`}
+                    className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                  />
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
           <div className="flex gap-2 items-end">
             <div className="flex-1 relative">
               <textarea
@@ -224,8 +298,8 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything..."
-                className="w-full px-4 py-3 pr-12 rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder-gray-500"
+                placeholder="Ask me anything... or upload photos/videos of your job!"
+                className="w-full px-4 py-3 pr-20 rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder-gray-500"
                 style={{
                   backgroundColor: '#f9fafb',
                   border: '1px solid #e2e6ea',
@@ -242,22 +316,36 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                 rows={1}
                 disabled={isLoading}
               />
+              
+              {/* Image upload button */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className="absolute right-12 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                title="Upload image or video"
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+              
               {/* Character count for long messages */}
               {input.length > 200 && (
-                <span className="absolute bottom-1 right-12 text-xs text-gray-400">
+                <span className="absolute bottom-1 right-20 text-xs text-gray-400">
                   {input.length}/1000
                 </span>
               )}
             </div>
+            
             <button
               onClick={handleSend}
-              disabled={!input.trim() || isLoading}
+              disabled={(!input.trim() && uploadedImages.length === 0) || isLoading}
               className="p-3 rounded-full transition-all transform active:scale-95 shadow-md hover:shadow-lg"
               style={{
-                background: !input.trim() || isLoading 
+                background: (!input.trim() && uploadedImages.length === 0) || isLoading 
                   ? '#e2e6ea' 
                   : 'linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)',
-                color: !input.trim() || isLoading ? '#9ca4af' : 'white'
+                color: (!input.trim() && uploadedImages.length === 0) || isLoading ? '#9ca4af' : 'white'
               }}
             >
               {isLoading ? (
@@ -269,6 +357,16 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
               )}
             </button>
           </div>
+          
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*,video/*"
+            onChange={(e) => e.target.files && handleImageUpload(e.target.files)}
+            className="hidden"
+          />
         </div>
       </div>
     </div>

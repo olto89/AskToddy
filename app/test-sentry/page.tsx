@@ -1,6 +1,6 @@
 'use client'
 
-import * as Sentry from "@sentry/nextjs"
+// import * as Sentry from "@sentry/nextjs" // Temporarily disabled
 import { useState } from "react"
 
 export default function TestSentry() {

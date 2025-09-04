@@ -1,0 +1,46 @@
+[
+  {
+    "supplier": "Hirebase",
+    "region": "Unknown",
+    "url": "https://www.hirebase.uk/",
+    "pricingStructure": "per_product_page",
+    "toolsFound": 0,
+    "tools": [],
+    "timestamp": "2025-08-25T09:12:00.900Z"
+  },
+  {
+    "supplier": "Tbs Hire",
+    "region": "Unknown",
+    "url": "https://www.tbs-hire.co.uk",
+    "pricingStructure": "per_product_page",
+    "toolsFound": 0,
+    "tools": [],
+    "timestamp": "2025-08-25T09:12:07.738Z"
+  },
+  {
+    "supplier": "Londonplanthire",
+    "region": "Unknown",
+    "url": "https://londonplanthire.co.uk/",
+    "error": "HTTP 403",
+    "toolsFound": 0,
+    "tools": []
+  },
+  {
+    "supplier": "Andaratools",
+    "region": "Unknown",
+    "url": "https://www.andaratools.com",
+    "pricingStructure": "daily_weekly_rates",
+    "toolsFound": 0,
+    "tools": [],
+    "timestamp": "2025-08-25T09:12:17.016Z"
+  },
+  {
+    "supplier": "Gaplant",
+    "region": "Unknown",
+    "url": "https://gaplant.co.uk/",
+    "pricingStructure": "per_product_page",
+    "toolsFound": 0,
+    "tools": [],
+    "timestamp": "2025-08-25T09:12:21.979Z"
+  }
+]

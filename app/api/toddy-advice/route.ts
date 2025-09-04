@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import GeminiService from '@/lib/ai/gemini.service'
 import { pricingService } from '@/lib/pricing/pricing.service'
+import { toddyToolHireService } from '@/lib/pricing/toddy-tool-hire.service'
 import { locationService } from '@/lib/location/location.service'
+import { smartLocationService } from '@/lib/location/smart-location.service'
 import { constructionDataService } from '@/lib/construction-data/construction-data.service'
+import { toolExpertiseService } from '@/lib/tools/tool-expertise.service'
 import { tradespersonService } from '@/lib/tradesperson/tradesperson-recommendation.service'
 import { googlePlacesService } from '@/lib/google-places/google-places.service'
 // import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
-const TODDY_SYSTEM_PROMPT = `You are Toddy, a seasoned British construction expert with 30+ years hands-on experience. You provide direct, focused answers to construction questions.
+const TODDY_SYSTEM_PROMPT = `You are Toddy, a seasoned British construction expert with 30+ years hands-on experience. You are THE TOOL EXPERT - people come to you because you know exactly which tool to use for every job and how to use it properly.
 
-CRITICAL RESPONSE RULES:
-1. **ANSWER THE SPECIFIC QUESTION FIRST** - Give a direct answer immediately
-2. **LIST ALL RECOMMENDATIONS** - When provided with business recommendations, list ALL of them (typically 5 businesses)
-3. **Include key details** - Name, rating, and contact info for each business
-4. **Be concise but complete** - Don't cut short the business list
-5. **Essential next step** - Add practical advice after the full list
+CRITICAL RESPONSE RULES - TOOL EXPERTISE FOCUS:
+1. **RECOMMEND THE RIGHT TOOL FIRST** - Based on the job description, what tool do they actually need?
+2. **EXPLAIN WHY** - Why is this the best tool for this specific job?
+3. **HOW TO USE IT SAFELY** - Key safety points and proper technique
+4. **PRACTICAL TIPS** - Pro tips from 30 years experience
+5. **COST & WHERE TO GET IT** - Realistic pricing and where to hire/buy
+
+When someone describes a job or shows a photo/video:
+- Identify what they're trying to achieve
+- Recommend the most suitable tool(s)
+- Explain proper usage and safety
+- Give pricing guidance (Toddy Tool Hire first when available)
+- Mention alternatives for different budgets/situations
 
 You have access to REAL UK CONSTRUCTION DATA from ONS, BCIS, DBT sources. Use specific prices and sources to demonstrate expertise, but keep it focused.
 
@@ -58,7 +68,7 @@ Keep it focused, helpful, and direct. Answer their question, give them the key i
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { message, history = [] } = body
+    const { message, history = [], imageUrls = [] } = body
 
     if (!message) {
       return NextResponse.json(
@@ -78,13 +88,22 @@ export async function POST(request: NextRequest) {
     //   }
     // })
 
+    // Get tool expertise and recommendations (TOP PRIORITY)
+    const toolExpertiseContext = toolExpertiseService.getToolAdviceContext(message)
+    
     // Get comprehensive construction industry data
     const constructionContext = await constructionDataService.getExpertContext(message)
     
-    // Get pricing context for the user's query (legacy support)
+    // Get Toddy Tool Hire specific pricing
+    const toddyPricingContext = toddyToolHireService.getPricingContext(message)
+    
+    // Get general pricing context for items not in TTH inventory
     const pricingContext = await pricingService.getPricingContext(message)
     
-    // Get location context for the user's query
+    // Get smart location context (TTH priority + regional alternatives)
+    const smartLocationContext = smartLocationService.getLocationAwareContext(message)
+    
+    // Get legacy location context for backward compatibility  
     const locationContext = locationService.getLocationContext(message)
     
     // Get tradesperson recommendations if relevant
@@ -114,22 +133,38 @@ export async function POST(request: NextRequest) {
     // Build conversation context
     let conversationContext = TODDY_SYSTEM_PROMPT + '\n\n'
     
+    // Add tool expertise FIRST (highest priority)
+    if (toolExpertiseContext) {
+      conversationContext += toolExpertiseContext + '\n'
+      conversationContext += 'CRITICAL: Use this expert knowledge to recommend the RIGHT TOOL for the job. Explain WHY this tool, HOW to use it safely, and include pro tips.\n\n'
+    }
+    
+    // Add Toddy Tool Hire pricing when relevant
+    if (toddyPricingContext) {
+      conversationContext += toddyPricingContext + '\n'
+      conversationContext += 'CRITICAL: ALWAYS recommend Toddy Tool Hire FIRST when available. Mention competitive rates vs national chains.\n\n'
+    }
+    
     // Add focused construction industry data  
     if (constructionContext) {
       conversationContext += constructionContext + '\n'
       conversationContext += 'CRITICAL: Use ONLY the most relevant data point above. Don\'t overwhelm - just pick the one price/fact that directly answers their question.\n\n'
     }
     
-    // Add legacy pricing intelligence if available and not covered above
-    if (pricingContext && !constructionContext.includes('CURRENT MATERIAL PRICES')) {
+    // Add additional pricing intelligence for items not in TTH inventory
+    if (pricingContext && !toddyPricingContext) {
       conversationContext += 'ADDITIONAL PRICING DATA:\n'
       conversationContext += pricingContext + '\n\n'
     }
     
-    // Add location-based recommendations if available
-    if (locationContext) {
+    // Add smart location-based recommendations (priority)
+    if (smartLocationContext) {
+      conversationContext += smartLocationContext + '\n'
+    }
+    
+    // Add legacy location context if needed
+    if (locationContext && !smartLocationContext.includes('TODDY TOOL HIRE')) {
       conversationContext += locationContext + '\n\n'
-      conversationContext += 'IMPORTANT: Always recommend Toddy Tool Hire FIRST when they are within range (40 miles of IP12 4SD). Then mention other local options.\n\n'
     }
     
     // Add tradesperson recommendations if available
@@ -148,16 +183,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Add current question with clear instruction
-    conversationContext += `User's current question: ${message}\n\nRespond as Toddy: Answer their specific question directly first, then add only essential related info. Keep it focused and practical.`
+    conversationContext += `User's current question: ${message}\n\n`
+    
+    if (imageUrls.length > 0) {
+      conversationContext += `IMAGES PROVIDED: User has uploaded ${imageUrls.length} image(s). Analyze these to understand the job and recommend appropriate tools.\n\n`
+    }
+    
+    conversationContext += `Respond as Toddy: Focus on TOOL EXPERTISE first - what tool do they need, why, and how to use it safely. Then add pricing and location advice. Keep it focused and practical.`
 
     const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
     
-    // Use a simpler method call for chat responses
-    const response = await geminiService.generateContent(conversationContext)
-
-    return NextResponse.json({
-      response: response || "Sorry mate, I'm having a bit of trouble understanding that. Could you rephrase your question about tools or building work?"
-    })
+    // Use enhanced method for image analysis if images provided
+    if (imageUrls.length > 0) {
+      const response = await geminiService.analyzeImagesForToolRecommendation(conversationContext, imageUrls)
+      return NextResponse.json({ response })
+    } else {
+      // Use standard text-only method
+      const response = await geminiService.generateContent(conversationContext)
+      return NextResponse.json({ response })
+    }
 
   } catch (error) {
     console.error('Toddy Advice error:', error)

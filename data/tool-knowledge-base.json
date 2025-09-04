@@ -1,0 +1,351 @@
+{
+  "tools": {
+    "mini_excavator_1_5t": {
+      "name": "1.5 Tonne Mini Excavator",
+      "category": "Excavators & Diggers",
+      "description": "Compact excavator perfect for small to medium construction projects with excellent maneuverability",
+      
+      "ideal_for": [
+        "Garden landscaping projects",
+        "Drainage and pipe installation",
+        "Foundation digging (up to 2.5m depth)",
+        "Swimming pool excavation",
+        "Driveway preparation",
+        "Tree stump removal"
+      ],
+      
+      "not_suitable_for": [
+        "Heavy demolition work",
+        "Deep excavations over 3m",
+        "Rocky ground breaking",
+        "Large scale earthmoving"
+      ],
+      
+      "specifications": {
+        "operating_weight": "1500kg",
+        "bucket_capacity": "0.04m³",
+        "max_dig_depth": "2.5m",
+        "width": "990mm (fits through standard gate)",
+        "engine": "Diesel 13HP",
+        "tracks": "Rubber (lawn friendly)"
+      },
+      
+      "key_features": [
+        "Zero tail swing for tight spaces",
+        "Rubber tracks protect surfaces",
+        "Variable width tracks",
+        "Quick hitch for attachments",
+        "Dozer blade for backfilling"
+      ],
+      
+      "safety_requirements": [
+        "Underground service check essential (CAT scan)",
+        "CPCS/NPORS card for commercial sites",
+        "PPE required (hard hat, hi-vis, boots)",
+        "Banksman for blind spots",
+        "Daily checks before operation"
+      ],
+      
+      "typical_hire_cost": {
+        "daily": { "min": 80, "max": 120 },
+        "weekly": { "min": 240, "max": 360 },
+        "note": "Prices vary by region and supplier"
+      },
+      
+      "buy_vs_rent": {
+        "rent_if": [
+          "Project duration under 6 months",
+          "One-off project",
+          "Storage space limited",
+          "Maintenance not viable"
+        ],
+        "buy_if": [
+          "Regular use (3+ times per month)",
+          "Multiple projects planned",
+          "Have storage and transport",
+          "Can handle maintenance"
+        ],
+        "new_price_range": "£15,000 - £25,000",
+        "used_price_range": "£8,000 - £15,000"
+      },
+      
+      "alternatives": {
+        "smaller_project": {
+          "tool": "0.8T Micro Excavator",
+          "when": "Very tight access or lighter work"
+        },
+        "larger_project": {
+          "tool": "3T Excavator",
+          "when": "Deeper digging or heavier materials"
+        },
+        "manual": {
+          "tool": "Trenching spade & mattock",
+          "when": "Small trenches under 10m"
+        }
+      },
+      
+      "attachments": [
+        "Auger (fence posts)",
+        "Breaker (concrete breaking)",
+        "Ripper tooth (hard ground)",
+        "Grab bucket (material handling)",
+        "Different bucket sizes"
+      ],
+      
+      "transport": {
+        "method": "Plant trailer",
+        "requirements": "Suitable tow vehicle (min 2.0L)",
+        "alternative": "Delivery usually £50-100 each way"
+      },
+      
+      "common_mistakes": [
+        "Not checking for underground services",
+        "Underestimating transport logistics", 
+        "Working on slopes beyond capability",
+        "Not allowing for spoil removal",
+        "Forgetting diesel fuel costs"
+      ],
+      
+      "pro_tips": [
+        "Book Friday pickup for weekend use at daily rate",
+        "Mini digger + driver often only £50-100 more",
+        "Check ground conditions after rain",
+        "Mark out dig area with spray paint first",
+        "Have dumper/skip ready for spoil"
+      ],
+      
+      "youtube_search": "how to operate mini excavator safely UK",
+      "hse_guidance": "https://www.hse.gov.uk/construction/safetytopics/excavators.htm"
+    },
+    
+    "concrete_mixer_110l": {
+      "name": "110L Petrol Concrete Mixer (Belle Type)",
+      "category": "Concrete & Mixing",
+      "description": "Standard site mixer for small to medium concrete mixing tasks",
+      
+      "ideal_for": [
+        "Fence post installation",
+        "Shed bases",
+        "Small paths and patios",
+        "Repair work",
+        "Mortar mixing for bricklaying"
+      ],
+      
+      "not_suitable_for": [
+        "Large pours (over 2m³)",
+        "Continuous mixing all day",
+        "Indoor use (petrol fumes)",
+        "Fine screed mixing"
+      ],
+      
+      "specifications": {
+        "drum_capacity": "110 litres",
+        "mixing_capacity": "90 litres",
+        "engine": "Honda GX120 petrol",
+        "weight": "55kg",
+        "output": "2-3 wheelbarrows per mix"
+      },
+      
+      "mixing_guide": {
+        "concrete_mix": {
+          "cement": "1 part",
+          "sharp_sand": "2 parts",
+          "gravel": "3 parts",
+          "water": "Half part (adjust for consistency)"
+        },
+        "mortar_mix": {
+          "cement": "1 part",
+          "building_sand": "4-5 parts",
+          "water": "As needed",
+          "plasticiser": "As per instructions"
+        }
+      },
+      
+      "typical_hire_cost": {
+        "daily": { "min": 25, "max": 40 },
+        "weekly": { "min": 75, "max": 120 },
+        "note": "Electric versions slightly cheaper"
+      },
+      
+      "buy_vs_rent": {
+        "rent_if": [
+          "One-off project",
+          "Less than 5 days use per year",
+          "No storage space",
+          "Don't want maintenance"
+        ],
+        "buy_if": [
+          "Regular DIY projects",
+          "Multiple properties",
+          "Have dry storage",
+          "Comfortable with maintenance"
+        ],
+        "new_price_range": "£200 - £400",
+        "used_price_range": "£100 - £200"
+      },
+      
+      "alternatives": {
+        "smaller": {
+          "tool": "Drill paddle mixer",
+          "when": "Small amounts or indoor work"
+        },
+        "larger": {
+          "tool": "Ready-mix concrete delivery",
+          "when": "Over 1m³ needed"
+        },
+        "manual": {
+          "tool": "Wheelbarrow & shovel",
+          "when": "Very small amounts"
+        }
+      },
+      
+      "safety_requirements": [
+        "Eye protection (cement dust)",
+        "Dust mask",
+        "Gloves (cement burns)",
+        "Stable, level ground",
+        "Never put hands in drum"
+      ],
+      
+      "common_mistakes": [
+        "Overloading the drum",
+        "Too wet mix (weakens concrete)",
+        "Not cleaning immediately after use",
+        "Running out of materials mid-job",
+        "Forgetting petrol"
+      ],
+      
+      "pro_tips": [
+        "Spray with WD40 before use for easier cleaning",
+        "Mix dry ingredients first, then add water",
+        "Keep spare shear pin (common failure)",
+        "Ready-mix more economical over 1m³",
+        "Clean with brick acid if cement sets"
+      ]
+    },
+    
+    "generator_3kva": {
+      "name": "3kVA Diesel Generator",
+      "category": "Power & Lighting",
+      "description": "Portable site generator for tools and temporary power",
+      
+      "ideal_for": [
+        "Power tools on site",
+        "Site lighting",
+        "Welfare cabin power",
+        "Emergency backup",
+        "Event power"
+      ],
+      
+      "power_capacity": {
+        "continuous": "2.5kW",
+        "maximum": "3.0kW",
+        "can_run": [
+          "Angle grinder (2000W)",
+          "Circular saw (1800W)",
+          "SDS drill (1500W)",
+          "Site lights (1000W)",
+          "Small MIG welder"
+        ],
+        "cannot_run": [
+          "Large compressor",
+          "Concrete breaker",
+          "Table saw (3000W+)",
+          "Multiple heavy tools"
+        ]
+      },
+      
+      "typical_hire_cost": {
+        "daily": { "min": 30, "max": 50 },
+        "weekly": { "min": 90, "max": 150 }
+      },
+      
+      "fuel_consumption": {
+        "rate": "0.8-1.2 litres/hour",
+        "tank_capacity": "12 litres",
+        "runtime": "10-15 hours per tank"
+      },
+      
+      "safety_requirements": [
+        "Outdoor use only (carbon monoxide)",
+        "Minimum 3m from buildings",
+        "Earth spike required",
+        "RCD protection",
+        "Fire extinguisher nearby"
+      ]
+    }
+  },
+  
+  "decision_trees": {
+    "excavation": {
+      "question": "How much earth needs moving?",
+      "answers": {
+        "small_trench": {
+          "volume": "Under 5m³",
+          "recommendation": "Hand dig or 0.8T micro digger",
+          "time": "1 day"
+        },
+        "medium_dig": {
+          "volume": "5-20m³",
+          "recommendation": "1.5T mini excavator",
+          "time": "1-2 days"
+        },
+        "large_dig": {
+          "volume": "Over 20m³",
+          "recommendation": "3T+ excavator",
+          "time": "2-5 days"
+        }
+      }
+    },
+    
+    "concrete_mixing": {
+      "question": "How much concrete needed?",
+      "answers": {
+        "small_amount": {
+          "volume": "Under 0.25m³",
+          "recommendation": "Mix by hand or drill mixer",
+          "bags_needed": "10-12 bags"
+        },
+        "medium_amount": {
+          "volume": "0.25-1m³",
+          "recommendation": "110L mixer hire",
+          "bags_needed": "40-50 bags"
+        },
+        "large_amount": {
+          "volume": "Over 1m³",
+          "recommendation": "Ready-mix delivery",
+          "cost_effective": "Yes"
+        }
+      }
+    }
+  },
+  
+  "cost_comparisons": {
+    "fence_posts_10": {
+      "scenario": "Installing 10 fence posts",
+      "options": {
+        "hand_dig": {
+          "time": "1 day",
+          "cost": "£0",
+          "effort": "High"
+        },
+        "post_auger_hire": {
+          "time": "2 hours",
+          "cost": "£50 daily hire",
+          "effort": "Medium"
+        },
+        "mini_digger_hire": {
+          "time": "1 hour",
+          "cost": "£100 daily hire",
+          "effort": "Low"
+        },
+        "contractor": {
+          "time": "2 hours",
+          "cost": "£200-300",
+          "effort": "None"
+        }
+      },
+      "recommendation": "Post auger for 10+ posts, hand dig for less"
+    }
+  }
+}

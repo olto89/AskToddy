@@ -1,0 +1,4 @@
+company_name,website_url,region,county,postcode_area,phone,has_online_pricing,main_categories_url,url_pattern,pricing_structure,site_structure_notes,priority
+Toddy Tool Hire,https://toddytoolhire.co.uk,East England,Suffolk,IP12,01394123456,yes,https://toddytoolhire.co.uk/categories,/categories/{category-name},per_product_page,Clean category structure - prices on individual tool pages,1
+Example Hire Co,https://example-hire.co.uk,London,Greater London,SW1,020712345678,yes,https://example-hire.co.uk/hire,/hire/{category}/{tool-name},daily_weekly_rates,Nested categories - /hire/plant/excavators/1-5-tonne,2
+Regional Tools Ltd,https://regionaltools.co.uk,North West,Lancashire,PR1,01772123456,partial,https://regionaltools.co.uk/equipment,/equipment?category={name},quote_and_price_mix,Mix of prices and POA - check individual pages,3

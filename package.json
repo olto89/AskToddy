@@ -10,7 +10,16 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "setup-contentful": "node scripts/setup-contentful.js"
+    "setup-contentful": "node scripts/setup-contentful.js",
+    "tool-hire:validate-all": "node scripts/tool-hire-scraper.js validate-all",
+    "tool-hire:validate": "node scripts/tool-hire-scraper.js validate",
+    "tool-hire:report": "node scripts/tool-hire-scraper.js report",
+    "tool-hire:analyze": "node scripts/site-analyzer.js analyze",
+    "tool-hire:analyze-file": "node scripts/site-analyzer.js analyze-file",
+    "tool-hire:scrape": "node scripts/price-scraper.js scrape",
+    "tool-hire:scrape-test": "node scripts/price-scraper.js test",
+    "tool-hire:fine-tune": "node scripts/fine-tuned-scraper.js scrape",
+    "tool-hire:fine-tune-test": "node scripts/fine-tuned-scraper.js test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

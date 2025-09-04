@@ -1,0 +1,50 @@
+website_url,region,regional_priority
+# East England,,
+toddytoolhire.co.uk,East England,1
+www.hirebase.uk/,East England,2
+https://brandonhirestation.com/,East England,3
+https://brightacreshire.co.uk/,East England,4
+https://www.tbs-hire.co.uk,East England,5
+https://www.fthhiregroup.co.uk/,East England,6
+https://www.gr8toolhire.com/,East England,7
+https://www.dalehire.com,East England,8
+https://ksshire.co.uk/,East England,9
+https://www.getyourdigger.com/,East England,10
+https://www.mark1hire.co.uk/,East England,11
+,,
+# London & South East,,
+https://www.nlph.co.uk,London,1
+https://www.plantandtoolservicesltd.com/,London,2
+https://gmactoolandplanthire.co.uk/,London,3
+https://londonplanthire.co.uk/,London,4
+https://maydayplanthire.co.uk/,London,5
+https://www.psmhire.co.uk/,London,6
+https://www.rawstonehire.co.uk,London,7
+https://www.andaratools.com,South East,8
+https://www.southeastplanthire.co.uk,South East,9
+https://www.rapidplant.com/,South East,10
+https://www.jparkplanthire.co.uk/,South East,11
+https://www.ermin.co.uk/,South East,12
+,,
+# South West,,
+https://mgtoolhire.co.uk/,South West,1
+https://gaplant.co.uk/,South West,2
+,,
+,,
+# Midlands,,
+https://itphire.co.uk/,Midlands,1
+https://midlandstoolandplanthire.co.uk/,Midlands,2
+https://crosbytoolhire.com/,Midlands,3
+https://www.lancashireplant.com/,Midlands,4
+,,
+# North England,,
+https://www.shc.co.uk/,North West,1
+https://wtaphire.co.uk/,Yorkshire,2
+https://www.rockrental.co.uk/,North East,3
+https://www.gvplanthire.co.uk/,North East,4
+,,
+,,
+,,
+# ADD YOUR ACTUAL TOOL HIRE COMPANY URLs BELOW,,
+# Format: website_url,region,priority (1 = highest priority)
+# Example: actualtoolhire.co.uk,East England,1

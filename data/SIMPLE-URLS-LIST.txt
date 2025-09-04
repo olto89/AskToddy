@@ -1,0 +1,10 @@
+# Tool Hire Company URLs - Just add the website URLs!
+# One URL per line, the analyzer will do the rest
+# Lines starting with # are comments and will be ignored
+
+# EXAMPLE ENTRIES (Replace with real companies):
+# toddytoolhire.co.uk
+# suffolk-plant-hire.co.uk
+# essex-tools.co.uk
+
+# === ADD YOUR URLS BELOW THIS LINE ===

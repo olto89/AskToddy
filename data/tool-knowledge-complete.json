@@ -1,0 +1,878 @@
+{
+  "tools": {
+    "mini_excavator_1_5t": {
+      "id": "mini_excavator_1_5t",
+      "name": "1.5 Tonne Mini Excavator",
+      "category": "Excavators & Diggers",
+      "description": "The most popular size for residential projects. Compact enough for tight access yet powerful enough for serious digging.",
+      
+      "ideal_for": [
+        "Garden landscaping and redesign",
+        "Drainage trenches (up to 2.5m deep)",
+        "Foundation digging for extensions",
+        "Swimming pool excavation",
+        "Driveway preparation",
+        "Tree stump and root removal",
+        "Footings for walls and structures"
+      ],
+      
+      "not_suitable_for": [
+        "Heavy demolition work",
+        "Deep excavations over 3m",
+        "Breaking solid rock",
+        "Large commercial earthmoving",
+        "Work in buildings (too heavy for floors)"
+      ],
+      
+      "specifications": {
+        "operating_weight": "1400-1600kg",
+        "bucket_capacity": "0.03-0.05m³",
+        "max_dig_depth": "2.4-2.6m",
+        "max_reach": "4.0-4.3m",
+        "width": "980-1000mm (fits through standard gate)",
+        "height": "2.3-2.4m",
+        "engine_power": "13-15 HP",
+        "tracks": "Rubber (230-250mm wide)",
+        "swing_type": "Zero tail swing available"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£80-120",
+        "weekly": "£280-400",
+        "weekend": "£140-180",
+        "note": "Prices vary by location and supplier. National chains typically higher end, local independents often 20-30% cheaper.",
+        "delivery": "Usually £50-80 each way within 20 miles"
+      },
+      
+      "buy_vs_rent": {
+        "rent_if": [
+          "Project duration under 3 months",
+          "One-off project",
+          "No storage space available",
+          "Can't handle maintenance"
+        ],
+        "buy_if": [
+          "Using 3+ days per month regularly",
+          "Have multiple projects over 2 years",
+          "Have secure storage and transport",
+          "Comfortable with basic maintenance"
+        ],
+        "new_price": "£15,000-25,000",
+        "used_price": "£7,000-15,000",
+        "break_even": "Roughly 150-200 hire days equals purchase price"
+      },
+      
+      "safety_requirements": [
+        "MUST check for underground services (call before you dig)",
+        "CPCS or NPORS card required for commercial sites",
+        "PPE required: hard hat, hi-vis vest, safety boots, gloves",
+        "Never exceed maximum slope angles (typically 30°)",
+        "Daily visual checks before operation",
+        "Keep exclusion zone around swing radius",
+        "Never use as a crane"
+      ],
+      
+      "common_mistakes": [
+        "Forgetting to check for underground pipes/cables (can be fatal)",
+        "Underestimating space needed for spoil heap",
+        "Not arranging spoil removal (skip/grab lorry)",
+        "Working on slopes beyond safe angle",
+        "Not allowing for machine transport costs",
+        "Forgetting diesel fuel (uses 5-8L per day)"
+      ],
+      
+      "pro_tips": [
+        "Book Friday PM collection for weekend use at one day rate",
+        "Hiring with an operator often only £200-300 more per day",
+        "Mark dig area with white spray paint before starting",
+        "Have a banksman for blind spots and services",
+        "Wet ground needs tracks cleaning regularly",
+        "Consider a dumper too if moving spoil far"
+      ],
+      
+      "alternatives": {
+        "smaller": "0.8T micro excavator for tighter access (£70-100/day)",
+        "larger": "3T excavator for bigger projects (£120-180/day)",
+        "manual": "Hand digging for areas under 5m³ (free but hard work)"
+      }
+    },
+    
+    "concrete_mixer_110l": {
+      "id": "concrete_mixer_110l",
+      "name": "110L Petrol Concrete Mixer (Belle Type)",
+      "category": "Concrete & Mixing",
+      "description": "The standard site mixer. Perfect for small to medium concrete and mortar mixing jobs.",
+      
+      "ideal_for": [
+        "Fence post concrete (10-20 posts)",
+        "Shed and greenhouse bases",
+        "Garden paths and small patios",
+        "Repair and patch work",
+        "Mortar for bricklaying",
+        "Screed mixing for floors",
+        "Small retaining walls"
+      ],
+      
+      "not_suitable_for": [
+        "Large concrete pours (over 2m³)",
+        "Continuous all-day mixing",
+        "Indoor use (petrol fumes)",
+        "Very wet mixes (better hand mixed)",
+        "Quick-setting materials"
+      ],
+      
+      "specifications": {
+        "drum_capacity": "110 litres",
+        "mixing_capacity": "80-90 litres (actual)",
+        "output": "2-3 wheelbarrows per batch",
+        "engine": "Honda GX120 or similar",
+        "power": "3.5-4 HP",
+        "weight": "50-55kg",
+        "mixing_time": "2-3 minutes per batch"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£25-40",
+        "weekly": "£75-120",
+        "weekend": "£40-60",
+        "note": "Electric versions slightly cheaper. Petrol more versatile.",
+        "delivery": "Often free with other equipment, otherwise £30-50"
+      },
+      
+      "mixing_ratios": {
+        "general_concrete": "1 cement : 2 sand : 4 gravel",
+        "foundation_concrete": "1 cement : 2.5 sand : 3.5 gravel",
+        "mortar": "1 cement : 4-5 sand",
+        "floor_screed": "1 cement : 3-4 sharp sand",
+        "water": "Start with half cement volume, adjust for consistency"
+      },
+      
+      "safety_requirements": [
+        "Eye protection essential (cement dust)",
+        "Dust mask when adding cement",
+        "Waterproof gloves (cement burns skin)",
+        "Keep hands out of rotating drum",
+        "Stable, level ground required",
+        "Check drum and engine bolts regularly"
+      ],
+      
+      "common_mistakes": [
+        "Mix too wet (weakens concrete strength)",
+        "Overloading drum (poor mixing, engine strain)",
+        "Not cleaning immediately (concrete sets hard)",
+        "Running out of materials mid-job",
+        "Forgetting fuel for petrol models"
+      ],
+      
+      "pro_tips": [
+        "Spray inside with WD40 before use for easier cleaning",
+        "Mix dry ingredients first, then gradually add water",
+        "Ready-mix delivery more economical over 1m³",
+        "Keep a spare shear pin (common failure point)",
+        "Brick acid removes set concrete if you forget to clean"
+      ],
+      
+      "alternatives": {
+        "smaller": "Drill paddle mixer for small amounts (£15-25/day)",
+        "larger": "Ready-mix concrete delivery for 1m³+ (£80-120/m³)",
+        "manual": "Wheelbarrow mixing for tiny amounts (free)"
+      },
+      
+      "buy_vs_rent": {
+        "rent_if": "Using less than 10 days per year",
+        "buy_if": "Regular small projects or multiple properties",
+        "new_price": "£250-400",
+        "used_price": "£100-200",
+        "break_even": "10-15 hire days equals purchase price"
+      }
+    },
+    
+    "breaker_medium": {
+      "id": "breaker_medium",
+      "name": "Medium Electric Breaker (10-15kg)",
+      "category": "Breaking & Drilling",
+      "description": "Powerful breaker for concrete and masonry demolition. The go-to tool for breaking up paths, drives and floors.",
+      
+      "ideal_for": [
+        "Breaking concrete paths and driveways",
+        "Removing tile floors",
+        "Demolishing brick/block walls",
+        "Breaking up concrete bases",
+        "Channel cutting in concrete",
+        "Removing render from walls",
+        "Breaking rocks in gardens"
+      ],
+      
+      "not_suitable_for": [
+        "Reinforced concrete over 200mm thick",
+        "Precision work near pipes",
+        "Working overhead (too heavy)",
+        "Sound-sensitive areas",
+        "Very thick foundation breaking"
+      ],
+      
+      "specifications": {
+        "weight": "10-15kg",
+        "impact_rate": "1400-2000 bpm",
+        "impact_energy": "15-25 joules",
+        "power": "1300-1750 watts",
+        "voltage": "110V (transformer) or 240V",
+        "chuck": "SDS-Max or Hex",
+        "vibration": "10-15 m/s²"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£35-55",
+        "weekly": "£120-180",
+        "weekend": "£60-80",
+        "note": "110V version needs transformer (add £10-15/day)",
+        "bits": "Pointed and flat chisels usually included"
+      },
+      
+      "safety_requirements": [
+        "Ear defenders essential (over 100dB)",
+        "Safety glasses/goggles mandatory",
+        "Dust mask for concrete dust",
+        "Anti-vibration gloves recommended",
+        "Steel toe boots required",
+        "Check for services before breaking floors",
+        "Maximum 30 mins continuous use (vibration)"
+      ],
+      
+      "common_mistakes": [
+        "Not checking for pipes/cables in concrete",
+        "Using blunt chisels (50% less effective)",
+        "Wrong angle (45° most effective)",
+        "Forcing the tool (let weight do work)",
+        "Ignoring hand-arm vibration limits"
+      ],
+      
+      "pro_tips": [
+        "Score a line first for neat edge breaks",
+        "Start at edges and corners",
+        "Work in lines, not random spots",
+        "Spray water to reduce dust",
+        "Sharpen chisels with angle grinder",
+        "Take breaks every 20-30 minutes"
+      ],
+      
+      "alternatives": {
+        "smaller": "SDS drill with chisel (£25-40/day) for light work",
+        "larger": "Heavy breaker 20kg+ (£60-90/day) for foundations",
+        "manual": "Sledgehammer and cold chisel (free but exhausting)"
+      }
+    },
+    
+    "generator_3kva": {
+      "id": "generator_3kva",
+      "name": "3kVA Diesel Generator",
+      "category": "Power & Lighting",
+      "description": "Reliable site power for tools and lighting. Perfect balance of power and portability.",
+      
+      "ideal_for": [
+        "Powering electric tools on site",
+        "Site lighting setups",
+        "Welfare cabin power",
+        "Emergency home backup",
+        "Event and marquee power",
+        "Charging tool batteries",
+        "Running pumps"
+      ],
+      
+      "power_capacity": {
+        "continuous": "2.5kW",
+        "maximum": "3.0kW",
+        "outlets": "2x 16A 110V, 1x 13A 240V typically",
+        "can_power": [
+          "Angle grinder (2000W)",
+          "Circular saw (1800W)",
+          "Small MIG welder (140A)",
+          "4-6 LED site lights",
+          "Concrete mixer (electric)"
+        ],
+        "cannot_power": [
+          "Large compressor (5kW+)",
+          "Big concrete breaker",
+          "Multiple heavy tools together",
+          "Electric heating"
+        ]
+      },
+      
+      "specifications": {
+        "rated_output": "3.0kVA / 2.5kW",
+        "engine": "Diesel (more economical than petrol)",
+        "fuel_consumption": "0.8-1.2 L/hour",
+        "fuel_tank": "10-15 litres",
+        "runtime": "10-18 hours per tank",
+        "noise_level": "65-75 dB at 7m",
+        "weight": "50-70kg",
+        "start": "Recoil or electric"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£30-50",
+        "weekly": "£100-150",
+        "weekend": "£50-70",
+        "note": "Diesel included for first day usually",
+        "delivery": "£30-50 typically"
+      },
+      
+      "safety_requirements": [
+        "OUTDOOR USE ONLY (carbon monoxide)",
+        "Minimum 3m from buildings/openings",
+        "Must use earth spike/RCD protection",
+        "Keep dry (cover if raining)",
+        "Fire extinguisher within reach",
+        "Refuel when cold only",
+        "Adequate ventilation essential"
+      ],
+      
+      "common_mistakes": [
+        "Running indoors or in confined spaces (deadly)",
+        "Overloading (trips breaker or damages)",
+        "Not calculating startup surge power",
+        "Forgetting overnight security",
+        "Running out of fuel (air in system)",
+        "Not using proper extension leads"
+      ],
+      
+      "pro_tips": [
+        "Start biggest tool first (highest surge)",
+        "Run at 75% capacity for longevity",
+        "Check oil daily before starting",
+        "Use a distribution board for multiple tools",
+        "Diesel more economical than petrol for all-day use",
+        "Chain to something solid overnight"
+      ],
+      
+      "alternatives": {
+        "smaller": "2kVA for light tools only (£25-40/day)",
+        "larger": "6kVA for heavy demands (£50-80/day)",
+        "mains": "Temporary supply from energy company if long-term"
+      }
+    },
+    
+    "wacker_plate": {
+      "id": "wacker_plate",
+      "name": "Wacker Plate Compactor (400mm)",
+      "category": "Compaction Equipment",
+      "description": "Essential for compacting sub-bases and finishing surfaces. Creates solid, stable ground for building on.",
+      
+      "ideal_for": [
+        "Compacting MOT Type 1 for driveways",
+        "Patio and path sub-base preparation",
+        "Compacting sand for block paving",
+        "Trench backfill compaction",
+        "Shed base preparation",
+        "Tarmac repair work",
+        "General ground stabilization"
+      ],
+      
+      "not_suitable_for": [
+        "Clay soils (needs rammer)",
+        "Deep lifts over 150mm",
+        "Wet cohesive soils",
+        "Very confined spaces",
+        "Steep slopes over 20°"
+      ],
+      
+      "specifications": {
+        "plate_width": "350-450mm",
+        "weight": "60-90kg",
+        "compaction_force": "10-15 kN",
+        "compaction_depth": "150-250mm",
+        "travel_speed": "20-25 m/min",
+        "engine": "Honda/Robin 4-5.5HP",
+        "vibration_frequency": "90-100 Hz"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£30-45",
+        "weekly": "£90-140",
+        "weekend": "£45-65",
+        "note": "Reversible models slightly more",
+        "paving_pad": "Rubber mat add £5-10/day for block paving"
+      },
+      
+      "safety_requirements": [
+        "Anti-vibration gloves essential",
+        "Ear protection required",
+        "Steel toe boots mandatory",
+        "Keep feet clear of plate",
+        "Check for buried services first",
+        "Maximum 2.5 hours daily exposure (vibration)"
+      ],
+      
+      "common_mistakes": [
+        "Compacting layers too thick (max 100-150mm)",
+        "Not overlapping passes (causes soft spots)",
+        "Using on wrong material type",
+        "Working on too steep slopes",
+        "Forgetting the rubber mat for block paving",
+        "Over-compacting (can cause pumping)"
+      ],
+      
+      "pro_tips": [
+        "3-4 passes usually sufficient",
+        "Work in lanes with 100mm overlap",
+        "Slightly damp material compacts better",
+        "Start at edges, work inward",
+        "Use water tank for dust suppression",
+        "Check levels frequently while compacting"
+      ],
+      
+      "alternatives": {
+        "smaller": "Trench rammer for confined spaces (£35-50/day)",
+        "larger": "Roller for big areas (£80-120/day)",
+        "manual": "Hand tamper for tiny areas (£10/day or buy £30)"
+      }
+    },
+    
+    "sds_drill": {
+      "id": "sds_drill",
+      "name": "SDS Plus Rotary Hammer Drill",
+      "category": "Drilling & Fixing",
+      "description": "The professional's choice for drilling concrete, brick and masonry. Much faster than regular drills.",
+      
+      "ideal_for": [
+        "Drilling concrete for fixings",
+        "Installing rawl bolts",
+        "Cable/pipe runs through walls",
+        "Removing tiles (chisel mode)",
+        "Light breaking work",
+        "Drilling brick and block",
+        "Core drilling pilot holes"
+      ],
+      
+      "specifications": {
+        "power": "700-900W",
+        "impact_energy": "2-4 joules",
+        "drilling_capacity": "4-26mm concrete",
+        "weight": "2.5-3.5kg",
+        "modes": "Drill, hammer drill, chisel",
+        "chuck": "SDS-Plus",
+        "speed": "0-1200 rpm"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£25-40",
+        "weekly": "£70-110",
+        "weekend": "£35-50",
+        "note": "Bit sets usually extra £10-15",
+        "dust_extraction": "Add £15-20/day for vacuum"
+      },
+      
+      "pro_tips": [
+        "Let the hammer action do the work",
+        "Pull bit out regularly to clear dust",
+        "Use rotation stop for chiseling",
+        "Mark depth on bit with tape",
+        "Start slow to prevent walking",
+        "Sharp bits make huge difference"
+      ],
+      
+      "alternatives": {
+        "smaller": "Combi drill for light work (£15-25/day)",
+        "larger": "SDS-Max for heavy drilling (£40-60/day)",
+        "specialized": "Diamond core drill for large holes (£60-100/day)"
+      }
+    },
+    
+    "angle_grinder_230": {
+      "id": "angle_grinder_230",
+      "name": "230mm (9\") Angle Grinder",
+      "category": "Cutting & Grinding",
+      "description": "Heavy-duty cutting and grinding for metal and masonry. The larger size for serious cutting work.",
+      
+      "ideal_for": [
+        "Cutting steel beams and RSJs",
+        "Cutting paving slabs",
+        "Grinding welds smooth",
+        "Cutting concrete blocks",
+        "Removing rust and paint",
+        "Cutting rebar",
+        "Notching and shaping metal"
+      ],
+      
+      "specifications": {
+        "disc_size": "230mm (9\")",
+        "power": "2000-2400W",
+        "speed": "6000-6500 rpm",
+        "weight": "4.5-5.5kg",
+        "spindle": "M14",
+        "guard": "Adjustable safety guard"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£20-35",
+        "weekly": "£60-100",
+        "weekend": "£30-45",
+        "note": "Discs £3-8 each depending on type",
+        "safety_gear": "Face shield recommended"
+      },
+      
+      "safety_requirements": [
+        "Full face shield (not just safety glasses)",
+        "Cut-resistant gloves",
+        "Ear protection essential",
+        "No loose clothing",
+        "Check disc speed rating",
+        "Inspect discs for damage",
+        "Two-handed operation"
+      ],
+      
+      "common_mistakes": [
+        "Wrong disc for material",
+        "Forcing the cut (let disc do work)",
+        "Removing safety guard (never do this)",
+        "Using damaged discs",
+        "Cutting towards yourself"
+      ],
+      
+      "alternatives": {
+        "smaller": "115mm grinder for light work (£15-25/day)",
+        "cutting": "Petrol disc cutter for heavy cutting (£40-60/day)",
+        "precise": "Cut-off saw for accurate cuts (£30-45/day)"
+      }
+    },
+    
+    "pressure_washer": {
+      "id": "pressure_washer",
+      "name": "Petrol Pressure Washer (200 bar)",
+      "category": "Cleaning Equipment",
+      "description": "Professional cleaning power for driveways, equipment, and building exteriors.",
+      
+      "ideal_for": [
+        "Driveway and patio cleaning",
+        "Removing moss and algae",
+        "Cleaning machinery and tools",
+        "Graffiti removal",
+        "Car and van washing",
+        "Building exterior cleaning",
+        "Drain jetting (with attachment)"
+      ],
+      
+      "specifications": {
+        "pressure": "150-200 bar (2200-3000 psi)",
+        "flow_rate": "10-15 L/min",
+        "engine": "Honda GX200 or similar",
+        "power": "5.5-6.5 HP",
+        "hose_length": "10-15m",
+        "weight": "30-40kg"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£40-60",
+        "weekly": "£140-200",
+        "weekend": "£60-80",
+        "note": "Turbo nozzle extra £10/day",
+        "accessories": "Drain jetting kit £20-30/day"
+      },
+      
+      "pro_tips": [
+        "Start far away, move closer gradually",
+        "Use detergent for first pass on tough dirt",
+        "Keep nozzle moving to avoid damage",
+        "Turbo nozzle 40% more effective",
+        "Protect windows and delicate areas",
+        "Work from bottom up on walls"
+      ],
+      
+      "alternatives": {
+        "smaller": "Electric 140 bar for light work (£25-40/day)",
+        "larger": "Hot water washer for oil/grease (£80-120/day)",
+        "manual": "Scrub brush and hose (free but slow)"
+      }
+    },
+    
+    "dumper_1t": {
+      "id": "dumper_1t",
+      "name": "1 Tonne Site Dumper",
+      "category": "Material Handling",
+      "description": "Essential for moving materials around site. Saves countless wheelbarrow trips.",
+      
+      "ideal_for": [
+        "Moving excavated soil",
+        "Transporting aggregate and sand",
+        "Concrete transportation",
+        "General site materials movement",
+        "Landscaping projects",
+        "Moving rubble and waste",
+        "Delivering materials across soft ground"
+      ],
+      
+      "specifications": {
+        "payload": "1000kg",
+        "heaped_capacity": "500-600 litres",
+        "engine": "Diesel or petrol",
+        "drive": "4WD typically",
+        "skip": "Front tip hydraulic",
+        "width": "1200-1300mm",
+        "ground_clearance": "280mm"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£60-90",
+        "weekly": "£200-300",
+        "weekend": "£90-120",
+        "note": "Hi-tip models add 20%",
+        "delivery": "Usually £50-80 each way"
+      },
+      
+      "safety_requirements": [
+        "Training certificate required on most sites",
+        "Never exceed rated capacity",
+        "Check ground conditions",
+        "Lower skip when travelling",
+        "Seatbelt must be worn",
+        "No passengers in skip",
+        "Check blind spots"
+      ],
+      
+      "common_mistakes": [
+        "Overloading (causes tipping)",
+        "Travelling with raised skip",
+        "Too fast on rough ground",
+        "Not checking overhead clearance",
+        "Sharp turns when loaded"
+      ],
+      
+      "pro_tips": [
+        "Load evenly, heavy items first",
+        "Travel in low gear when loaded",
+        "Clean out daily (concrete sets)",
+        "Check tyre pressures daily",
+        "Hi-tip version useful for skips",
+        "Consider tracked for very soft ground"
+      ],
+      
+      "alternatives": {
+        "smaller": "Pedestrian dumper 500kg (£40-60/day)",
+        "larger": "3T dumper for big projects (£100-150/day)",
+        "manual": "Wheelbarrow (free but slow)"
+      }
+    },
+    
+    "scaffold_tower": {
+      "id": "scaffold_tower",
+      "name": "Scaffold Tower (6m working height)",
+      "category": "Access Equipment",
+      "description": "Safe working platform for height work. Much safer than ladders for extended work.",
+      
+      "ideal_for": [
+        "Painting and decorating",
+        "Gutter cleaning and repairs",
+        "Window installation",
+        "Soffit and fascia work",
+        "Ceiling work indoors",
+        "Brickwork pointing",
+        "Installing cabling"
+      ],
+      
+      "specifications": {
+        "working_height": "6m (platform at 4m)",
+        "platform_size": "1.8m x 0.6m typically",
+        "footprint": "2.5m x 1.3m with outriggers",
+        "safe_load": "200-275kg",
+        "material": "Aluminium",
+        "weight": "80-100kg total",
+        "assembly_time": "15-20 minutes"
+      },
+      
+      "typical_hire_cost": {
+        "daily": "£30-45",
+        "weekly": "£80-120",
+        "weekend": "£45-60",
+        "note": "Larger heights proportionally more",
+        "delivery": "Often free locally"
+      },
+      
+      "safety_requirements": [
+        "Must be on firm, level ground",
+        "Use all outriggers/stabilizers",
+        "3:1 height to base ratio max",
+        "Lock wheels before climbing",
+        "Face ladder when climbing",
+        "Never exceed safe working load",
+        "Inspect before each use"
+      ],
+      
+      "common_mistakes": [
+        "Not leveling the base properly",
+        "Forgetting to lock wheels",
+        "Moving tower with person on it",
+        "Overreaching from platform",
+        "Not using stabilizers",
+        "Building in wrong sequence"
+      ],
+      
+      "pro_tips": [
+        "Build on level ground, then move",
+        "Use adjustable legs for slopes",
+        "Tie in to building if possible",
+        "Internal use doesn't need stabilizers",
+        "Board platform fully for comfort",
+        "Consider narrow tower for tight spaces"
+      ],
+      
+      "alternatives": {
+        "smaller": "Podium steps for lower work (£25-35/day)",
+        "larger": "8m+ towers available (£100-150/week)",
+        "different": "Scissor lift for larger platform (£150-250/day)"
+      }
+    }
+  },
+  
+  "decision_helpers": {
+    "excavation_size_guide": {
+      "title": "What Size Excavator Do I Need?",
+      "decisions": {
+        "micro_0_8t": {
+          "when": "Tight access (under 750mm)",
+          "projects": "Small trenches, post holes",
+          "volume": "Under 10m³",
+          "cost": "£70-100/day"
+        },
+        "mini_1_5t": {
+          "when": "Standard garden access",
+          "projects": "Foundations, drainage, landscaping",
+          "volume": "10-50m³",
+          "cost": "£80-120/day"
+        },
+        "midi_3t": {
+          "when": "Larger projects",
+          "projects": "Deep foundations, pools",
+          "volume": "50-150m³",
+          "cost": "£120-180/day"
+        },
+        "hand_dig": {
+          "when": "Very small jobs",
+          "projects": "Post holes, small repairs",
+          "volume": "Under 2m³",
+          "cost": "Free (your labour)"
+        }
+      }
+    },
+    
+    "concrete_quantity_guide": {
+      "title": "Mix Yourself or Order Ready-Mix?",
+      "decisions": {
+        "hand_mix": {
+          "volume": "Under 0.25m³",
+          "method": "Wheelbarrow and shovel",
+          "time": "2 hours",
+          "cost": "£50 materials"
+        },
+        "mixer_hire": {
+          "volume": "0.25-1.5m³",
+          "method": "110L concrete mixer",
+          "time": "4-6 hours",
+          "cost": "£35 hire + £200-300 materials"
+        },
+        "ready_mix": {
+          "volume": "Over 1.5m³",
+          "method": "Concrete lorry delivery",
+          "time": "30 minutes",
+          "cost": "£100-150/m³ delivered"
+        }
+      },
+      "tip": "Ready-mix becomes more economical over 1m³ when you factor in labour time"
+    },
+    
+    "breaking_tool_selector": {
+      "title": "Which Breaking Tool Do I Need?",
+      "decisions": {
+        "sds_drill": {
+          "for": "Tiles, light concrete under 50mm",
+          "power": "2-4 joules",
+          "cost": "£25-40/day"
+        },
+        "light_breaker": {
+          "for": "Paths, thin concrete 50-100mm",
+          "power": "6-10kg class",
+          "cost": "£30-45/day"
+        },
+        "medium_breaker": {
+          "for": "Driveways, floors 100-200mm",
+          "power": "10-15kg class",
+          "cost": "£35-55/day"
+        },
+        "heavy_breaker": {
+          "for": "Foundations, thick concrete 200mm+",
+          "power": "20kg+ class",
+          "cost": "£60-90/day"
+        }
+      }
+    }
+  },
+  
+  "safety_essentials": {
+    "ppe_requirements": {
+      "always_needed": [
+        "Safety boots (steel toe-cap)",
+        "Hi-vis vest",
+        "Work gloves"
+      ],
+      "noise_work": [
+        "Ear defenders (breakers, grinders)",
+        "Ear plugs minimum"
+      ],
+      "dust_work": [
+        "FFP3 dust mask (concrete cutting)",
+        "Safety goggles"
+      ],
+      "vibration_work": [
+        "Anti-vibration gloves",
+        "Limit exposure time"
+      ]
+    },
+    
+    "before_you_start": [
+      "Check for underground services (ESSENTIAL)",
+      "Read equipment manual/instructions",
+      "Inspect equipment for damage",
+      "Ensure you have required PPE",
+      "Check site access and ground conditions",
+      "Plan material storage/disposal",
+      "Inform neighbors if noisy work"
+    ]
+  },
+  
+  "supplier_guidance": {
+    "national_chains": {
+      "pros": [
+        "Wide availability",
+        "Consistent standards",
+        "Online booking",
+        "Delivery service"
+      ],
+      "cons": [
+        "Higher prices",
+        "Less flexible",
+        "Busy periods booked up"
+      ],
+      "expect_to_pay": "Top end of price ranges shown"
+    },
+    
+    "local_independents": {
+      "pros": [
+        "20-30% cheaper typically",
+        "More flexible on times",
+        "Local knowledge",
+        "Often better service"
+      ],
+      "cons": [
+        "Variable equipment age",
+        "Limited stock",
+        "May lack newest models"
+      ],
+      "how_to_find": "Search 'tool hire near me' or 'plant hire [your town]'"
+    },
+    
+    "specialist_suppliers": {
+      "when_to_use": "Specific equipment like access platforms, welding, surveying",
+      "examples": "Nationwide Platforms (access), Speedy (general), HSS (tools)",
+      "tip": "Often have better equipment and knowledge for specialist items"
+    }
+  }
+}

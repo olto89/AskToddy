@@ -404,6 +404,67 @@ export class GeminiService {
       requiresProfessional: false
     }
   }
+
+  async analyzeImagesForToolRecommendation(systemPrompt: string, imageUrls: string[]): Promise<string> {
+    if (!this.model) {
+      return "I'd love to analyze your images for tool recommendations, but I'm currently offline. Based on typical DIY projects, consider hiring from your local tool shop or HSS Hire for professional equipment."
+    }
+
+    try {
+      const imageParts = []
+      for (const url of imageUrls.slice(0, 4)) {
+        try {
+          const response = await fetch(url)
+          if (response.ok) {
+            const blob = await response.blob()
+            const arrayBuffer = await blob.arrayBuffer()
+            const base64 = Buffer.from(arrayBuffer).toString('base64')
+            imageParts.push({
+              inlineData: {
+                data: base64,
+                mimeType: blob.type
+              }
+            })
+          }
+        } catch (error) {
+          console.warn('Failed to load image:', url, error)
+        }
+      }
+
+      const analysisPrompt = `${systemPrompt}
+
+VISUAL ANALYSIS INSTRUCTIONS:
+Look carefully at the uploaded image(s) to understand:
+1. **What job needs doing** - What do you see that needs work?
+2. **Scale and scope** - How big is the area/task?
+3. **Access requirements** - Can large tools get there? Gates, doorways, etc.
+4. **Ground conditions** - For excavation: soft/hard ground, existing structures
+5. **Material types** - Concrete, brick, wood, etc. affects tool choice
+6. **Safety hazards** - Overhead lines, confined spaces, structural concerns
+
+TOOL RECOMMENDATION PRIORITY:
+1. Recommend THE RIGHT TOOL for what you see in the image
+2. Explain WHY this tool based on visual evidence
+3. Mention key safety considerations you can see
+4. Give realistic pricing from Toddy Tool Hire if available
+5. Suggest alternatives if access/conditions problematic
+
+Respond as Toddy with your expert eye - what tool does this job actually need?`
+
+      const contentParts = [{ text: analysisPrompt }]
+      if (imageParts.length > 0) {
+        contentParts.push(...imageParts)
+      }
+
+      const result = await this.model.generateContent(contentParts)
+      const response = await result.response
+      return response.text()
+
+    } catch (error) {
+      console.error('Image analysis error:', error)
+      return "Right then, I'm having trouble analyzing your images at the moment. Drop me the details of what you're looking to do and I'll sort you out with the proper tools for the job!"
+    }
+  }
 }
 
 export default GeminiService

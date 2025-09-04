@@ -1,0 +1,68 @@
+{
+  "tool_pricing_enhanced": {
+    "description": "Enhanced tool hire data with descriptions for AI recommendations",
+    "fields": {
+      "id": "UUID",
+      "supplier_id": "Reference to supplier",
+      "category": "Standard category (excavator, mixer, etc)",
+      "tool_name": "1.5 Tonne Mini Excavator",
+      "tool_description": "Compact excavator ideal for tight spaces. Features include rubber tracks, zero tail swing, and auxiliary hydraulics for attachments. Perfect for landscaping, drainage work, and small construction projects.",
+      "specifications": {
+        "weight": "1500kg",
+        "width": "990mm", 
+        "dig_depth": "2.5m",
+        "engine": "Kubota diesel",
+        "features": ["Zero tail swing", "Rubber tracks", "Dozer blade", "Quick hitch"]
+      },
+      "suitable_for": [
+        "Garden landscaping",
+        "Drainage installation", 
+        "Foundation digging",
+        "Pool excavation",
+        "Driveway preparation"
+      ],
+      "safety_requirements": [
+        "CPCS/NPORS card recommended",
+        "PPE required",
+        "Site assessment needed"
+      ],
+      "pricing": {
+        "daily_rate": 85,
+        "weekly_rate": 255,
+        "weekend_rate": 170,
+        "monthly_rate": 850
+      },
+      "alternatives": [
+        "0.8 Tonne Micro Excavator (tighter spaces)",
+        "3 Tonne Excavator (larger projects)",
+        "Hand tools (very small jobs)"
+      ],
+      "delivery_options": "Available - POA",
+      "source_url": "https://supplier.com/excavators/mini-1-5t",
+      "last_updated": "2024-01-15",
+      "confidence_score": 0.95
+    }
+  },
+  
+  "ai_recommendation_data": {
+    "description": "Data specifically structured for Gemini to make intelligent recommendations",
+    "use_cases": {
+      "user_query": "I need to dig a trench for drainage in my garden",
+      "recommended_tools": [
+        {
+          "tool": "1.5 Tonne Mini Excavator",
+          "reasoning": "Perfect size for garden access, efficient for trenching",
+          "supplier": "Toddy Tool Hire",
+          "price": "£85/day",
+          "alternatives": "0.8 Tonne if very tight access, or trenching spade for small jobs"
+        }
+      ],
+      "safety_notes": "Consider hiring an operator if not experienced",
+      "additional_equipment": [
+        "Dumper for spoil removal",
+        "Trench box if deep excavation",
+        "Breaker attachment if encountering concrete"
+      ]
+    }
+  }
+}
