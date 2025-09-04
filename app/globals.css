@@ -3,6 +3,45 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Mobile optimizations */
+html {
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  height: 100%;
+  overscroll-behavior: none;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Allow text selection in chat messages */
+.select-text {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Fix for iOS Safari viewport height */
+.h-screen {
+  height: 100vh;
+  height: -webkit-fill-available;
+}
+
+/* Smooth scrolling for chat */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

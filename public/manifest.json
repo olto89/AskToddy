@@ -1,0 +1,32 @@
+{
+  "name": "AskToddy - Construction Expert",
+  "short_name": "AskToddy",
+  "description": "Professional construction advice, tool recommendations, and cost estimates",
+  "theme_color": "#FF6B35",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/toddy-character.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/toddy-character.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["productivity", "utilities", "business"],
+  "screenshots": [
+    {
+      "src": "/toddy-hero.png",
+      "type": "image/png",
+      "sizes": "1080x1920",
+      "label": "AskToddy Chat Interface"
+    }
+  ]
+}
