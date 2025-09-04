@@ -20,9 +20,9 @@ interface HomepageClientProps {
 
 export default function HomepageClient({ homepageContent, uploadFormContent }: HomepageClientProps) {
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden">
+    <div className="chat-container flex flex-col bg-white">
       {/* Mobile-optimized Header with AskToddy Brand */}
-      <header style={{background: 'linear-gradient(90deg, #FF6B35 0%, #FF8C42 100%)'}} className="shadow-lg">
+      <header style={{background: 'linear-gradient(90deg, #FF6B35 0%, #FF8C42 100%)'}} className="shadow-lg flex-shrink-0">
         <div className="px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -45,7 +45,7 @@ export default function HomepageClient({ homepageContent, uploadFormContent }: H
       </header>
       
       {/* Chat Interface - Full height mobile optimized */}
-      <main className="flex-1 overflow-hidden" style={{background: 'linear-gradient(to bottom, #f9fafb 0%, #ffffff 100%)'}}>
+      <main className="flex-1 min-h-0" style={{background: 'linear-gradient(to bottom, #f9fafb 0%, #ffffff 100%)'}}>
         <ToddyAdviceChat />
       </main>
     </div>

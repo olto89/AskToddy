@@ -10,19 +10,41 @@
 html {
   height: 100%;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  touch-action: manipulation;
 }
 
 body {
   height: 100%;
   overscroll-behavior: none;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Allow text selection in chat messages */
+/* Allow text selection only in chat messages */
 .select-text {
-  -webkit-user-select: text;
-  user-select: text;
+  -webkit-user-select: text !important;
+  user-select: text !important;
 }
+
+/* Prevent pull-to-refresh on mobile */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* Fix iOS Safari bouncing */
+.chat-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
 
 /* Fix for iOS Safari viewport height */
 .h-screen {

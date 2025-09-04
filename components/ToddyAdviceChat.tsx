@@ -154,9 +154,20 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   return (
-    <div className={`h-full flex flex-col ${className}`}>
-      {/* Messages Area - Scrollable */}
-      <div className="flex-1 overflow-y-auto pb-2">
+    <div className={`h-full flex flex-col ${className}`} style={{
+      touchAction: 'manipulation',
+      overscrollBehavior: 'none'
+    }}>
+      {/* Messages Area - Fixed mobile scrolling */}
+      <div 
+        className="flex-1 overflow-y-auto pb-2" 
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+          touchAction: 'pan-y',
+          position: 'relative'
+        }}
+      >
         <div className="px-4 py-4 space-y-4 max-w-3xl mx-auto">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
