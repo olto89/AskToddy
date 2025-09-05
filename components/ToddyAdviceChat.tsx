@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import FeedbackModal from './FeedbackModal'
+import { track } from '@vercel/analytics'
 
 interface Message {
   id: string
@@ -26,6 +28,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
+  const [showFeedback, setShowFeedback] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -36,6 +39,19 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
 
   useEffect(() => {
     scrollToBottom()
+    
+    // Check if we should show feedback modal
+    const userMessageCount = messages.filter(m => m.role === 'user').length
+    const feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
+    const feedbackSkipped = localStorage.getItem('feedbackSkipped')
+    
+    if (!feedbackGiven && userMessageCount >= 5) {
+      // If skipped before, wait for 10 messages instead
+      const skipThreshold = feedbackSkipped ? 10 : 5
+      if (userMessageCount >= skipThreshold && !showFeedback) {
+        setShowFeedback(true)
+      }
+    }
   }, [messages])
 
   // Auto-resize textarea
@@ -58,6 +74,11 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       return
     }
 
+    // Track image upload
+    track('image_uploaded', {
+      count: validFiles.length
+    })
+
     const newImageUrls: string[] = []
     for (const file of validFiles.slice(0, 4)) { // Limit to 4 files
       const reader = new FileReader()
@@ -79,6 +100,13 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
 
   const handleSend = async () => {
     if ((!input.trim() && uploadedImages.length === 0) || isLoading) return
+
+    // Track message sent
+    track('message_sent', {
+      hasText: !!input.trim(),
+      hasImages: uploadedImages.length > 0,
+      messageCount: messages.filter(m => m.role === 'user').length + 1
+    })
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -149,6 +177,9 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   ]
 
   const handleExampleClick = (question: string) => {
+    track('example_question_clicked', {
+      question
+    })
     setInput(question)
     inputRef.current?.focus()
   }
@@ -383,6 +414,12 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
           />
         </div>
       </div>
+      {/* Feedback Modal */}
+      <FeedbackModal 
+        isOpen={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        messageCount={messages.filter(m => m.role === 'user').length}
+      />
     </div>
   )
 }
