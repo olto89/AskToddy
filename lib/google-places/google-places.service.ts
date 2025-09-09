@@ -59,12 +59,6 @@ export class GooglePlacesService {
   ]
   
   constructor() {
-    console.log('Google Places API Key check:', {
-      hasKey: !!this.API_KEY,
-      keyLength: this.API_KEY?.length || 0,
-      envVars: Object.keys(process.env).filter(key => key.includes('GOOGLE'))
-    })
-    
     if (!this.API_KEY) {
       console.warn('Google Places API key not configured. Add GOOGLE_PLACES_API_KEY to .env.local')
     }
@@ -339,19 +333,13 @@ export class GooglePlacesService {
    */
   async getGooglePlacesContext(trade: string, location: string): Promise<string> {
     try {
-      console.log(`Google Places search: ${trade} in ${location}`)
-      console.log(`API Key configured: ${!!this.API_KEY}`)
-      
       const results = await this.searchBusinesses({
         query: trade,
         location: location,
         minRating: 4.0
       })
       
-      console.log(`Google Places results: ${results.length} found`)
-      
       if (results.length === 0) {
-        console.log('No Google Places results, returning empty context')
         return ''
       }
       
