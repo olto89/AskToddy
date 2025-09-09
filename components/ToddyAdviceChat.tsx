@@ -53,7 +53,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         trackEvents.feedbackModalShown()
       }
     }
-  }, [messages])
+  }, [messages, showFeedback])
 
   // Auto-resize textarea
   useEffect(() => {

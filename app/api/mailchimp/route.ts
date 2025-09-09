@@ -42,20 +42,16 @@ export async function POST(request: NextRequest) {
       status: body.marketingConsent ? 'subscribed' : 'unsubscribed',
       merge_fields: {
         RATING: body.rating,
-        SOURCE: 'AskToddy Feedback'
+        SOURCE: 'AskToddy Feedback',
+        // Store feedback text in a merge field (you may need to create this field in Mailchimp)
+        FEEDBACK: body.feedback || ''
       },
       tags: ['asktoddy-user', `rating-${body.rating}`],
       // Store GDPR consent
       marketing_permissions: [{
-        marketing_permission_id: 'email',
+        marketing_permission_id: 'email', 
         enabled: body.marketingConsent
-      }],
-      // Store feedback in notes (or custom field if you set one up)
-      ...(body.feedback && {
-        notes: [{
-          note: `Feedback: ${body.feedback}`
-        }]
-      })
+      }]
     }
 
     // Make request to Mailchimp
@@ -84,7 +80,8 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             merge_fields: {
-              RATING: body.rating
+              RATING: body.rating,
+              FEEDBACK: body.feedback || ''
             },
             tags: [`rating-${body.rating}`]
           })
