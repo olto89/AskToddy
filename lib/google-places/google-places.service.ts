@@ -333,13 +333,19 @@ export class GooglePlacesService {
    */
   async getGooglePlacesContext(trade: string, location: string): Promise<string> {
     try {
+      console.log(`Google Places search: ${trade} in ${location}`)
+      console.log(`API Key configured: ${!!this.API_KEY}`)
+      
       const results = await this.searchBusinesses({
         query: trade,
         location: location,
         minRating: 4.0
       })
       
+      console.log(`Google Places results: ${results.length} found`)
+      
       if (results.length === 0) {
+        console.log('No Google Places results, returning empty context')
         return ''
       }
       

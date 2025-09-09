@@ -152,11 +152,14 @@ export async function POST(request: NextRequest) {
       const requestedTrade = tradeTypes.find(trade => message.toLowerCase().includes(trade)) || 'general builder'
       
       // Try Google Places first (if configured)
+      console.log(`Requesting contractors: ${requestedTrade} in ${location}`)
       const googleContext = await googlePlacesService.getGooglePlacesContext(requestedTrade, location)
       
       if (googleContext) {
+        console.log('Using Google Places context')
         tradespersonContext = googleContext
       } else {
+        console.log('Google Places empty, falling back to curated recommendations')
         // Fall back to curated recommendations
         tradespersonContext = await tradespersonService.getRecommendationContext(requestedTrade, location)
       }
