@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import FeedbackModal from './FeedbackModal'
-import { track } from '@vercel/analytics'
+import { trackEvents } from '@/lib/analytics/analytics.service'
 
 interface Message {
   id: string
@@ -50,6 +50,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       const skipThreshold = feedbackSkipped ? 10 : 5
       if (userMessageCount >= skipThreshold && !showFeedback) {
         setShowFeedback(true)
+        trackEvents.feedbackModalShown()
       }
     }
   }, [messages])
@@ -75,9 +76,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     }
 
     // Track image upload
-    track('image_uploaded', {
-      count: validFiles.length
-    })
+    trackEvents.imageUploaded(validFiles.length)
 
     const newImageUrls: string[] = []
     for (const file of validFiles.slice(0, 4)) { // Limit to 4 files
@@ -102,7 +101,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     if ((!input.trim() && uploadedImages.length === 0) || isLoading) return
 
     // Track message sent
-    track('message_sent', {
+    trackEvents.messageSent({
       hasText: !!input.trim(),
       hasImages: uploadedImages.length > 0,
       messageCount: messages.filter(m => m.role === 'user').length + 1
@@ -177,9 +176,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   ]
 
   const handleExampleClick = (question: string) => {
-    track('example_question_clicked', {
-      question
-    })
+    trackEvents.exampleQuestionClicked(question)
     setInput(question)
     inputRef.current?.focus()
   }

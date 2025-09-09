@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { trackEvents } from '@/lib/analytics/analytics.service'
 
 interface FeedbackModalProps {
   isOpen: boolean
@@ -12,6 +13,8 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
   const [email, setEmail] = useState('')
   const [rating, setRating] = useState(0)
   const [feedback, setFeedback] = useState('')
+  const [gdprConsent, setGdprConsent] = useState(false)
+  const [marketingConsent, setMarketingConsent] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
@@ -19,20 +22,24 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || rating === 0) return
+    if (!email || rating === 0 || !gdprConsent) return
 
     setIsSubmitting(true)
 
     try {
-      const response = await fetch('/api/feedback', {
+      // Track feedback submission
+      trackEvents.feedbackSubmitted(rating, !!feedback)
+
+      // Send to Mailchimp
+      const response = await fetch('/api/mailchimp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           rating,
           feedback,
-          messageCount,
-          timestamp: new Date().toISOString()
+          gdprConsent,
+          marketingConsent
         })
       })
 
@@ -48,12 +55,20 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
       }
     } catch (error) {
       console.error('Failed to submit feedback:', error)
+      // Still mark as submitted to not block user
+      setIsSubmitted(true)
+      localStorage.setItem('feedbackGiven', 'true')
+      setTimeout(() => {
+        onClose()
+      }, 2000)
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleSkip = () => {
+    // Track skip event
+    trackEvents.feedbackSkipped()
     // Store that user skipped - ask again after more interactions
     localStorage.setItem('feedbackSkipped', String(messageCount))
     onClose()
@@ -128,7 +143,7 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
               {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email for updates & offers
+                  Email address
                 </label>
                 <input
                   type="email"
@@ -139,9 +154,37 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="your@email.com"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Get exclusive tool hire offers and AskToddy updates
-                </p>
+              </div>
+
+              {/* GDPR Consent Checkboxes */}
+              <div className="space-y-3">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={gdprConsent}
+                    onChange={(e) => setGdprConsent(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                    required
+                  />
+                  <span className="text-xs text-gray-600">
+                    I consent to Toddy Tool Hire storing my email and feedback to improve the service.
+                    <a href="/privacy" className="text-orange-600 hover:underline ml-1" target="_blank">
+                      Privacy Policy
+                    </a>
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={marketingConsent}
+                    onChange={(e) => setMarketingConsent(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                  />
+                  <span className="text-xs text-gray-600">
+                    Send me exclusive tool hire offers and AskToddy updates (optional)
+                  </span>
+                </label>
               </div>
 
               {/* Buttons */}
@@ -155,10 +198,10 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
                 </button>
                 <button
                   type="submit"
-                  disabled={!email || rating === 0 || isSubmitting}
+                  disabled={!email || rating === 0 || !gdprConsent || isSubmitting}
                   className="flex-1 px-4 py-2 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
-                    background: (!email || rating === 0 || isSubmitting)
+                    background: (!email || rating === 0 || !gdprConsent || isSubmitting)
                       ? '#e2e6ea'
                       : 'linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)'
                   }}
