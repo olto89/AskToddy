@@ -9,6 +9,7 @@ import { toolExpertiseService } from '@/lib/tools/tool-expertise.service'
 import { tradespersonService } from '@/lib/tradesperson/tradesperson-recommendation.service'
 import { googlePlacesService } from '@/lib/google-places/google-places.service'
 import { youtubeService } from '@/lib/youtube/youtube.service'
+import { diyGuidesService } from '@/lib/diy-guides/diy-guides.service'
 // import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
 const TODDY_SYSTEM_PROMPT = `You are Toddy, a friendly British construction expert with 30+ years hands-on experience. You're the go-to tool expert who gives straight answers without the waffle.
@@ -38,6 +39,14 @@ Give helpful tool recommendations:
 2. **Key safety tip** - keep them safe
 3. **Cost guidance** - if they're asking about prices/hiring
 4. **Learning help** - YouTube search suggestion if relevant
+
+WHEN THEY ASK "HOW TO" DO SOMETHING:
+If you have a guide, provide clear step-by-step instructions:
+1. List tools and materials needed
+2. Give 4-5 key steps (not every detail)
+3. Include one crucial safety tip
+4. Mention common mistake to avoid
+End with: "Need the tools? I can help with hire options."
 
 WHEN THEY ASK FOR CONTRACTORS/TRADESPEOPLE:
 CRITICAL: If no location given, ONLY ask "Where do you need the [trade]?" - do NOT guess or provide random recommendations.
@@ -74,6 +83,9 @@ You: "£40/day from us or HSS. Where are you based?"
 Specific Job: "Need to cut paving slabs"  
 You: "Angle grinder with diamond disc - cuts clean through stone. Wear safety glasses, chips fly everywhere."
 
+How-to Question: "How do I lay a patio?"
+You: "Tools needed: spirit level, rubber mallet, angle grinder. Steps: 1) Excavate 20cm deep 2) Add MOT base 3) Lay mortar bed 4) Position slabs 5) Point joints. Safety: wear cut gloves. Common mistake: poor drainage fall. Need tools? I can help with hire options."
+
 Contractor Request (NO location): "Need a builder"
 You: "Where do you need the builder?"
 
@@ -105,6 +117,9 @@ export async function POST(request: NextRequest) {
     //   }
     // })
 
+    // Get DIY guide context if "how to" question
+    const diyGuideContext = diyGuidesService.getGuideContext(message)
+    
     // Get tool expertise and recommendations (TOP PRIORITY)
     const toolExpertiseContext = toolExpertiseService.getToolAdviceContext(message)
     
@@ -150,7 +165,13 @@ export async function POST(request: NextRequest) {
     // Build conversation context
     let conversationContext = TODDY_SYSTEM_PROMPT + '\n\n'
     
-    // Add tool expertise FIRST (highest priority)
+    // Add DIY guide if available (HIGHEST PRIORITY for how-to questions)
+    if (diyGuideContext) {
+      conversationContext += diyGuideContext + '\n'
+      conversationContext += 'Use this step-by-step guide to answer their how-to question. Be clear and practical.\n\n'
+    }
+    
+    // Add tool expertise (high priority)
     if (toolExpertiseContext) {
       conversationContext += toolExpertiseContext + '\n'
       conversationContext += 'Use this knowledge to recommend tools. Only mention hiring/costs if the user asks about pricing or availability.\n\n'
