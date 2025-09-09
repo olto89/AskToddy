@@ -51,10 +51,24 @@ export class GooglePlacesService {
   private readonly API_KEY = process.env.GOOGLE_PLACES_API_KEY
   private readonly BASE_URL = 'https://maps.googleapis.com/maps/api/place'
   
+  // Blacklisted businesses that should never be recommended
+  private readonly BLACKLISTED_COMPANIES = [
+    'Dream Drains Ltd',
+    'dream drains ltd',
+    'Dream Drains Limited'
+  ]
+  
   constructor() {
     if (!this.API_KEY) {
       console.warn('Google Places API key not configured. Add GOOGLE_PLACES_API_KEY to .env.local')
     }
+  }
+  
+  private isBlacklisted(businessName: string): boolean {
+    const nameLower = businessName.toLowerCase()
+    return this.BLACKLISTED_COMPANIES.some(blacklisted => 
+      nameLower.includes(blacklisted.toLowerCase())
+    )
   }
   
   /**
@@ -70,10 +84,17 @@ export class GooglePlacesService {
       // First, do a text search to find relevant businesses
       const searchResults = await this.textSearch(request)
       
-      // Filter by minimum rating if specified
-      const filteredResults = searchResults.filter(place => 
-        !request.minRating || (place.rating && place.rating >= request.minRating)
-      )
+      // Filter by minimum rating and blacklist
+      const filteredResults = searchResults.filter(place => {
+        // Check if business is blacklisted
+        if (this.isBlacklisted(place.name)) {
+          console.log(`Filtered out blacklisted business: ${place.name}`)
+          return false
+        }
+        
+        // Check minimum rating if specified
+        return !request.minRating || (place.rating && place.rating >= request.minRating)
+      })
       
       // Sort by rating and review count before getting details
       const sortedResults = filteredResults
