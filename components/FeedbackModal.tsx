@@ -75,8 +75,20 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" style={{ 
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 9999,
+      touchAction: 'none'
+    }}>
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-200" style={{
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch'
+      }}>
         {/* Close button */}
         <button
           onClick={handleSkip}

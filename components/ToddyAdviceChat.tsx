@@ -45,12 +45,9 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     const feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
     const feedbackSkipped = localStorage.getItem('feedbackSkipped')
     
-    console.log('Feedback check:', { userMessageCount, feedbackGiven, feedbackSkipped, showFeedback })
-    
     if (!feedbackGiven && !showFeedback) {
       const skipThreshold = feedbackSkipped ? 10 : 5
       if (userMessageCount >= skipThreshold) {
-        console.log('Triggering feedback modal')
         setShowFeedback(true)
         trackEvents.feedbackModalShown()
       }
