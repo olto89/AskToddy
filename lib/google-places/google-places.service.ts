@@ -59,6 +59,12 @@ export class GooglePlacesService {
   ]
   
   constructor() {
+    console.log('Google Places API Key check:', {
+      hasKey: !!this.API_KEY,
+      keyLength: this.API_KEY?.length || 0,
+      envVars: Object.keys(process.env).filter(key => key.includes('GOOGLE'))
+    })
+    
     if (!this.API_KEY) {
       console.warn('Google Places API key not configured. Add GOOGLE_PLACES_API_KEY to .env.local')
     }
