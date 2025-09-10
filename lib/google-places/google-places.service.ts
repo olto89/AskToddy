@@ -81,8 +81,15 @@ export class GooglePlacesService {
     }
     
     try {
-      // First, do a text search to find relevant businesses
-      const searchResults = await this.textSearch(request)
+      // Add timeout for mobile networks (especially iOS Safari)
+      const timeoutPromise = new Promise<GooglePlace[]>((_, reject) => {
+        setTimeout(() => reject(new Error('Google Places API timeout - mobile network slow')), 8000)
+      })
+
+      // First, do a text search to find relevant businesses  
+      const searchPromise = this.textSearch(request)
+      
+      const searchResults = await Promise.race([searchPromise, timeoutPromise])
       
       // Filter by minimum rating and blacklist
       const filteredResults = searchResults.filter(place => {

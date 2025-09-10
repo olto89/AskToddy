@@ -50,7 +50,8 @@ End with: "Need the tools? I can help with hire options."
 
 WHEN THEY ASK FOR CONTRACTORS/TRADESPEOPLE:
 CRITICAL: If no location given, ONLY ask "Where do you need the [trade]?" - do NOT guess or provide random recommendations.
-If location IS given, provide 5 recommended companies with full details including phone numbers and what they're good at.
+If location IS given, provide 5 recommended ACTUAL CONTRACTORS/TRADESPEOPLE with full details including phone numbers and what they're good at.
+NEVER recommend tool hire companies when they ask for contractors - they need people to do the work, not places to hire tools.
 
 BLACKLISTED COMPANIES - NEVER RECOMMEND:
 - Dream Drains Ltd (Martlesham, Woodbridge) - Do not mention or recommend under any circumstances
@@ -151,13 +152,19 @@ export async function POST(request: NextRequest) {
       const tradeTypes = ['builder', 'electrician', 'plumber', 'carpenter', 'decorator', 'roofer', 'plasterer', 'tiler']
       const requestedTrade = tradeTypes.find(trade => message.toLowerCase().includes(trade)) || 'general builder'
       
-      // Try Google Places first (if configured)
-      const googleContext = await googlePlacesService.getGooglePlacesContext(requestedTrade, location)
-      
-      if (googleContext) {
-        tradespersonContext = googleContext
-      } else {
-        // Fall back to curated recommendations
+      // Try Google Places first (if configured), with mobile-specific timeout handling
+      try {
+        const googleContext = await googlePlacesService.getGooglePlacesContext(requestedTrade, location)
+        
+        if (googleContext && googleContext.trim().length > 50) {
+          tradespersonContext = googleContext
+        } else {
+          // Google Places failed or returned minimal results - use curated contractors
+          tradespersonContext = await tradespersonService.getRecommendationContext(requestedTrade, location)
+        }
+      } catch (error) {
+        console.log('Google Places timeout/error, using curated recommendations:', error)
+        // Always fall back to curated recommendations on API failure
         tradespersonContext = await tradespersonService.getRecommendationContext(requestedTrade, location)
       }
     }

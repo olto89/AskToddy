@@ -82,12 +82,42 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
       right: 0,
       bottom: 0,
       zIndex: 9999,
-      touchAction: 'none'
+      touchAction: 'none',
+      // iOS Safari specific fixes - force hardware acceleration
+      WebkitTransform: 'translateZ(0)',
+      transform: 'translateZ(0)',
+      WebkitBackfaceVisibility: 'hidden',
+      backfaceVisibility: 'hidden',
+      // Force layer creation for iOS Safari
+      willChange: 'transform',
+      WebkitFontSmoothing: 'antialiased',
+      // Ensure it's above iOS Safari's UI with viewport units
+      minHeight: '100vh',
+      minHeight: '100dvh', // Dynamic viewport height for mobile
+      width: '100vw',
+      // Disable elastic scrolling
+      WebkitOverflowScrolling: 'auto',
+      overscrollBehavior: 'none',
+      // Force fixed positioning on mobile
+      WebkitUserSelect: 'none',
+      MozUserSelect: 'none',
+      msUserSelect: 'none',
+      userSelect: 'none'
     }}>
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-200" style={{
         maxHeight: '90vh',
         overflowY: 'auto',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        // Force hardware acceleration and prevent scrolling issues
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
+        // Ensure proper touch handling on iOS
+        touchAction: 'pan-y',
+        // Re-enable text selection for form fields
+        WebkitUserSelect: 'auto',
+        MozUserSelect: 'auto',
+        msUserSelect: 'auto',
+        userSelect: 'auto'
       }}>
         {/* Close button */}
         <button

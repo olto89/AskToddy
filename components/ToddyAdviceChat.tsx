@@ -45,11 +45,18 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     const feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
     const feedbackSkipped = localStorage.getItem('feedbackSkipped')
     
+    // Debug logging for mobile troubleshooting
+    console.log('Feedback check:', { userMessageCount, feedbackGiven, showFeedback, feedbackSkipped })
+    
     if (!feedbackGiven && !showFeedback) {
       const skipThreshold = feedbackSkipped ? 10 : 5
       if (userMessageCount >= skipThreshold) {
-        setShowFeedback(true)
-        trackEvents.feedbackModalShown()
+        console.log('Triggering feedback modal')
+        // Add slight delay for iOS Safari to ensure proper rendering
+        setTimeout(() => {
+          setShowFeedback(true)
+          trackEvents.feedbackModalShown()
+        }, 100)
       }
     }
   }, [messages, showFeedback])
