@@ -29,6 +29,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   const [isLoading, setIsLoading] = useState(false)
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [showFeedback, setShowFeedback] = useState(false)
+  const [sessionFeedbackGiven, setSessionFeedbackGiven] = useState(false) // Fallback for Safari private mode
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -48,11 +49,18 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     let feedbackSkipped = null
     
     try {
+      // Test localStorage availability first
+      const testKey = '__safari_test__'
+      localStorage.setItem(testKey, 'test')
+      localStorage.removeItem(testKey)
+      
       feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
       feedbackSkipped = localStorage.getItem('feedbackSkipped')
     } catch (error) {
-      console.error('localStorage access failed (Safari?):', error)
-      // Continue without localStorage - show modal based on message count only
+      console.error('localStorage not available (Safari Private Mode?):', error)
+      // In private mode, always show modal based on message count
+      feedbackGiven = false
+      feedbackSkipped = null
     }
     
     // Debug logging for Safari troubleshooting
@@ -66,7 +74,8 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       userAgent: navigator.userAgent
     })
     
-    if (!feedbackGiven && !showFeedback) {
+    // Use session state as additional check for Safari private mode
+    if (!feedbackGiven && !showFeedback && !sessionFeedbackGiven) {
       // Lower threshold for Safari testing
       const skipThreshold = feedbackSkipped ? 8 : 3
       if (userMessageCount >= skipThreshold) {
@@ -86,7 +95,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         }, delay)
       }
     }
-  }, [messages, showFeedback])
+  }, [messages, showFeedback, sessionFeedbackGiven])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -450,12 +459,19 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         onClose={() => {
           console.log('Feedback modal closed')
           setShowFeedback(false)
+          setSessionFeedbackGiven(true) // Mark as given for this session
         }}
         messageCount={messages.filter(m => m.role === 'user').length}
       />
       
       {/* Safari fallback: Show feedback button after many messages without modal */}
-      {!showFeedback && messages.filter(m => m.role === 'user').length >= 7 && !localStorage.getItem('feedbackGiven') && (
+      {!showFeedback && messages.filter(m => m.role === 'user').length >= 7 && (() => {
+        try {
+          return !localStorage.getItem('feedbackGiven')
+        } catch {
+          return true // Show button if localStorage fails
+        }
+      })() && (
         <button
           onClick={() => {
             console.log('Manual feedback trigger for Safari')

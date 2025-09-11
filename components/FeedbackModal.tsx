@@ -68,8 +68,12 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
 
       if (response.ok) {
         setIsSubmitted(true)
-        // Store in localStorage that user has given feedback
-        localStorage.setItem('feedbackGiven', 'true')
+        // Store in localStorage that user has given feedback (Safari-safe)
+        try {
+          localStorage.setItem('feedbackGiven', 'true')
+        } catch (error) {
+          console.error('Cannot save to localStorage (Safari Private?):', error)
+        }
         
         // Close modal after 2 seconds
         setTimeout(() => {
@@ -80,7 +84,11 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
       console.error('Failed to submit feedback:', error)
       // Still mark as submitted to not block user
       setIsSubmitted(true)
-      localStorage.setItem('feedbackGiven', 'true')
+      try {
+        localStorage.setItem('feedbackGiven', 'true')
+      } catch (error) {
+        console.error('Cannot save to localStorage (Safari Private?):', error)
+      }
       setTimeout(() => {
         onClose()
       }, 2000)
@@ -92,8 +100,12 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
   const handleSkip = () => {
     // Track skip event
     trackEvents.feedbackSkipped()
-    // Store that user skipped - ask again after more interactions
-    localStorage.setItem('feedbackSkipped', String(messageCount))
+    // Store that user skipped - ask again after more interactions (Safari-safe)
+    try {
+      localStorage.setItem('feedbackSkipped', String(messageCount))
+    } catch (error) {
+      console.error('Cannot save to localStorage (Safari Private?):', error)
+    }
     onClose()
   }
 

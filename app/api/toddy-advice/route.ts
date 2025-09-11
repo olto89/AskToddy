@@ -96,8 +96,14 @@ You: "Here are 5 recommended builders in London..." [then provide full list]
 Focus on answering EXACTLY what they asked - nothing more.`
 
 export async function POST(request: NextRequest) {
+  // Add timeout wrapper for Safari/mobile networks
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Request timeout')), 25000) // 25 second timeout
+  })
+
   try {
-    const body = await request.json()
+    const bodyPromise = request.json()
+    const body = await Promise.race([bodyPromise, timeoutPromise]) as any
     const { message, history = [], imageUrls = [] } = body
 
     if (!message) {
