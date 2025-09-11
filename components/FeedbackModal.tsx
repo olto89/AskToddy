@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { trackEvents } from '@/lib/analytics/analytics.service'
 
 interface FeedbackModalProps {
@@ -17,8 +18,30 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
   const [marketingConsent, setMarketingConsent] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
-  if (!isOpen) return null
+  useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
+
+  // Safari debug logging
+  useEffect(() => {
+    if (isOpen) {
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+      console.log('FeedbackModal opened:', { isOpen, isSafari, userAgent: navigator.userAgent })
+      
+      // Force Safari to repaint
+      if (isSafari) {
+        document.body.style.transform = 'translateZ(0)'
+        setTimeout(() => {
+          document.body.style.transform = ''
+        }, 10)
+      }
+    }
+  }, [isOpen])
+
+  if (!isOpen || !mounted) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -74,7 +97,7 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
     onClose()
   }
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" style={{ 
       position: 'fixed',
       top: 0,
@@ -268,4 +291,11 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
       </div>
     </div>
   )
+
+  // Use portal for better Safari compatibility
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body)
+  }
+  
+  return modalContent
 }

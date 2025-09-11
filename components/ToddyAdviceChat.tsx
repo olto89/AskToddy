@@ -42,21 +42,48 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     
     // Check if we should show feedback modal
     const userMessageCount = messages.filter(m => m.role === 'user').length
-    const feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
-    const feedbackSkipped = localStorage.getItem('feedbackSkipped')
     
-    // Debug logging for mobile troubleshooting
-    console.log('Feedback check:', { userMessageCount, feedbackGiven, showFeedback, feedbackSkipped })
+    // Safari-safe localStorage access with try-catch
+    let feedbackGiven = false
+    let feedbackSkipped = null
+    
+    try {
+      feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
+      feedbackSkipped = localStorage.getItem('feedbackSkipped')
+    } catch (error) {
+      console.error('localStorage access failed (Safari?):', error)
+      // Continue without localStorage - show modal based on message count only
+    }
+    
+    // Debug logging for Safari troubleshooting
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    console.log('Feedback check:', { 
+      userMessageCount, 
+      feedbackGiven, 
+      showFeedback, 
+      feedbackSkipped,
+      isSafari,
+      userAgent: navigator.userAgent
+    })
     
     if (!feedbackGiven && !showFeedback) {
-      const skipThreshold = feedbackSkipped ? 10 : 5
+      // Lower threshold for Safari testing
+      const skipThreshold = feedbackSkipped ? 8 : 3
       if (userMessageCount >= skipThreshold) {
-        console.log('Triggering feedback modal')
-        // Add slight delay for iOS Safari to ensure proper rendering
+        console.log('Triggering feedback modal on Safari:', isSafari)
+        // Longer delay for Safari to ensure proper rendering
+        const delay = isSafari ? 1000 : 100
         setTimeout(() => {
           setShowFeedback(true)
           trackEvents.feedbackModalShown()
-        }, 100)
+          
+          // Force Safari repaint
+          if (isSafari) {
+            document.body.style.display = 'none'
+            document.body.offsetHeight // Force reflow
+            document.body.style.display = ''
+          }
+        }, delay)
       }
     }
   }, [messages, showFeedback])
@@ -420,9 +447,26 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       {/* Feedback Modal */}
       <FeedbackModal 
         isOpen={showFeedback}
-        onClose={() => setShowFeedback(false)}
+        onClose={() => {
+          console.log('Feedback modal closed')
+          setShowFeedback(false)
+        }}
         messageCount={messages.filter(m => m.role === 'user').length}
       />
+      
+      {/* Safari fallback: Show feedback button after many messages without modal */}
+      {!showFeedback && messages.filter(m => m.role === 'user').length >= 7 && !localStorage.getItem('feedbackGiven') && (
+        <button
+          onClick={() => {
+            console.log('Manual feedback trigger for Safari')
+            setShowFeedback(true)
+            trackEvents.feedbackModalShown()
+          }}
+          className="fixed bottom-4 right-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full text-sm shadow-lg z-40 hover:shadow-xl transition-shadow"
+        >
+          💬 Give Feedback
+        </button>
+      )}
     </div>
   )
 }
