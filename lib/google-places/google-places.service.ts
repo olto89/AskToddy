@@ -83,7 +83,7 @@ export class GooglePlacesService {
     try {
       // Add timeout for mobile networks (especially iOS Safari)
       const timeoutPromise = new Promise<GooglePlace[]>((_, reject) => {
-        setTimeout(() => reject(new Error('Google Places API timeout - mobile network slow')), 5000) // Reduced to 5 seconds
+        setTimeout(() => reject(new Error('Google Places API timeout - mobile network slow')), 10000) // 10 seconds for mobile
       })
 
       // First, do a text search to find relevant businesses  

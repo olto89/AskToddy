@@ -44,56 +44,22 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     // Check if we should show feedback modal
     const userMessageCount = messages.filter(m => m.role === 'user').length
     
-    // Safari-safe localStorage access with try-catch
-    let feedbackGiven = false
-    let feedbackSkipped = null
+    // Skip if already shown this session
+    if (sessionFeedbackGiven || showFeedback) return
     
+    // Simple check for localStorage availability
+    let feedbackGiven = false
     try {
-      // Test localStorage availability first
-      const testKey = '__safari_test__'
-      localStorage.setItem(testKey, 'test')
-      localStorage.removeItem(testKey)
-      
       feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
-      feedbackSkipped = localStorage.getItem('feedbackSkipped')
     } catch (error) {
-      console.error('localStorage not available (Safari Private Mode?):', error)
-      // In private mode, always show modal based on message count
-      feedbackGiven = false
-      feedbackSkipped = null
+      // localStorage blocked - continue anyway
     }
     
-    // Debug logging for Safari troubleshooting
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-    console.log('Feedback check:', { 
-      userMessageCount, 
-      feedbackGiven, 
-      showFeedback, 
-      feedbackSkipped,
-      isSafari,
-      userAgent: navigator.userAgent
-    })
-    
-    // Use session state as additional check for Safari private mode
-    if (!feedbackGiven && !showFeedback && !sessionFeedbackGiven) {
-      // Lower threshold for Safari testing
-      const skipThreshold = feedbackSkipped ? 8 : 3
-      if (userMessageCount >= skipThreshold) {
-        console.log('Triggering feedback modal on Safari:', isSafari)
-        // Longer delay for Safari to ensure proper rendering
-        const delay = isSafari ? 1000 : 100
-        setTimeout(() => {
-          setShowFeedback(true)
-          trackEvents.feedbackModalShown()
-          
-          // Force Safari repaint
-          if (isSafari) {
-            document.body.style.display = 'none'
-            document.body.offsetHeight // Force reflow
-            document.body.style.display = ''
-          }
-        }, delay)
-      }
+    // Show modal after 5 messages if not given feedback
+    if (!feedbackGiven && userMessageCount >= 5) {
+      console.log('Showing feedback modal after', userMessageCount, 'messages')
+      setShowFeedback(true)
+      trackEvents.feedbackModalShown()
     }
   }, [messages, showFeedback, sessionFeedbackGiven])
 
@@ -464,17 +430,11 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         messageCount={messages.filter(m => m.role === 'user').length}
       />
       
-      {/* Safari fallback: Show feedback button after many messages without modal */}
-      {!showFeedback && messages.filter(m => m.role === 'user').length >= 7 && (() => {
-        try {
-          return !localStorage.getItem('feedbackGiven')
-        } catch {
-          return true // Show button if localStorage fails
-        }
-      })() && (
+      {/* Manual feedback button as fallback */}
+      {!showFeedback && !sessionFeedbackGiven && messages.filter(m => m.role === 'user').length >= 7 && (
         <button
           onClick={() => {
-            console.log('Manual feedback trigger for Safari')
+            console.log('Manual feedback trigger')
             setShowFeedback(true)
             trackEvents.feedbackModalShown()
           }}
