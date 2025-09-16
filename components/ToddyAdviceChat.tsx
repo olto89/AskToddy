@@ -44,22 +44,37 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     // Check if we should show feedback modal
     const userMessageCount = messages.filter(m => m.role === 'user').length
     
+    console.log('Feedback modal check:', {
+      userMessageCount,
+      showFeedback,
+      sessionFeedbackGiven,
+      totalMessages: messages.length
+    })
+    
     // Skip if already shown this session
-    if (sessionFeedbackGiven || showFeedback) return
+    if (sessionFeedbackGiven || showFeedback) {
+      console.log('Skipping feedback modal - already shown or showing')
+      return
+    }
     
     // Simple check for localStorage availability
     let feedbackGiven = false
     try {
       feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
+      console.log('localStorage feedbackGiven:', feedbackGiven)
     } catch (error) {
-      // localStorage blocked - continue anyway
+      console.log('localStorage not available:', error)
     }
     
-    // Show modal after 5 messages if not given feedback
-    if (!feedbackGiven && userMessageCount >= 5) {
-      console.log('Showing feedback modal after', userMessageCount, 'messages')
+    // Show modal after 3 messages for testing
+    if (!feedbackGiven && userMessageCount >= 3) {
+      console.log('TRIGGERING feedback modal after', userMessageCount, 'messages')
       setShowFeedback(true)
-      trackEvents.feedbackModalShown()
+      try {
+        trackEvents.feedbackModalShown()
+      } catch (error) {
+        console.log('trackEvents failed:', error)
+      }
     }
   }, [messages, showFeedback, sessionFeedbackGiven])
 
@@ -430,8 +445,21 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         messageCount={messages.filter(m => m.role === 'user').length}
       />
       
+      {/* Debug button - always visible in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <button
+          onClick={() => {
+            console.log('Force showing feedback modal')
+            setShowFeedback(true)
+          }}
+          className="fixed top-4 right-4 bg-red-500 text-white px-3 py-1 rounded text-xs z-50"
+        >
+          DEBUG: Show Modal
+        </button>
+      )}
+
       {/* Manual feedback button as fallback */}
-      {!showFeedback && !sessionFeedbackGiven && messages.filter(m => m.role === 'user').length >= 7 && (
+      {!showFeedback && !sessionFeedbackGiven && messages.filter(m => m.role === 'user').length >= 2 && (
         <button
           onClick={() => {
             console.log('Manual feedback trigger')
