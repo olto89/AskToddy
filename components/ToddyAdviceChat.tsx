@@ -44,37 +44,24 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     // Check if we should show feedback modal
     const userMessageCount = messages.filter(m => m.role === 'user').length
     
-    console.log('Feedback modal check:', {
-      userMessageCount,
-      showFeedback,
-      sessionFeedbackGiven,
-      totalMessages: messages.length
-    })
-    
     // Skip if already shown this session
-    if (sessionFeedbackGiven || showFeedback) {
-      console.log('Skipping feedback modal - already shown or showing')
-      return
-    }
+    if (sessionFeedbackGiven || showFeedback) return
     
     // Simple check for localStorage availability
     let feedbackGiven = false
     try {
       feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
-      console.log('localStorage feedbackGiven:', feedbackGiven)
     } catch (error) {
-      console.log('localStorage not available:', error)
+      // localStorage blocked - continue anyway
     }
     
-    // Show modal after 3 messages for testing
-    if (!feedbackGiven && userMessageCount >= 3) {
-      console.log('TRIGGERING feedback modal after', userMessageCount, 'messages')
-      setShowFeedback(true)
-      try {
+    // Auto-show modal after 5 messages if not given feedback
+    if (!feedbackGiven && userMessageCount === 5) { // Using === to trigger only once
+      // Small delay to ensure smooth animation
+      setTimeout(() => {
+        setShowFeedback(true)
         trackEvents.feedbackModalShown()
-      } catch (error) {
-        console.log('trackEvents failed:', error)
-      }
+      }, 500)
     }
   }, [messages, showFeedback, sessionFeedbackGiven])
 
@@ -445,28 +432,14 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         messageCount={messages.filter(m => m.role === 'user').length}
       />
       
-      {/* Debug button - always visible in development */}
-      {process.env.NODE_ENV === 'development' && (
+      {/* Manual feedback button - shows if auto-trigger fails */}
+      {!showFeedback && !sessionFeedbackGiven && messages.filter(m => m.role === 'user').length >= 7 && (
         <button
           onClick={() => {
-            console.log('Force showing feedback modal')
-            setShowFeedback(true)
-          }}
-          className="fixed top-4 right-4 bg-red-500 text-white px-3 py-1 rounded text-xs z-50"
-        >
-          DEBUG: Show Modal
-        </button>
-      )}
-
-      {/* Manual feedback button as fallback */}
-      {!showFeedback && !sessionFeedbackGiven && messages.filter(m => m.role === 'user').length >= 2 && (
-        <button
-          onClick={() => {
-            console.log('Manual feedback trigger')
             setShowFeedback(true)
             trackEvents.feedbackModalShown()
           }}
-          className="fixed bottom-4 right-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full text-sm shadow-lg z-40 hover:shadow-xl transition-shadow"
+          className="fixed bottom-4 right-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full text-sm shadow-lg z-40 hover:shadow-xl transition-shadow animate-pulse"
         >
           💬 Give Feedback
         </button>

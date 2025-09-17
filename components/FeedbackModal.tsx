@@ -25,23 +25,7 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
     return () => setMounted(false)
   }, [])
 
-  // Debug logging
-  useEffect(() => {
-    console.log('FeedbackModal props changed:', { isOpen, mounted, messageCount })
-    if (isOpen) {
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-      console.log('FeedbackModal should be visible:', { isOpen, mounted, isSafari, userAgent: navigator.userAgent })
-    }
-  }, [isOpen, mounted, messageCount])
-
-  console.log('FeedbackModal render check:', { isOpen, mounted })
-  
-  if (!isOpen || !mounted) {
-    console.log('FeedbackModal returning null:', { isOpen, mounted })
-    return null
-  }
-  
-  console.log('FeedbackModal RENDERING')
+  if (!isOpen || !mounted) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
