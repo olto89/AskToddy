@@ -51,6 +51,10 @@ export class GooglePlacesService {
   private readonly API_KEY = process.env.GOOGLE_PLACES_API_KEY
   private readonly BASE_URL = 'https://maps.googleapis.com/maps/api/place'
   
+  // Simple in-memory cache for API results (5 minute TTL)
+  private cache = new Map<string, { data: GooglePlace[], timestamp: number }>()
+  private readonly CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+  
   // Blacklisted businesses that should never be recommended
   private readonly BLACKLISTED_COMPANIES = [
     'Dream Drains Ltd',
@@ -80,10 +84,18 @@ export class GooglePlacesService {
       return []
     }
     
+    // Check cache first
+    const cacheKey = `${request.query}-${request.location}-${request.minRating}`
+    const cached = this.cache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      console.log('Using cached Google Places results')
+      return cached.data
+    }
+    
     try {
-      // Add timeout for mobile networks (especially iOS Safari)
+      // Shorter timeout for mobile networks to fail faster
       const timeoutPromise = new Promise<GooglePlace[]>((_, reject) => {
-        setTimeout(() => reject(new Error('Google Places API timeout - mobile network slow')), 10000) // 10 seconds for mobile
+        setTimeout(() => reject(new Error('Google Places API timeout - mobile network slow')), 3000) // 3 seconds max
       })
 
       // First, do a text search to find relevant businesses  
@@ -115,14 +127,13 @@ export class GooglePlacesService {
         })
         .slice(0, 5) // Take top 5
       
-      // Get detailed information for top results
-      const detailedResults = await Promise.all(
-        sortedResults.map(place => 
-          this.getPlaceDetails(place.place_id)
-        )
-      )
+      // Skip detailed API calls on mobile - use basic info from search
+      // This saves 5 additional API calls that often timeout on 4G
       
-      return detailedResults.filter(place => place !== null) as GooglePlace[]
+      // Cache the results
+      this.cache.set(cacheKey, { data: sortedResults, timestamp: Date.now() })
+      
+      return sortedResults
     } catch (error) {
       console.error('Google Places search error:', error)
       return []

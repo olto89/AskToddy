@@ -152,19 +152,28 @@ export async function POST(request: NextRequest) {
       const tradeTypes = ['builder', 'electrician', 'plumber', 'carpenter', 'decorator', 'roofer', 'plasterer', 'tiler']
       const requestedTrade = tradeTypes.find(trade => message.toLowerCase().includes(trade)) || 'general builder'
       
-      // Try Google Places first (if configured), with mobile-specific timeout handling
+      // On mobile/4G, skip Google Places and use curated data immediately for better performance
+      // You can detect mobile by checking user agent or just always prioritize speed
+      const startTime = Date.now()
+      
       try {
-        const googleContext = await googlePlacesService.getGooglePlacesContext(requestedTrade, location)
+        // Try Google Places with strict timeout
+        const googlePromise = googlePlacesService.getGooglePlacesContext(requestedTrade, location)
+        const timeoutPromise = new Promise<string>((resolve) => {
+          setTimeout(() => resolve(''), 2000) // 2 second max wait
+        })
+        
+        const googleContext = await Promise.race([googlePromise, timeoutPromise])
         
         if (googleContext && googleContext.trim().length > 50) {
+          console.log(`Google Places succeeded in ${Date.now() - startTime}ms`)
           tradespersonContext = googleContext
         } else {
-          // Google Places failed or returned minimal results - use curated contractors
+          console.log(`Google Places failed/timeout, using curated data (${Date.now() - startTime}ms)`)
           tradespersonContext = await tradespersonService.getRecommendationContext(requestedTrade, location)
         }
       } catch (error) {
-        console.log('Google Places timeout/error, using curated recommendations:', error)
-        // Always fall back to curated recommendations on API failure
+        console.log('Google Places error, using curated recommendations:', error)
         tradespersonContext = await tradespersonService.getRecommendationContext(requestedTrade, location)
       }
     }
