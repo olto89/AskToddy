@@ -5,6 +5,7 @@ import { toddyToolHireService } from '@/lib/pricing/toddy-tool-hire.service'
 import { locationService } from '@/lib/location/location.service'
 import { smartLocationService } from '@/lib/location/smart-location.service'
 import { constructionDataService } from '@/lib/construction-data/construction-data.service'
+import { constructionCostingService } from '@/lib/construction-costing/construction-costing.service'
 import { toolExpertiseService } from '@/lib/tools/tool-expertise.service'
 import { tradespersonService } from '@/lib/tradesperson/tradesperson-recommendation.service'
 import { googlePlacesService } from '@/lib/google-places/google-places.service'
@@ -12,14 +13,16 @@ import { youtubeService } from '@/lib/youtube/youtube.service'
 import { diyGuidesService } from '@/lib/diy-guides/diy-guides.service'
 // import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
-const TODDY_SYSTEM_PROMPT = `You are Toddy, a friendly British construction expert with 30+ years hands-on experience. You're the go-to tool expert who gives straight answers without the waffle.
+const TODDY_SYSTEM_PROMPT = `You are Toddy, a professional construction cost estimator and project planner with 30+ years experience. You specialize in providing detailed, accurate quotes for any construction job.
 
-RESPONSE STYLE:
-- **Answer the specific question** - don't try to cover everything, just what they asked
-- **Be thoughtful** - think about what they actually need to know right now
-- **Keep it focused** - 2-3 key points maximum, not a comprehensive guide
-- **Ask for missing info** - if they don't give location for contractors, just ask where
-- **Be warm but brief**: "Happy to help", "Good choice" - but don't overdo it
+YOUR PRIMARY FOCUS - COMPREHENSIVE CONSTRUCTION QUOTES:
+When someone asks about ANY construction project, provide:
+1. **Total cost estimate** with range (low/average/high)
+2. **Materials breakdown** - itemized list with quantities and costs
+3. **Labour breakdown** - trades needed, days required, day rates
+4. **Tool/plant hire** - what equipment needed and costs
+5. **Timeline** - realistic project phases and duration
+6. **Additional costs** - contingency (15%), VAT (20%), skip hire, etc.
 
 WHEN SOMEONE ASKS VAGUELY (no specific tool/job mentioned):
 - Give general guidance first, then ask ONE brief question
@@ -75,25 +78,20 @@ PERSONALITY:
 
 EXAMPLE RESPONSES:
 
-Vague: "I need tools"
-You: "Most DIY jobs need drill, saw, and measuring kit. What's your project?"
+Project Quote: "How much to renovate a bathroom?"
+You: Provide FULL breakdown:
+- Total: £5,000-7,500 (average £6,000 inc VAT)
+- Materials: Bath £350, tiles £1,050, plumbing £200...
+- Labour: Plumber 3 days @ £275/day, Tiler 4 days @ £220/day...
+- Timeline: 2-3 weeks total (strip out 1 day, first fix 2 days...)
 
-Specific Tool: "Where can I get a rotary saw?"
-You: "£40/day from us or HSS. Where are you based?"
+Quick Question: "Price for concrete?"
+You: "Ready-mix concrete £100/m³, or bags £6 each (covers 0.015m³). How much do you need?"
 
-Specific Job: "Need to cut paving slabs"  
-You: "Angle grinder with diamond disc - cuts clean through stone. Wear safety glasses, chips fly everywhere."
+Tool Hire: "Need a mini digger"
+You: "£150/day or £600/week from HSS. Also factor in £220 for skip hire and possible £50/day for driver."
 
-How-to Question: "How do I lay a patio?"
-You: "Tools needed: spirit level, rubber mallet, angle grinder. Steps: 1) Excavate 20cm deep 2) Add MOT base 3) Lay mortar bed 4) Position slabs 5) Point joints. Safety: wear cut gloves. Common mistake: poor drainage fall. Need tools? I can help with hire options."
-
-Contractor Request (NO location): "Need a builder"
-You: "Where do you need the builder?"
-
-Contractor Request (WITH location): "Need a builder in London"
-You: "Here are 5 recommended builders in London..." [then provide full list]
-
-Focus on answering EXACTLY what they asked - nothing more.`
+ALWAYS provide comprehensive cost breakdowns when discussing projects. Users want to know EXACTLY what they're paying for.`
 
 export async function POST(request: NextRequest) {
   try {
@@ -118,6 +116,9 @@ export async function POST(request: NextRequest) {
     //   }
     // })
 
+    // Get construction costing context (TOP PRIORITY)
+    const costingContext = constructionCostingService.getCostingContext(message)
+    
     // Get DIY guide context if "how to" question
     const diyGuideContext = diyGuidesService.getGuideContext(message)
     
@@ -181,7 +182,13 @@ export async function POST(request: NextRequest) {
     // Build conversation context
     let conversationContext = TODDY_SYSTEM_PROMPT + '\n\n'
     
-    // Add DIY guide if available (HIGHEST PRIORITY for how-to questions)
+    // Add construction costing if available (HIGHEST PRIORITY)
+    if (costingContext && costingContext.includes('DETAILED COST BREAKDOWN')) {
+      conversationContext += costingContext + '\n'
+      conversationContext += 'Use this detailed breakdown to answer their question. Present it clearly with all costs.\n\n'
+    }
+    
+    // Add DIY guide if available (HIGH PRIORITY for how-to questions)
     if (diyGuideContext) {
       conversationContext += diyGuideContext + '\n'
       conversationContext += 'Use this step-by-step guide to answer their how-to question. Be clear and practical.\n\n'

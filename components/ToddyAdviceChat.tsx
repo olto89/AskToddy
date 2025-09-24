@@ -21,7 +21,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     {
       id: '1',
       role: 'assistant',
-      content: "Hi! I'm Toddy 👋\n\nI can help you with:\n• Tool hire prices & recommendations\n• Material costs & suppliers\n• DIY project guidance\n• Professional building advice\n\nWhat would you like to know? You can also upload photos or videos of your job!",
+      content: "Hi! I'm Toddy, your construction cost expert 👋\n\nI provide detailed quotes for any building project:\n• Full cost breakdowns (materials + labour + tools)\n• Project timelines and phases\n• What each trade will charge\n• VAT and contingency costs\n\nTell me about your project and I'll give you a comprehensive quote! You can also upload photos.",
       timestamp: new Date()
     }
   ])
@@ -179,10 +179,10 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   const exampleQuestions = [
-    "Tool hire prices",
-    "Decking costs",
-    "Bathroom renovation",
-    "Best concrete mixer"
+    "Quote for bathroom renovation",
+    "Cost to build extension",
+    "Loft conversion price",
+    "Kitchen remodel budget"
   ]
 
   const handleExampleClick = (question: string) => {
