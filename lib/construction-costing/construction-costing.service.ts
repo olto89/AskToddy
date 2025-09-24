@@ -348,9 +348,110 @@ export class ConstructionCostingService {
   }
 
   /**
+   * Get regional multiplier for labour costs
+   */
+  private getRegionalMultiplier(location: string): number {
+    const loc = location.toLowerCase()
+    if (loc.includes('london') || loc.includes('surrey') || loc.includes('hertfordshire')) {
+      return 1.25 // 25% higher
+    }
+    if (loc.includes('manchester') || loc.includes('birmingham') || loc.includes('bristol') || loc.includes('brighton')) {
+      return 1.10 // 10% higher
+    }
+    if (loc.includes('scotland') || loc.includes('wales') || loc.includes('north')) {
+      return 0.90 // 10% lower
+    }
+    return 1.0 // Standard rate
+  }
+
+  /**
+   * Get quality multiplier for materials
+   */
+  private getQualityMultiplier(quality: 'budget' | 'standard' | 'premium'): number {
+    switch (quality) {
+      case 'budget': return 0.7
+      case 'premium': return 1.6
+      default: return 1.0
+    }
+  }
+
+  /**
+   * Detect if query needs more information
+   */
+  needsMoreInfo(query: string): boolean {
+    const genericTerms = [
+      'kitchen renovation', 'kitchen remodel', 'bathroom renovation', 'bathroom refit',
+      'extension', 'loft conversion', 'conservatory', 'garage conversion'
+    ]
+    
+    return genericTerms.some(term => 
+      query.toLowerCase().includes(term) && 
+      !query.includes('m') && // no dimensions
+      !query.includes('x') && // no dimensions  
+      !query.includes('budget') && !query.includes('premium') && // no quality level
+      !query.includes('london') && !query.includes('essex') // no location
+    )
+  }
+
+  /**
+   * Generate questionnaire for more details
+   */
+  getQuestionnaire(projectType: string): string {
+    const questions = {
+      kitchen: [
+        "What's the kitchen size? (length x width in metres)",
+        "Quality level: budget, standard, or premium finishes?", 
+        "New layout or keeping existing units/plumbing?",
+        "Where are you based? (affects labour costs)"
+      ],
+      bathroom: [
+        "Bathroom size? (length x width in metres)",
+        "Budget, standard, or premium fittings?",
+        "Shower only, bath only, or both?",
+        "Where are you based?"
+      ],
+      extension: [
+        "Extension size? (length x width in metres)",
+        "Single or double storey?",
+        "Kitchen, living room, or bedroom?", 
+        "Where are you based?"
+      ],
+      loft: [
+        "Loft size? (approximate room dimensions)",
+        "Dormer or Velux conversion?",
+        "Ensuite bathroom included?",
+        "Where are you based?"
+      ]
+    }
+
+    const type = Object.keys(questions).find(key => 
+      projectType.toLowerCase().includes(key)
+    ) as keyof typeof questions
+
+    if (type && questions[type]) {
+      let response = `${projectType} costs vary significantly. For an accurate quote, I need:\n\n`
+      questions[type].forEach((q, i) => {
+        response += `${i + 1}. ${q}\n`
+      })
+      response += `\nThis will let me give you a detailed breakdown within ±15% accuracy.`
+      return response
+    }
+
+    return ''
+  }
+
+  /**
    * Generate cost context for AI responses
    */
   getCostingContext(query: string): string {
+    // Check if we need more information first
+    if (this.needsMoreInfo(query)) {
+      const questionnaire = this.getQuestionnaire(query)
+      if (questionnaire) {
+        return `\n## NEED MORE DETAILS FOR ACCURATE QUOTE:\n\n${questionnaire}\n`
+      }
+    }
+
     // Check if query matches any templates
     const templates = this.getProjectTemplates()
     
