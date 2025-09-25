@@ -1,0 +1,235 @@
+/**
+ * Document Generator Service
+ * Creates professional quote documents, project plans, and reports
+ */
+
+export interface QuoteDocument {
+  projectName: string
+  client: string
+  date: string
+  validUntil: string
+  reference: string
+  summary: {
+    totalCost: number
+    depositRequired: number
+    timeline: string
+  }
+  breakdown: {
+    materials: Array<{ item: string; quantity: number; unit: string; unitCost: number; total: number }>
+    labour: Array<{ trade: string; days: number; rate: number; total: number }>
+    other: Array<{ description: string; cost: number }>
+  }
+  terms: string[]
+  notes: string[]
+}
+
+export interface ProjectPlan {
+  projectName: string
+  startDate: string
+  endDate: string
+  phases: Array<{
+    phase: string
+    duration: string
+    startWeek: number
+    tasks: string[]
+    dependencies?: string[]
+    tradespeople: string[]
+  }>
+  milestones: Array<{
+    milestone: string
+    date: string
+    paymentDue?: number
+  }>
+  riskFactors: string[]
+}
+
+export class DocumentGeneratorService {
+  /**
+   * Generate a professional quote document format
+   */
+  generateQuoteDocument(
+    projectType: string,
+    specifications: any,
+    breakdown: any
+  ): string {
+    const date = new Date().toLocaleDateString('en-GB')
+    const validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB')
+    const reference = `Q-${Date.now().toString().slice(-8)}`
+
+    let document = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+           CONSTRUCTION QUOTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Reference: ${reference}
+Date: ${date}
+Valid Until: ${validUntil}
+
+PROJECT: ${projectType.toUpperCase()}
+${specifications.size ? `Size: ${specifications.size}` : ''}
+${specifications.location ? `Location: ${specifications.location}` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COST SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Total Project Cost: £${breakdown.totalCost.toLocaleString()} (inc. VAT)
+Deposit Required (25%): £${Math.round(breakdown.totalCost * 0.25).toLocaleString()}
+Timeline: ${breakdown.timeline}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DETAILED BREAKDOWN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MATERIALS (£${breakdown.materials?.reduce((s: number, m: any) => s + m.totalCost, 0).toLocaleString() || '0'})
+─────────────────────────────────────`
+
+    if (breakdown.materials) {
+      breakdown.materials.forEach((item: any) => {
+        document += `
+${item.item.padEnd(25)} ${String(item.quantity).padStart(5)} ${item.unit.padEnd(10)} £${item.totalCost.toLocaleString().padStart(8)}`
+      })
+    }
+
+    document += `
+
+LABOUR (£${breakdown.labour?.reduce((s: number, l: any) => s + l.totalCost, 0).toLocaleString() || '0'})
+─────────────────────────────────────`
+
+    if (breakdown.labour) {
+      breakdown.labour.forEach((item: any) => {
+        document += `
+${item.trade.padEnd(25)} ${String(item.days).padStart(5)} days @ £${item.dayRate}/day £${item.totalCost.toLocaleString().padStart(8)}`
+      })
+    }
+
+    document += `
+
+ADDITIONAL COSTS
+─────────────────────────────────────
+Contingency (15%)         £${breakdown.contingency?.toLocaleString().padStart(8) || '0'}
+VAT (20%)                 £${breakdown.vat?.toLocaleString().padStart(8) || '0'}
+Skip Hire                 £220
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PAYMENT TERMS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• 25% deposit to secure booking
+• 25% on completion of first fix
+• 25% on second fix
+• 25% on completion
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TERMS & CONDITIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Quote valid for 30 days
+• Prices subject to site survey
+• Additional work charged separately
+• Tool hire from Toddy Tool Hire 01394 447658
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+
+    return document
+  }
+
+  /**
+   * Generate a project timeline/plan document
+   */
+  generateProjectPlan(
+    projectType: string,
+    timeline: any[],
+    totalDuration: string
+  ): string {
+    let document = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         PROJECT TIMELINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROJECT: ${projectType.toUpperCase()}
+Total Duration: ${totalDuration}
+Start Date: ${new Date().toLocaleDateString('en-GB')}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHASE BREAKDOWN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`
+
+    let weekCounter = 1
+    timeline.forEach((phase: any, index: number) => {
+      document += `
+PHASE ${index + 1}: ${phase.phase.toUpperCase()}
+Duration: ${phase.duration}
+Week ${weekCounter}${phase.duration.includes('week') ? `-${weekCounter + parseInt(phase.duration) - 1}` : ''}
+─────────────────────────────────────`
+      
+      if (phase.tasks && phase.tasks.length > 0) {
+        phase.tasks.forEach((task: string) => {
+          document += `
+  ✓ ${task}`
+        })
+      }
+      
+      if (phase.dependencies) {
+        document += `
+  ⚠ Dependencies: ${phase.dependencies.join(', ')}`
+      }
+      
+      document += '\n'
+      
+      if (phase.duration.includes('week')) {
+        weekCounter += parseInt(phase.duration)
+      } else if (phase.duration.includes('day')) {
+        weekCounter += 1
+      }
+    })
+
+    document += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY MILESTONES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• First Fix Complete: Week 2 - Payment Due (25%)
+• Second Fix Complete: Week 3 - Payment Due (25%)
+• Project Completion: ${totalDuration} - Final Payment (25%)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPORTANT NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Timeline assumes no delays for materials
+• Weather may affect external work
+• Building control inspections required at key stages
+• Tool hire available from Toddy Tool Hire
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+
+    return document
+  }
+
+  /**
+   * Generate document context for AI
+   */
+  getDocumentContext(query: string): string {
+    const documentKeywords = ['quote document', 'project plan', 'timeline document', 'create document', 'generate quote', 'formal quote']
+    
+    if (documentKeywords.some(keyword => query.toLowerCase().includes(keyword))) {
+      return `
+## DOCUMENT GENERATION AVAILABLE:
+
+I can create professional documents for you:
+
+1. **Quote Document** - Formal quotation with full breakdown, payment terms, T&Cs
+2. **Project Timeline** - Week-by-week plan with milestones and dependencies
+3. **Materials List** - Shopping list with suppliers and costs
+
+Just ask: "Create a quote document" or "Generate project timeline"
+`
+    }
+    
+    return ''
+  }
+}
+
+export const documentGeneratorService = new DocumentGeneratorService()

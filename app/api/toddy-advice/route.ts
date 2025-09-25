@@ -11,6 +11,7 @@ import { tradespersonService } from '@/lib/tradesperson/tradesperson-recommendat
 import { googlePlacesService } from '@/lib/google-places/google-places.service'
 import { youtubeService } from '@/lib/youtube/youtube.service'
 import { diyGuidesService } from '@/lib/diy-guides/diy-guides.service'
+import { documentGeneratorService } from '@/lib/documents/document-generator.service'
 // import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
 const TODDY_SYSTEM_PROMPT = `You are Toddy, a construction cost expert. BE EXTREMELY CONCISE. Maximum 2-3 sentences per response.
@@ -29,15 +30,21 @@ Format: "For an accurate quote, I need:
 • Room size?
 • Quality level?
 • New layout?
-• Your location?"
+• Your location?
+
+💡 Upload photos for better accuracy"
 
 If DETAILED (has size/quality/location), provide:
 "**Quote:** £X-Y (inc VAT)
 **Breakdown:** Materials £X, Labour £Y, Timeline: Z weeks
 **Accuracy:** ±20%
-Want full itemized breakdown?
 
-For tool hire: Toddy Tool Hire (Suffolk/Essex) 01394 447658"
+Would you like me to:
+• Create a detailed quote document?
+• Generate a project timeline?
+• See photos for more accurate pricing?
+
+Tool hire: Toddy Tool Hire (Suffolk/Essex) 01394 447658"
 
 GENERAL QUERIES:
 Keep it ONE sentence + question:
@@ -56,6 +63,11 @@ HOW-TO QUESTIONS:
 1. Tools needed
 2-4. Key steps
 5. Main safety tip
+
+WHEN USER REQUESTS DOCUMENTS:
+"Create quote document" → Generate formal quote using the template
+"Project timeline" → Generate week-by-week plan
+Always offer: "Would you like me to email this to you?"
 
 WHEN THEY ASK FOR CONTRACTORS/TRADESPEOPLE:
 CRITICAL: If no location given, ONLY ask "Where do you need the [trade]?" - do NOT guess or provide random recommendations.
@@ -129,6 +141,9 @@ export async function POST(request: NextRequest) {
 
     // Get construction costing context (TOP PRIORITY)
     const costingContext = constructionCostingService.getCostingContext(message)
+    
+    // Get document generation context if requested
+    const documentContext = documentGeneratorService.getDocumentContext(message)
     
     // Get DIY guide context if "how to" question
     const diyGuideContext = diyGuidesService.getGuideContext(message)
@@ -204,6 +219,12 @@ export async function POST(request: NextRequest) {
       }
     }
     
+    // Add document generation capability
+    if (documentContext) {
+      conversationContext += documentContext + '\n'
+      conversationContext += 'Offer to create formal documents when appropriate.\n\n'
+    }
+    
     // Add DIY guide if available (HIGH PRIORITY for how-to questions)
     if (diyGuideContext) {
       conversationContext += diyGuideContext + '\n'
@@ -269,17 +290,17 @@ export async function POST(request: NextRequest) {
     conversationContext += `RESPOND AS TODDY - CRITICAL RULES:
 
 1. BE EXTREMELY CONCISE - Max 2-3 sentences. NO LONG EXPLANATIONS.
-2. If project query without details, ask the 4 questions ONLY
-3. If project query WITH details, give quote + mention Toddy Tool Hire
+2. If project query without details, ask 4 questions + suggest photo upload
+3. If project query WITH details, give quote + offer document generation
 4. NEVER explain why prices vary or what affects costs
 5. NEVER jump to contractors until quote is complete
-6. Use bullet points, not paragraphs
+6. Be PROACTIVE - offer documents, request photos, suggest next steps
 7. Always mention Toddy Tool Hire when discussing tools/projects
 
-Example: "Bathroom renovation" → Ask 4 questions with proper grammar
-Example: "3x2m bath, standard, Essex" → Quote + Toddy Tool Hire mention
+Example: "Bathroom renovation" → 4 questions + "Upload photos for better accuracy"
+Example: "3x2m bath, standard, Essex" → Quote + "Want a formal quote document?"
 
-BE BRIEF. BE DIRECT. PROPER GRAMMAR.`
+BE BRIEF. BE SMART. BE PROACTIVE.`
 
     const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
     
