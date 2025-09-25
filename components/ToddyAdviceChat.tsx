@@ -47,21 +47,36 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     // Skip if already shown this session
     if (sessionFeedbackGiven || showFeedback) return
     
-    // Simple check for localStorage availability
+    // Safari-safe localStorage check
     let feedbackGiven = false
     try {
       feedbackGiven = localStorage.getItem('feedbackGiven') === 'true'
     } catch (error) {
-      // localStorage blocked - continue anyway
+      // Safari private mode - continue anyway
+      console.log('localStorage unavailable (Safari private mode?)')
     }
     
-    // Auto-show modal after 5 messages if not given feedback
-    if (!feedbackGiven && userMessageCount === 5) { // Using === to trigger only once
-      // Small delay to ensure smooth animation
+    // Debug logging for Safari
+    console.log('Feedback modal check:', {
+      userMessageCount,
+      feedbackGiven,
+      sessionFeedbackGiven,
+      showFeedback,
+      shouldShow: !feedbackGiven && userMessageCount >= 5
+    })
+    
+    // Show modal after 5+ messages (>= instead of === for Safari reliability)
+    if (!feedbackGiven && userMessageCount >= 5) {
+      console.log('Showing feedback modal - Safari safe')
+      // Longer delay for Safari
       setTimeout(() => {
         setShowFeedback(true)
-        trackEvents.feedbackModalShown()
-      }, 500)
+        try {
+          trackEvents.feedbackModalShown()
+        } catch (e) {
+          console.log('trackEvents failed:', e)
+        }
+      }, 1000) // Longer delay for Safari
     }
   }, [messages, showFeedback, sessionFeedbackGiven])
 
@@ -432,14 +447,25 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         messageCount={messages.filter(m => m.role === 'user').length}
       />
       
-      {/* Manual feedback button - shows if auto-trigger fails */}
-      {!showFeedback && !sessionFeedbackGiven && messages.filter(m => m.role === 'user').length >= 7 && (
+      {/* Manual feedback button - shows earlier for Safari reliability */}
+      {!showFeedback && !sessionFeedbackGiven && messages.filter(m => m.role === 'user').length >= 4 && (
         <button
           onClick={() => {
+            console.log('Manual feedback button clicked')
             setShowFeedback(true)
-            trackEvents.feedbackModalShown()
+            setSessionFeedbackGiven(false) // Allow it to show
+            try {
+              trackEvents.feedbackModalShown()
+            } catch (e) {
+              console.log('trackEvents failed:', e)
+            }
           }}
           className="fixed bottom-4 right-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full text-sm shadow-lg z-40 hover:shadow-xl transition-shadow animate-pulse"
+          style={{
+            // Force Safari to show the button
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)'
+          }}
         >
           💬 Give Feedback
         </button>

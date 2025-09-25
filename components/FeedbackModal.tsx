@@ -22,8 +22,12 @@ export default function FeedbackModal({ isOpen, onClose, messageCount }: Feedbac
 
   useEffect(() => {
     setMounted(true)
+    // Debug logging for Safari
+    if (isOpen) {
+      console.log('FeedbackModal mounted and isOpen:', isOpen)
+    }
     return () => setMounted(false)
-  }, [])
+  }, [isOpen])
 
   if (!isOpen || !mounted) return null
 
