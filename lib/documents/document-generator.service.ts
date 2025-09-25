@@ -224,7 +224,7 @@ I can create professional documents for you:
 2. **Project Timeline** - Week-by-week plan with milestones and dependencies
 3. **Materials List** - Shopping list with suppliers and costs
 
-Just ask: "Create a quote document" or "Generate project timeline"
+Just ask: "Create a downloadable quote document" or "Generate project timeline"
 `
     }
     

@@ -10,6 +10,11 @@ interface Message {
   content: string
   timestamp: Date
   images?: string[]
+  showDocumentButtons?: {
+    projectType: string
+    canGenerateQuote: boolean
+    canGenerateTimeline: boolean
+  }
 }
 
 interface ToddyAdviceChatProps {
@@ -122,6 +127,65 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     setUploadedImages(prev => prev.filter((_, i) => i !== index))
   }
 
+  const handleDocumentGeneration = async (projectType: string, documentType: 'quote' | 'timeline' = 'quote') => {
+    try {
+      const response = await fetch('/api/generate-document', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectType,
+          documentType,
+          specifications: {} // TODO: Extract from conversation context
+        })
+      })
+
+      if (response.ok) {
+        // Create blob and download
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.style.display = 'none'
+        a.href = url
+        
+        // Get filename from Content-Disposition header
+        const contentDisposition = response.headers.get('Content-Disposition')
+        const filenameMatch = contentDisposition?.match(/filename="([^"]*)"/)
+        const filename = filenameMatch ? filenameMatch[1] : `${projectType}-${documentType}-${Date.now()}.txt`
+        
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+
+        // Add a message confirming download
+        const downloadMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          role: 'assistant',
+          content: `✅ ${documentType === 'quote' ? 'Quote document' : 'Project timeline'} downloaded! Check your Downloads folder for "${filename}".`,
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, downloadMessage])
+
+        // Track download
+        trackEvents.documentDownloaded?.(documentType, projectType)
+      } else {
+        throw new Error('Failed to generate document')
+      }
+    } catch (error) {
+      console.error('Document generation error:', error)
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        role: 'assistant',
+        content: `Sorry, I couldn't generate the ${documentType} document. Please try again.`,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+    }
+  }
+
   const handleSend = async () => {
     if ((!input.trim() && uploadedImages.length === 0) || isLoading) return
 
@@ -161,13 +225,80 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
 
       if (response.ok) {
         const data = await response.json()
+        
+        // Check if user requested document generation
+        const userWantsDocument = input.trim().toLowerCase().includes('quote document') || 
+                                input.trim().toLowerCase().includes('create document') ||
+                                input.trim().toLowerCase().includes('generate quote') ||
+                                input.trim().toLowerCase().includes('project timeline')
+        
+        let responseContent = data.response
+        
+        // If response mentions document generation, add download buttons
+        let showButtons = false
+        let detectedProject = 'project'
+        
+        if (data.response.toLowerCase().includes('quote document') || 
+            data.response.toLowerCase().includes('project timeline') ||
+            data.response.toLowerCase().includes('downloadable')) {
+          
+          showButtons = true
+          
+          // Extract project type from conversation context
+          const recentMessages = messages.slice(-6)
+          const projectKeywords = ['bathroom', 'kitchen', 'extension', 'loft conversion', 'renovation']
+          
+          for (const keyword of projectKeywords) {
+            const found = recentMessages.concat([userMessage]).some(msg => 
+              msg.content.toLowerCase().includes(keyword)
+            )
+            if (found) {
+              detectedProject = keyword === 'loft conversion' ? 'loft_conversion' : 
+                              keyword === 'extension' ? 'kitchen_extension' :
+                              keyword + '_renovation'
+              break
+            }
+          }
+          
+          responseContent = data.response.replace(
+            /would you like me to email this to you\?/gi,
+            ''
+          ).replace(
+            /i'll email.*?to you/gi,
+            'I can generate downloadable documents for you:'
+          ).trim()
+        }
+
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: data.response,
-          timestamp: new Date()
+          content: responseContent,
+          timestamp: new Date(),
+          showDocumentButtons: showButtons ? {
+            projectType: detectedProject,
+            canGenerateQuote: true,
+            canGenerateTimeline: true
+          } : undefined
         }
         setMessages(prev => [...prev, assistantMessage])
+        
+        // Auto-trigger document generation if explicitly requested
+        if (userWantsDocument) {
+          const isTimeline = input.trim().toLowerCase().includes('timeline')
+          const projectType = messages.slice(-6).concat([userMessage])
+            .map(m => m.content.toLowerCase())
+            .join(' ')
+          
+          let detectedProject = 'project'
+          if (projectType.includes('bathroom')) detectedProject = 'bathroom_renovation'
+          else if (projectType.includes('kitchen')) detectedProject = 'kitchen_renovation'  
+          else if (projectType.includes('extension')) detectedProject = 'kitchen_extension'
+          else if (projectType.includes('loft')) detectedProject = 'loft_conversion'
+          
+          setTimeout(() => {
+            handleDocumentGeneration(detectedProject, isTimeline ? 'timeline' : 'quote')
+          }, 500)
+        }
       } else {
         throw new Error('Failed to get response')
       }
@@ -275,6 +406,30 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                   <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-white/70' : 'text-gray-500'}`}>
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
+                  
+                  {/* Document Generation Buttons */}
+                  {message.role === 'assistant' && message.showDocumentButtons && (
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <div className="flex flex-wrap gap-2">
+                        {message.showDocumentButtons.canGenerateQuote && (
+                          <button
+                            onClick={() => handleDocumentGeneration(message.showDocumentButtons!.projectType, 'quote')}
+                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm rounded-lg hover:shadow-md transition-all active:scale-95"
+                          >
+                            📄 Download Quote
+                          </button>
+                        )}
+                        {message.showDocumentButtons.canGenerateTimeline && (
+                          <button
+                            onClick={() => handleDocumentGeneration(message.showDocumentButtons!.projectType, 'timeline')}
+                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:shadow-md transition-all active:scale-95"
+                          >
+                            📅 Download Timeline
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
