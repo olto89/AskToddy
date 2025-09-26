@@ -17,22 +17,29 @@ export async function POST(request: NextRequest) {
     // Get the cost breakdown
     const breakdown = constructionCostingService.calculateProjectCost(projectType, specifications)
     
-    let document = ''
+    let documentBuffer: Buffer
     let filename = ''
+    let contentType = ''
     
     if (documentType === 'quote') {
-      document = documentGeneratorService.generateQuoteDocument(projectType, specifications || {}, breakdown)
-      filename = `${projectType.replace(/\s+/g, '-')}-quote-${Date.now()}.txt`
+      documentBuffer = documentGeneratorService.generateQuotePDF(projectType, specifications || {}, breakdown)
+      filename = `${projectType.replace(/\s+/g, '-')}-quote-${Date.now()}.pdf`
+      contentType = 'application/pdf'
     } else if (documentType === 'timeline') {
-      document = documentGeneratorService.generateProjectPlan(projectType, breakdown.timeline, '4-6 weeks')
+      // For now, still use text for timeline - can convert to PDF later
+      const document = documentGeneratorService.generateProjectPlan(projectType, breakdown.timeline, '4-6 weeks')
+      documentBuffer = Buffer.from(document, 'utf-8')
       filename = `${projectType.replace(/\s+/g, '-')}-timeline-${Date.now()}.txt`
+      contentType = 'text/plain; charset=utf-8'
+    } else {
+      throw new Error('Unknown document type')
     }
 
     // Return the document content for download
-    return new NextResponse(document, {
+    return new NextResponse(documentBuffer, {
       status: 200,
       headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Type': contentType,
         'Content-Disposition': `attachment; filename="${filename}"`,
         'Cache-Control': 'no-cache'
       }

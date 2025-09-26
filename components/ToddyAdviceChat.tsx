@@ -428,7 +428,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                             onClick={() => handleDocumentGeneration(message.showDocumentButtons!.projectType, 'quote')}
                             className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm rounded-lg hover:shadow-md transition-all active:scale-95"
                           >
-                            📄 Download Quote
+                            📄 Download PDF Quote
                           </button>
                         )}
                         {message.showDocumentButtons.canGenerateTimeline && (
