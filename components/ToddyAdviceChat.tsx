@@ -238,11 +238,23 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         let showButtons = false
         let detectedProject = 'project'
         
-        if (data.response.toLowerCase().includes('quote document') || 
-            data.response.toLowerCase().includes('project timeline') ||
-            data.response.toLowerCase().includes('downloadable')) {
-          
+        // More comprehensive detection of document offers
+        const responseText = data.response.toLowerCase()
+        
+        // Show buttons if:
+        // 1. Response contains a quote (has £ symbol and numbers)
+        // 2. Response mentions documents
+        // 3. Response offers document creation
+        const hasQuote = responseText.includes('£') && responseText.includes('quote:')
+        const mentionsDocuments = (responseText.includes('quote') && responseText.includes('document')) || 
+                                 responseText.includes('timeline') ||
+                                 responseText.includes('downloadable') ||
+                                 (responseText.includes('would you like') && responseText.includes('document')) ||
+                                 (responseText.includes('create') && responseText.includes('document'))
+        
+        if (hasQuote || mentionsDocuments) {
           showButtons = true
+          console.log('Document buttons will show - hasQuote:', hasQuote, 'mentionsDocuments:', mentionsDocuments)
           
           // Extract project type from conversation context
           const recentMessages = messages.slice(-6)

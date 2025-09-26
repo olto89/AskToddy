@@ -42,7 +42,6 @@ If DETAILED (has size/quality/location), provide:
 Would you like me to:
 • Create a downloadable quote document?
 • Generate a downloadable project timeline?
-• See photos for more accurate pricing?
 
 Tool hire: Toddy Tool Hire (Suffolk/Essex) 01394 447658"
 

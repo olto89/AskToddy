@@ -73,9 +73,9 @@ ${specifications.location ? `Location: ${specifications.location}` : ''}
 COST SUMMARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Total Project Cost: £${breakdown.totalCost.toLocaleString()} (inc. VAT)
-Deposit Required (25%): £${Math.round(breakdown.totalCost * 0.25).toLocaleString()}
-Timeline: ${breakdown.timeline}
+Total Project Cost: £${(breakdown.totalCost?.average || breakdown.totalCost || 0).toLocaleString()} (inc. VAT)
+Deposit Required (25%): £${Math.round((breakdown.totalCost?.average || breakdown.totalCost || 0) * 0.25).toLocaleString()}
+Timeline: ${breakdown.timeline?.map?.((t: any) => t.duration).join(', ') || 'TBD'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DETAILED BREAKDOWN
