@@ -26,11 +26,11 @@ export async function POST(request: NextRequest) {
       filename = `${projectType.replace(/\s+/g, '-')}-quote-${Date.now()}.pdf`
       contentType = 'application/pdf'
     } else if (documentType === 'timeline') {
-      // For now, still use text for timeline - can convert to PDF later
-      const document = documentGeneratorService.generateProjectPlan(projectType, breakdown.timeline, '4-6 weeks')
-      documentBuffer = Buffer.from(document, 'utf-8')
-      filename = `${projectType.replace(/\s+/g, '-')}-timeline-${Date.now()}.txt`
-      contentType = 'text/plain; charset=utf-8'
+      // Use PDF for timeline too
+      const totalDuration = breakdown.timeline?.length > 0 ? `${breakdown.timeline.length * 2}-${breakdown.timeline.length * 3} weeks` : '4-6 weeks'
+      documentBuffer = documentGeneratorService.generateTimelinePDF(projectType, breakdown.timeline, totalDuration)
+      filename = `${projectType.replace(/\s+/g, '-')}-timeline-${Date.now()}.pdf`
+      contentType = 'application/pdf'
     } else {
       throw new Error('Unknown document type')
     }

@@ -171,6 +171,183 @@ export class DocumentGeneratorService {
   }
 
   /**
+   * Generate a project timeline as PDF
+   */
+  generateTimelinePDF(
+    projectType: string,
+    timeline: any[],
+    totalDuration: string
+  ): Buffer {
+    const doc = new jsPDF()
+    
+    // Add AskToddy logo/branding at the top
+    doc.setFillColor(255, 107, 53) // Orange gradient start color
+    doc.rect(0, 0, 210, 30, 'F') // Header background
+    
+    // Logo text
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(24)
+    doc.setFont('helvetica', 'bold')
+    doc.text('AskToddy', 20, 20)
+    
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'normal')
+    doc.text('Construction Cost Expert', 80, 20)
+    
+    // Reset colors for document content
+    doc.setTextColor(0, 0, 0)
+    
+    // Document title
+    doc.setFontSize(20)
+    doc.setFont('helvetica', 'bold')
+    doc.text('PROJECT TIMELINE', 20, 50)
+    
+    // Project details
+    doc.setFontSize(14)
+    doc.setFont('helvetica', 'bold')
+    doc.text(`PROJECT: ${projectType.toUpperCase().replace(/_/g, ' ')}`, 20, 70)
+    
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Total Duration: ${totalDuration}`, 20, 80)
+    doc.text(`Start Date: ${new Date().toLocaleDateString('en-GB')}`, 20, 87)
+    
+    // Timeline phases
+    let yPos = 110
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('PHASE BREAKDOWN', 20, yPos)
+    yPos += 15
+    
+    let weekCounter = 1
+    timeline.forEach((phase: any, index: number) => {
+      if (yPos > 260) { // Start new page if needed
+        doc.addPage()
+        yPos = 30
+      }
+      
+      // Phase header
+      doc.setDrawColor(255, 107, 53)
+      doc.setLineWidth(0.5)
+      doc.rect(20, yPos - 5, 170, 12)
+      doc.setFillColor(255, 107, 53, 0.1)
+      doc.rect(20, yPos - 5, 170, 12, 'F')
+      
+      doc.setFontSize(11)
+      doc.setFont('helvetica', 'bold')
+      doc.text(`PHASE ${index + 1}: ${phase.phase?.toUpperCase() || 'UNKNOWN PHASE'}`, 25, yPos + 2)
+      yPos += 20
+      
+      doc.setFontSize(9)
+      doc.setFont('helvetica', 'normal')
+      doc.text(`Duration: ${phase.duration || 'TBD'}`, 25, yPos)
+      
+      const weekInfo = phase.duration && phase.duration.includes('week') ? 
+        `Week ${weekCounter}${phase.duration.includes('week') ? `-${weekCounter + parseInt(phase.duration) - 1}` : ''}` : 
+        `Week ${weekCounter}`
+      doc.text(weekInfo, 120, yPos)
+      yPos += 10
+      
+      // Tasks
+      if (phase.tasks && phase.tasks.length > 0) {
+        doc.setFontSize(8)
+        phase.tasks.forEach((task: string) => {
+          if (yPos > 270) {
+            doc.addPage()
+            yPos = 20
+          }
+          doc.text(`✓ ${task}`, 30, yPos)
+          yPos += 6
+        })
+      }
+      
+      // Dependencies
+      if (phase.dependencies && phase.dependencies.length > 0) {
+        doc.setTextColor(255, 0, 0) // Red for dependencies
+        doc.text(`⚠ Dependencies: ${phase.dependencies.join(', ')}`, 30, yPos)
+        doc.setTextColor(0, 0, 0) // Reset to black
+        yPos += 6
+      }
+      
+      yPos += 10
+      
+      // Update week counter
+      if (phase.duration && phase.duration.includes('week')) {
+        weekCounter += parseInt(phase.duration)
+      } else {
+        weekCounter += 1
+      }
+    })
+    
+    // Key milestones section
+    yPos += 10
+    if (yPos > 250) {
+      doc.addPage()
+      yPos = 30
+    }
+    
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('KEY MILESTONES', 20, yPos)
+    yPos += 15
+    
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    const milestones = [
+      '• First Fix Complete: Week 2 - Payment Due (25%)',
+      '• Second Fix Complete: Week 3 - Payment Due (25%)', 
+      `• Project Completion: ${totalDuration} - Final Payment (25%)`
+    ]
+    
+    milestones.forEach(milestone => {
+      if (yPos > 270) {
+        doc.addPage()
+        yPos = 30
+      }
+      doc.text(milestone, 25, yPos)
+      yPos += 7
+    })
+    
+    // Important notes
+    yPos += 10
+    if (yPos > 240) {
+      doc.addPage()
+      yPos = 30
+    }
+    
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('IMPORTANT NOTES', 20, yPos)
+    yPos += 15
+    
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'normal')
+    const notes = [
+      '• Timeline assumes no delays for materials',
+      '• Weather may affect external work',
+      '• Building control inspections required at key stages',
+      '• Tool hire available from Toddy Tool Hire'
+    ]
+    
+    notes.forEach(note => {
+      if (yPos > 270) {
+        doc.addPage()
+        yPos = 30
+      }
+      doc.text(note, 25, yPos)
+      yPos += 7
+    })
+    
+    // Footer with contact info
+    doc.setFontSize(8)
+    doc.setTextColor(128, 128, 128)
+    doc.text('Tool hire available from Toddy Tool Hire (Suffolk/Essex) - 01394 447658', 20, 285)
+    doc.text('Generated by AskToddy AI - asktoddyai.com', 20, 290)
+    
+    return Buffer.from(doc.output('arraybuffer'))
+  }
+
+  /**
    * Generate a professional quote document format
    */
   generateQuoteDocument(

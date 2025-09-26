@@ -145,26 +145,46 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         // Create blob and download
         const blob = await response.blob()
         const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.style.display = 'none'
-        a.href = url
         
         // Get filename from Content-Disposition header
         const contentDisposition = response.headers.get('Content-Disposition')
         const filenameMatch = contentDisposition?.match(/filename="([^"]*)"/)
-        const filename = filenameMatch ? filenameMatch[1] : `${projectType}-${documentType}-${Date.now()}.txt`
+        const filename = filenameMatch ? filenameMatch[1] : `${projectType}-${documentType}-${Date.now()}.pdf`
         
-        a.download = filename
-        document.body.appendChild(a)
-        a.click()
-        window.URL.revokeObjectURL(url)
-        document.body.removeChild(a)
+        // Check if mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        
+        if (isMobile) {
+          // On mobile, open in new window to prevent losing chat
+          const newWindow = window.open('', '_blank')
+          if (newWindow) {
+            newWindow.location.href = url
+            // Don't revoke URL immediately on mobile to allow download
+            setTimeout(() => {
+              window.URL.revokeObjectURL(url)
+            }, 1000)
+          } else {
+            // Fallback if popup blocked
+            window.location.href = url
+            window.URL.revokeObjectURL(url)
+          }
+        } else {
+          // Desktop: use traditional download
+          const a = document.createElement('a')
+          a.style.display = 'none'
+          a.href = url
+          a.download = filename
+          document.body.appendChild(a)
+          a.click()
+          window.URL.revokeObjectURL(url)
+          document.body.removeChild(a)
+        }
 
         // Add a message confirming download
         const downloadMessage: Message = {
           id: (Date.now() + 2).toString(),
           role: 'assistant',
-          content: `✅ ${documentType === 'quote' ? 'Quote document' : 'Project timeline'} downloaded! Check your Downloads folder for "${filename}".`,
+          content: `✅ ${documentType === 'quote' ? 'PDF Quote' : 'PDF Timeline'} ${isMobile ? 'opened in new window' : 'downloaded'}! ${!isMobile ? `Check your Downloads folder for "${filename}".` : 'You can save it from there.'}`,
           timestamp: new Date()
         }
         setMessages(prev => [...prev, downloadMessage])
@@ -436,7 +456,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                             onClick={() => handleDocumentGeneration(message.showDocumentButtons!.projectType, 'timeline')}
                             className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:shadow-md transition-all active:scale-95"
                           >
-                            📅 Download Timeline
+                            📅 Download PDF Timeline
                           </button>
                         )}
                       </div>
