@@ -384,12 +384,31 @@ export class ConstructionCostingService {
       'extension', 'loft conversion', 'conservatory', 'garage conversion'
     ]
     
+    // Check if query is just a generic term without any details
+    const lowerQuery = query.toLowerCase()
+    
+    // Check for dimensions (various formats)
+    const hasDimensions = /\d+(?:\.\d+)?[\s]*[xX×][\s]*\d+(?:\.\d+)?/.test(query) || // 3x2, 3.5 x 2
+                         /\d+(?:\.\d+)?[\s]*(?:m|metre|meter|ft|foot|feet)/.test(query) || // 3m, 3 metres
+                         /\d+(?:\.\d+)?[\s]*(?:by)[\s]*\d+/.test(query) // 3 by 2
+    
+    // Check for quality level
+    const hasQuality = lowerQuery.includes('budget') || 
+                      lowerQuery.includes('standard') || 
+                      lowerQuery.includes('premium') ||
+                      lowerQuery.includes('basic') ||
+                      lowerQuery.includes('luxury')
+    
+    // Check for location
+    const hasLocation = /[A-Z][a-z]+/.test(query) && // Has proper nouns (likely place names)
+                       query.split(' ').some(word => word.length > 4 && /^[A-Z]/.test(word))
+    
+    // Only need more info if it's a generic query without any details
     return genericTerms.some(term => 
-      query.toLowerCase().includes(term) && 
-      !query.includes('m') && // no dimensions
-      !query.includes('x') && // no dimensions  
-      !query.includes('budget') && !query.includes('premium') && // no quality level
-      !query.includes('london') && !query.includes('essex') // no location
+      lowerQuery.includes(term) && 
+      !hasDimensions && 
+      !hasQuality && 
+      !hasLocation
     )
   }
 

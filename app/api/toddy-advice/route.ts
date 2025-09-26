@@ -289,17 +289,25 @@ export async function POST(request: NextRequest) {
     conversationContext += `RESPOND AS TODDY - CRITICAL RULES:
 
 1. BE EXTREMELY CONCISE - Max 2-3 sentences. NO LONG EXPLANATIONS.
-2. If project query without details, ask 4 questions + suggest photo upload
-3. If project query WITH details, give quote + offer document generation
-4. NEVER explain why prices vary or what affects costs
+2. IMPORTANT: Check if user has ALREADY PROVIDED details in their message:
+   - Size/dimensions (like "3x2m", "3 by 2", "3 metres")
+   - Quality (budget/standard/premium)
+   - Location (any place name)
+   - If YES to ANY → PROVIDE QUOTE IMMEDIATELY
+3. Only ask for missing details if truly needed
+4. NEVER repeat questions the user already answered
 5. NEVER jump to contractors until quote is complete
-6. Be PROACTIVE - offer documents, request photos, suggest next steps
+6. Be PROACTIVE - offer documents when quote given
 7. Always mention Toddy Tool Hire when discussing tools/projects
 
-Example: "Bathroom renovation" → 4 questions + "Upload photos for better accuracy"
-Example: "3x2m bath, standard, Essex" → Quote + "Want a formal quote document?"
+CRITICAL: If user says dimensions like "3x2m bathroom" - THAT'S ENOUGH INFO FOR A QUOTE!
+Don't ask for size again if they already told you!
 
-BE BRIEF. BE SMART. BE PROACTIVE.`
+Example: "Bathroom renovation" → Ask 4 questions
+Example: "3x2m bathroom" → GIVE QUOTE (they gave size!)
+Example: "3x2m bath, standard, Essex" → FULL QUOTE + documents
+
+BE SMART. LISTEN. DON'T REPEAT QUESTIONS.`
 
     const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
     
