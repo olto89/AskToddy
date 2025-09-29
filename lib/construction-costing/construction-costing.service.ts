@@ -376,7 +376,7 @@ export class ConstructionCostingService {
   }
 
   /**
-   * Detect if query needs more information
+   * Detect if query needs more information (much more permissive now)
    */
   needsMoreInfo(query: string): boolean {
     const genericTerms = [
@@ -384,32 +384,16 @@ export class ConstructionCostingService {
       'extension', 'loft conversion', 'conservatory', 'garage conversion'
     ]
     
-    // Check if query is just a generic term without any details
     const lowerQuery = query.toLowerCase()
     
-    // Check for dimensions (various formats)
-    const hasDimensions = /\d+(?:\.\d+)?[\s]*[xX×][\s]*\d+(?:\.\d+)?/.test(query) || // 3x2, 3.5 x 2
-                         /\d+(?:\.\d+)?[\s]*(?:m|metre|meter|ft|foot|feet)/.test(query) || // 3m, 3 metres
-                         /\d+(?:\.\d+)?[\s]*(?:by)[\s]*\d+/.test(query) // 3 by 2
-    
-    // Check for quality level
-    const hasQuality = lowerQuery.includes('budget') || 
-                      lowerQuery.includes('standard') || 
-                      lowerQuery.includes('premium') ||
-                      lowerQuery.includes('basic') ||
-                      lowerQuery.includes('luxury')
-    
-    // Check for location
-    const hasLocation = /[A-Z][a-z]+/.test(query) && // Has proper nouns (likely place names)
-                       query.split(' ').some(word => word.length > 4 && /^[A-Z]/.test(word))
-    
-    // Only need more info if it's a generic query without any details
-    return genericTerms.some(term => 
-      lowerQuery.includes(term) && 
-      !hasDimensions && 
-      !hasQuality && 
-      !hasLocation
-    )
+    // Only need more info if it's EXTREMELY vague (just "bathroom renovation" with no other words)
+    // If user has provided ANY additional context, provide a quote
+    return genericTerms.some(term => {
+      const exactMatch = lowerQuery.trim() === term || 
+                        lowerQuery.trim() === term.replace(' ', '') ||
+                        lowerQuery.trim() === term.split(' ')[0] // just "bathroom" or "kitchen"
+      return exactMatch
+    })
   }
 
   /**
