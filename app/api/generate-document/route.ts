@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { constructionCostingService } from '@/lib/construction-costing/construction-costing.service'
 import { documentGeneratorService } from '@/lib/documents/document-generator.service'
+import { taskListGeneratorService } from '@/lib/documents/task-list-generator.service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,6 +31,11 @@ export async function POST(request: NextRequest) {
       const totalDuration = breakdown.timeline?.length > 0 ? `${breakdown.timeline.length * 2}-${breakdown.timeline.length * 3} weeks` : '4-6 weeks'
       documentBuffer = documentGeneratorService.generateTimelinePDF(projectType, breakdown.timeline, totalDuration)
       filename = `${projectType.replace(/\s+/g, '-')}-timeline-${Date.now()}.pdf`
+      contentType = 'application/pdf'
+    } else if (documentType === 'tasklist') {
+      // Generate task list PDF
+      documentBuffer = taskListGeneratorService.generateTaskListPDF(projectType, breakdown)
+      filename = `${projectType.replace(/\s+/g, '-')}-tasklist-${Date.now()}.pdf`
       contentType = 'application/pdf'
     } else {
       throw new Error('Unknown document type')

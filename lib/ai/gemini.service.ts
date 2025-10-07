@@ -35,7 +35,7 @@ export class GeminiService {
   constructor(apiKey?: string) {
     if (apiKey && apiKey !== 'your_gemini_api_key_here') {
       this.genAI = new GoogleGenerativeAI(apiKey)
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash-8b' })
+      this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' })
     }
   }
 

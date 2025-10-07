@@ -14,6 +14,7 @@ interface Message {
     projectType: string
     canGenerateQuote: boolean
     canGenerateTimeline: boolean
+    canGenerateTaskList: boolean
   }
 }
 
@@ -127,7 +128,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     setUploadedImages(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleDocumentGeneration = async (projectType: string, documentType: 'quote' | 'timeline' = 'quote') => {
+  const handleDocumentGeneration = async (projectType: string, documentType: 'quote' | 'timeline' | 'tasklist' = 'quote') => {
     try {
       const response = await fetch('/api/generate-document', {
         method: 'POST',
@@ -184,7 +185,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         const downloadMessage: Message = {
           id: (Date.now() + 2).toString(),
           role: 'assistant',
-          content: `✅ ${documentType === 'quote' ? 'PDF Quote' : 'PDF Timeline'} ${isMobile ? 'opened in new window' : 'downloaded'}! ${!isMobile ? `Check your Downloads folder for "${filename}".` : 'You can save it from there.'}`,
+          content: `✅ ${documentType === 'quote' ? 'PDF Quote' : documentType === 'timeline' ? 'Project Plan' : 'Task List'} ${isMobile ? 'opened in new window' : 'downloaded'}! ${!isMobile ? `Check your Downloads folder for "${filename}".` : 'You can save it from there.'}`,
           timestamp: new Date()
         }
         setMessages(prev => [...prev, downloadMessage])
@@ -263,14 +264,17 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         
         // Show buttons if:
         // 1. Response contains a quote (has £ symbol and numbers)
-        // 2. Response mentions documents
+        // 2. Response mentions documents or "what would you like me to create"
         // 3. Response offers document creation
         const hasQuote = responseText.includes('£') && responseText.includes('quote:')
+        const offersCreation = responseText.includes('what would you like me to create') ||
+                              responseText.includes('quote document') || 
+                              responseText.includes('project plan') ||
+                              responseText.includes('task list')
         const mentionsDocuments = (responseText.includes('quote') && responseText.includes('document')) || 
                                  responseText.includes('timeline') ||
                                  responseText.includes('downloadable') ||
-                                 (responseText.includes('would you like') && responseText.includes('document')) ||
-                                 (responseText.includes('create') && responseText.includes('document'))
+                                 offersCreation
         
         if (hasQuote || mentionsDocuments) {
           showButtons = true
@@ -309,7 +313,8 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
           showDocumentButtons: showButtons ? {
             projectType: detectedProject,
             canGenerateQuote: true,
-            canGenerateTimeline: true
+            canGenerateTimeline: true,
+            canGenerateTaskList: true
           } : undefined
         }
         setMessages(prev => [...prev, assistantMessage])
@@ -456,7 +461,15 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
                             onClick={() => handleDocumentGeneration(message.showDocumentButtons!.projectType, 'timeline')}
                             className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:shadow-md transition-all active:scale-95"
                           >
-                            📅 Download PDF Timeline
+                            📅 Download Project Plan
+                          </button>
+                        )}
+                        {message.showDocumentButtons.canGenerateTaskList && (
+                          <button
+                            onClick={() => handleDocumentGeneration(message.showDocumentButtons!.projectType, 'tasklist')}
+                            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white text-sm rounded-lg hover:shadow-md transition-all active:scale-95"
+                          >
+                            ✅ Download Task List
                           </button>
                         )}
                       </div>
