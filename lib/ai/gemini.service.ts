@@ -31,17 +31,77 @@ export interface ProjectAnalysis {
 export class GeminiService {
   private genAI: GoogleGenerativeAI | null = null
   private model: any = null
+  private fallbackModels = [
+    'gemini-1.5-flash-latest',
+    'gemini-1.5-flash', 
+    'gemini-1.5-pro-latest',
+    'gemini-1.5-pro',
+    'gemini-pro',
+    'gemini-1.0-pro-latest',
+    'gemini-1.0-pro'
+  ]
 
   constructor(apiKey?: string) {
     if (apiKey && apiKey !== 'your_gemini_api_key_here') {
       this.genAI = new GoogleGenerativeAI(apiKey)
-      this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' })
+      
+      // Use environment variable for primary model if available
+      const primaryModel = process.env.GEMINI_PRIMARY_MODEL
+      if (primaryModel && !this.fallbackModels.includes(primaryModel)) {
+        this.fallbackModels.unshift(primaryModel)
+      }
+      
+      this.initializeModel()
     }
   }
 
+  private async initializeModel() {
+    if (!this.genAI) return
+
+    // Check if fallback is disabled via environment variable
+    const enableFallback = process.env.GEMINI_ENABLE_FALLBACK !== 'false'
+    
+    if (!enableFallback) {
+      // Use only the primary model if fallback is disabled
+      const primaryModel = this.fallbackModels[0]
+      try {
+        console.log(`Using primary model only: ${primaryModel}`)
+        this.model = this.genAI.getGenerativeModel({ model: primaryModel })
+        await this.model.generateContent('Test')
+        console.log(`✅ Successfully initialized ${primaryModel}`)
+        return
+      } catch (error) {
+        console.error(`❌ Primary model ${primaryModel} failed:`, (error as Error).message)
+        this.model = null
+        return
+      }
+    }
+
+    // Try each model in the fallback chain
+    for (const modelName of this.fallbackModels) {
+      try {
+        console.log(`Trying Gemini model: ${modelName}`)
+        this.model = this.genAI.getGenerativeModel({ model: modelName })
+        
+        // Test the model with a simple request
+        await this.model.generateContent('Test')
+        console.log(`✅ Successfully initialized ${modelName}`)
+        return
+      } catch (error) {
+        console.log(`❌ Model ${modelName} failed:`, (error as Error).message)
+        continue
+      }
+    }
+    
+    console.error('❌ ALL GEMINI MODELS FAILED - Using fallback responses')
+    this.model = null
+  }
+
   async generateContent(prompt: string): Promise<string> {
+    // If no model is initialized, return intelligent fallback
     if (!this.model) {
-      return "I'm currently offline, but I'd be happy to help! For tool hire, try HSS Hire or Speedy Hire. For materials, B&Q and Wickes are great local options."
+      console.log('🔄 No model available, using intelligent fallback')
+      return this.getIntelligentFallback(prompt)
     }
 
     try {
@@ -50,8 +110,51 @@ export class GeminiService {
       return response.text()
     } catch (error) {
       console.error('Gemini API error:', error)
-      return "Sorry mate, having a technical issue. For quick help: HSS Hire for tools, B&Q for materials, and always wear safety gear!"
+      
+      // Try to reinitialize with a different model
+      console.log('🔄 Attempting model fallback...')
+      await this.initializeModel()
+      
+      if (this.model) {
+        try {
+          console.log('✅ Retry successful with fallback model')
+          const result = await this.model.generateContent(prompt)
+          const response = await result.response
+          return response.text()
+        } catch (retryError) {
+          console.error('❌ Retry failed:', retryError)
+        }
+      }
+      
+      // Final fallback - intelligent response based on prompt
+      console.log('🔄 All models failed, using intelligent fallback responses')
+      return this.getIntelligentFallback(prompt)
     }
+  }
+
+  private getIntelligentFallback(prompt: string): string {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // Detect project types and give appropriate responses
+    if (lowerPrompt.includes('bathroom')) {
+      return "For an accurate bathroom quote, I need:\n• Room size?\n• Quality level?\n• New layout?\n• Your location?\n\n💡 Typical cost: £4,500-7,500"
+    }
+    
+    if (lowerPrompt.includes('kitchen')) {
+      return "For an accurate kitchen quote, I need:\n• Room size?\n• Quality level?\n• New layout?\n• Your location?\n\n💡 Typical cost: £8,000-15,000"
+    }
+    
+    if (lowerPrompt.includes('extension')) {
+      return "For an accurate extension quote, I need:\n• Size?\n• Single/double storey?\n• Type (kitchen/living)?\n• Your location?\n\n💡 Typical cost: £15,000-30,000"
+    }
+    
+    // Tool hire queries
+    if (lowerPrompt.includes('tool') || lowerPrompt.includes('hire')) {
+      return "Tool hire prices: £20-200/day depending on equipment. Toddy Tool Hire (Suffolk/Essex): 01394 447658. HSS/Speedy available nationwide. Which tool do you need?"
+    }
+    
+    // General fallback
+    return "I'm having connection issues but happy to help! For construction quotes, please share: project type, size, quality level, and location. Tool hire: Toddy Tool Hire 01394 447658."
   }
 
   async analyzeProject(
