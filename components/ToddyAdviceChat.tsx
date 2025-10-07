@@ -362,10 +362,10 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   }
 
   const exampleQuestions = [
-    "Quote for bathroom renovation",
-    "Cost to build extension",
-    "Loft conversion price",
-    "Kitchen remodel budget"
+    "Bathroom renovation quote",
+    "Extension build cost",
+    "Loft conversion quote",
+    "Kitchen renovation price"
   ]
 
   const handleExampleClick = (question: string) => {

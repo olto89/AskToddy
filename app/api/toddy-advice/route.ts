@@ -20,11 +20,36 @@ CRITICAL INSTRUCTION: PROVIDE QUOTE AFTER 2 CLARIFICATIONS - NO ENDLESS LOOPS!
 
 For PROJECT QUERIES:
 
-FIRST ASK (no details): Ask for key details:
-"For an accurate quote, I need:
-• Room size?
-• Quality level?
-• New layout?
+FIRST ASK (no details): Ask PROJECT-SPECIFIC details:
+
+BATHROOM: "For an accurate bathroom quote, I need:
+• Room size (e.g. 2m x 3m)?
+• Quality level (budget/mid/high)?
+• New layout or keeping same?
+• Your location?"
+
+KITCHEN: "For an accurate kitchen quote, I need:
+• Kitchen size (e.g. galley/L-shape/island)?
+• Quality level (budget/mid/high)?
+• New layout or keeping same?
+• Your location?"
+
+EXTENSION: "For an accurate extension quote, I need:
+• Size (e.g. 4m x 6m)?
+• Single or double storey?
+• Purpose (kitchen/living/bedroom)?
+• Your location?"
+
+LOFT CONVERSION: "For an accurate loft quote, I need:
+• Loft size (e.g. 4m x 8m)?
+• Type (bedroom/office/bathroom)?
+• Dormer windows needed?
+• Your location?"
+
+RENOVATION: "For an accurate renovation quote, I need:
+• What room/area?
+• Size (e.g. 3m x 4m)?
+• Scope (full gut/cosmetic)?
 • Your location?"
 
 AFTER 1-2 CLARIFICATIONS: ALWAYS PROVIDE QUOTE with 3 VALUE OPTIONS:
@@ -279,6 +304,26 @@ export async function POST(request: NextRequest) {
 
     // Add current question with clear instruction
     conversationContext += `User's current question: ${message}\n\n`
+    
+    // Detect project type from current message for appropriate questions
+    const lowerMessage = message.toLowerCase()
+    let detectedProjectType = ''
+    
+    if (lowerMessage.includes('bathroom') || lowerMessage.includes('bath')) {
+      detectedProjectType = 'BATHROOM'
+    } else if (lowerMessage.includes('kitchen')) {
+      detectedProjectType = 'KITCHEN'
+    } else if (lowerMessage.includes('extension') || lowerMessage.includes('extend')) {
+      detectedProjectType = 'EXTENSION'
+    } else if (lowerMessage.includes('loft') || lowerMessage.includes('attic')) {
+      detectedProjectType = 'LOFT CONVERSION'
+    } else if (lowerMessage.includes('renovation') || lowerMessage.includes('renovate')) {
+      detectedProjectType = 'RENOVATION'
+    }
+    
+    if (detectedProjectType && history.length === 0) {
+      conversationContext += `PROJECT TYPE DETECTED: ${detectedProjectType} - Use the specific questions for this project type from the system prompt.\n\n`
+    }
     
     if (imageUrls.length > 0) {
       conversationContext += `IMAGES PROVIDED: User has uploaded ${imageUrls.length} image(s). Analyze these to understand the job and recommend appropriate tools.\n\n`
