@@ -337,43 +337,55 @@ export async function POST(request: NextRequest) {
     const hasProvidedDetails = message.toLowerCase().match(/\d+m|\d+\s*x\s*\d+|single|double|storey|budget|mid|high|quality|bedroom|kitchen|living|office/) || 
                                (userMessageCount >= 1 && message.length > 20)
     
-    conversationContext += `RESPOND AS TODDY - ABSOLUTE CRITICAL RULE:
+    // Check if assistant already asked questions
+    const assistantAskedQuestions = history.some((msg: any) => 
+      msg.role === 'assistant' && 
+      (msg.content.includes('I need:') || msg.content.includes('?'))
+    )
+    
+    // Debug logging
+    console.log('🔍 Conversation state:', {
+      userMessageCount,
+      assistantAskedQuestions,
+      hasProvidedDetails,
+      currentMessage: message.substring(0, 50),
+      shouldProvideQuote: userMessageCount >= 1 || assistantAskedQuestions
+    })
+    
+    conversationContext += `CRITICAL RESPONSE RULES:
 
-IF USER HAS SENT 2+ MESSAGES: PROVIDE QUOTE NOW! NO MORE QUESTIONS!
+CURRENT STATE:
+- User messages sent: ${userMessageCount}
+- Assistant asked questions: ${assistantAskedQuestions ? 'YES' : 'NO'}
+- User provided details: ${hasProvidedDetails ? 'YES' : 'NO'}
 
-Count the user messages:
-${userMessageCount > 0 ? `USER HAS SENT ${userMessageCount} MESSAGES` : 'FIRST USER MESSAGE'}
+${userMessageCount === 0 && !assistantAskedQuestions ? 
+  'ACTION: ASK PROJECT QUESTIONS (ONCE ONLY)' : 
+  'ACTION: PROVIDE QUOTE NOW - DO NOT ASK ANY QUESTIONS!'}
 
-${userMessageCount >= 2 ? '⚠️ USER ALREADY ANSWERED QUESTIONS - PROVIDE QUOTE NOW - NO MORE QUESTIONS!' : ''}
-${userMessageCount === 1 ? '⚠️ USER ANSWERED ONCE - MUST PROVIDE QUOTE NOW!' : ''}
+${userMessageCount >= 1 || assistantAskedQuestions ? `
+🛑 STOP! DO NOT ASK QUESTIONS!
+The user has already responded. You MUST provide a quote now.
 
-MANDATORY FLOW:
-Turn 1: Ask questions
-Turn 2+: QUOTE with "±30% accuracy (upload photos for ±15%)"
-
-${hasProvidedDetails ? `USER HAS PROVIDED PROJECT DETAILS - DO NOT ASK ANY MORE QUESTIONS!
-GENERATE A QUOTE IMMEDIATELY BASED ON THEIR ANSWERS!
-
-Use these reasonable defaults for any missing info:
-- Size: Average UK room/extension size
-- Quality: Mid-range
-- Location: UK average pricing
-
-Based on the information provided, here's your quote:` : userMessageCount >= 1 ? 'USER ALREADY SENT AN ANSWER - PROVIDE QUOTE NOW!' : 'Ask for project details ONCE only'}
-
-QUOTE FORMAT WHEN USER HAS ANSWERED (MUST USE THIS):
-"**Quote:** £X-Y (inc VAT)
-**Breakdown:** Materials £X, Labour £Y  
-**Timeline:** X weeks
+Generate this EXACT format:
+**Quote:** £[calculate range] (inc VAT)
+**Breakdown:** Materials £[amount], Labour £[amount]
+**Timeline:** [X] weeks
 **Accuracy:** ±30% (upload photos for ±15%)
 
 What would you like me to create?
 📄 Quote Document - Professional PDF breakdown
 📅 Project Plan - Timeline & milestones
-✅ Task List - DIY checklist"
+✅ Task List - DIY checklist
 
-${userMessageCount >= 1 ? 'STOP ASKING QUESTIONS - PROVIDE QUOTE ABOVE!' : ''}
-NO EXCEPTIONS - NEVER ASK SAME QUESTIONS TWICE!`
+Use UK average prices if details missing:
+- Extension: £15,000-25,000 (4x5m single storey)
+- Bathroom: £4,500-7,500 (standard 2x3m)
+- Kitchen: £8,000-15,000 (mid-range L-shape)
+- Loft: £12,000-22,000 (standard dormer)
+` : ''}
+
+NEVER ASK THE SAME QUESTION TWICE!`
 
     const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
     
