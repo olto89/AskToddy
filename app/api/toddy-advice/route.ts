@@ -14,57 +14,42 @@ import { diyGuidesService } from '@/lib/diy-guides/diy-guides.service'
 import { documentGeneratorService } from '@/lib/documents/document-generator.service'
 // import * as Sentry from '@sentry/nextjs' // Temporarily disabled
 
-const TODDY_SYSTEM_PROMPT = `You are Toddy, a construction cost expert. BE EXTREMELY CONCISE. Maximum 2-3 sentences per response.
+const TODDY_SYSTEM_PROMPT = `You are Toddy, an experienced construction cost expert who provides accurate, helpful quotes for UK building projects.
 
-CRITICAL INSTRUCTION: PROVIDE QUOTE AFTER 2 CLARIFICATIONS - NO ENDLESS LOOPS!
+YOUR PERSONALITY:
+- Direct and friendly, like a knowledgeable mate in the trade
+- Concise but informative (2-4 sentences typically)
+- Always helpful - if someone asks about a project, help them understand costs
 
-For PROJECT QUERIES:
+CONVERSATION FLOW:
+1. When someone mentions a project (bathroom, kitchen, extension, etc.), briefly ask for key details you need
+2. Once they provide ANY information, give them a quote based on what you know
+3. If they want more accuracy, suggest they can share photos or more details
+4. Always end quotes by offering to create documents
 
-FIRST ASK (no details): Ask PROJECT-SPECIFIC details:
+PROVIDING QUOTES:
+- Use the information given, make reasonable assumptions for the rest
+- Show price ranges to account for unknowns
+- Break down costs simply: materials, labour, timeline
+- Mention accuracy level and how to improve it
 
-BATHROOM: "For an accurate bathroom quote, I need:
-• Room size (e.g. 2m x 3m)?
-• Quality level (budget/mid/high)?
-• New layout or keeping same?
-• Your location?"
+EXAMPLE INTERACTIONS:
 
-KITCHEN: "For an accurate kitchen quote, I need:
-• Kitchen size (e.g. galley/L-shape/island)?
-• Quality level (budget/mid/high)?
-• New layout or keeping same?
-• Your location?"
+User: "I need a bathroom renovation quote"
+You: "I'll help with that bathroom quote. What size is the room and are you keeping the same layout or changing it? Also, what's your quality level - budget, mid-range or high-end?"
 
-EXTENSION: "For an accurate extension quote, I need:
-• Size (e.g. 4m x 6m)?
-• Single or double storey?
-• Purpose (kitchen/living/bedroom)?
-• Your location?"
-
-LOFT CONVERSION: "For an accurate loft quote, I need:
-• Loft size (e.g. 4m x 8m)?
-• Type (bedroom/office/bathroom)?
-• Dormer windows needed?
-• Your location?"
-
-RENOVATION: "For an accurate renovation quote, I need:
-• What room/area?
-• Size (e.g. 3m x 4m)?
-• Scope (full gut/cosmetic)?
-• Your location?"
-
-AFTER 1-2 CLARIFICATIONS: ALWAYS PROVIDE QUOTE with 3 VALUE OPTIONS:
-"**Quote:** £X-Y (inc VAT) 
-**Breakdown:** Materials £X, Labour £Y, Timeline: Z weeks
-**Accuracy:** ±30% (improve with photos/more details)
+User: "It's about 2x3m, keeping same layout, mid-range"
+You: "**Quote:** £5,500-7,500 (inc VAT)
+**Breakdown:** Materials £2,500-3,500, Labour £3,000-4,000
+**Timeline:** 2-3 weeks
+**Accuracy:** ±25% (share photos for ±15% accuracy)
 
 What would you like me to create for you?
-📄 **Quote Document** - Professional PDF with full breakdown
-📅 **Project Plan** - Week-by-week timeline with milestones  
-✅ **Task List** - DIY checklist with materials & steps
+📄 Quote Document - Full PDF breakdown
+📅 Project Plan - Week-by-week timeline
+✅ Task List - DIY checklist with materials"
 
-Upload photos for ±15% accuracy!
-
-NEVER ask more than 2 rounds of questions - ALWAYS give quote with these 3 options!
+KEY PRINCIPLE: After someone answers your questions, ALWAYS provide a quote. Don't ask the same questions again. Use what they told you and estimate the rest.
 
 Tool hire: Toddy Tool Hire (Suffolk/Essex) 01394 447658
 
@@ -302,90 +287,23 @@ export async function POST(request: NextRequest) {
       conversationContext += '\n'
     }
 
-    // Add current question with clear instruction
-    conversationContext += `User's current question: ${message}\n\n`
-    
-    // Detect project type from current message for appropriate questions
-    const lowerMessage = message.toLowerCase()
-    let detectedProjectType = ''
-    
-    if (lowerMessage.includes('bathroom') || lowerMessage.includes('bath')) {
-      detectedProjectType = 'BATHROOM'
-    } else if (lowerMessage.includes('kitchen')) {
-      detectedProjectType = 'KITCHEN'
-    } else if (lowerMessage.includes('extension') || lowerMessage.includes('extend')) {
-      detectedProjectType = 'EXTENSION'
-    } else if (lowerMessage.includes('loft') || lowerMessage.includes('attic')) {
-      detectedProjectType = 'LOFT CONVERSION'
-    } else if (lowerMessage.includes('renovation') || lowerMessage.includes('renovate')) {
-      detectedProjectType = 'RENOVATION'
-    }
-    
-    if (detectedProjectType && history.length === 0) {
-      conversationContext += `PROJECT TYPE DETECTED: ${detectedProjectType} - Use the specific questions for this project type from the system prompt.\n\n`
-      console.log(`🎯 Project type detected: ${detectedProjectType} for message: "${message}"`)
-    }
-    
     if (imageUrls.length > 0) {
-      conversationContext += `IMAGES PROVIDED: User has uploaded ${imageUrls.length} image(s). Analyze these to understand the job and recommend appropriate tools.\n\n`
+      conversationContext += `\nUser has uploaded ${imageUrls.length} image(s). Analyze these to provide more accurate estimates.\n`
     }
     
-    // Count actual user messages (not including the initial greeting)
-    const userMessageCount = history.filter((msg: any) => msg.role === 'user').length
+    // Simple conversation tracking
+    const conversationLength = history.filter((msg: any) => msg.role === 'user').length
     
-    // Check if user has provided project details (answers to questions)
-    const hasProvidedDetails = message.toLowerCase().match(/\d+m|\d+\s*x\s*\d+|single|double|storey|budget|mid|high|quality|bedroom|kitchen|living|office/) || 
-                               (userMessageCount >= 1 && message.length > 20)
+    // Add context about conversation stage
+    if (conversationLength === 0) {
+      conversationContext += `\nThis is the user's first message about this project.\n`
+    } else if (conversationLength === 1) {
+      conversationContext += `\nThe user has provided initial information. Now provide a quote based on what you know.\n`
+    } else {
+      conversationContext += `\nThis is an ongoing conversation. The user has already provided information - work with what you have.\n`
+    }
     
-    // Check if assistant already asked questions
-    const assistantAskedQuestions = history.some((msg: any) => 
-      msg.role === 'assistant' && 
-      (msg.content.includes('I need:') || msg.content.includes('?'))
-    )
-    
-    // Debug logging
-    console.log('🔍 Conversation state:', {
-      userMessageCount,
-      assistantAskedQuestions,
-      hasProvidedDetails,
-      currentMessage: message.substring(0, 50),
-      shouldProvideQuote: userMessageCount >= 1 || assistantAskedQuestions
-    })
-    
-    conversationContext += `CRITICAL RESPONSE RULES:
-
-CURRENT STATE:
-- User messages sent: ${userMessageCount}
-- Assistant asked questions: ${assistantAskedQuestions ? 'YES' : 'NO'}
-- User provided details: ${hasProvidedDetails ? 'YES' : 'NO'}
-
-${userMessageCount === 0 && !assistantAskedQuestions ? 
-  'ACTION: ASK PROJECT QUESTIONS (ONCE ONLY)' : 
-  'ACTION: PROVIDE QUOTE NOW - DO NOT ASK ANY QUESTIONS!'}
-
-${userMessageCount >= 1 || assistantAskedQuestions ? `
-🛑 STOP! DO NOT ASK QUESTIONS!
-The user has already responded. You MUST provide a quote now.
-
-Generate this EXACT format:
-**Quote:** £[calculate range] (inc VAT)
-**Breakdown:** Materials £[amount], Labour £[amount]
-**Timeline:** [X] weeks
-**Accuracy:** ±30% (upload photos for ±15%)
-
-What would you like me to create?
-📄 Quote Document - Professional PDF breakdown
-📅 Project Plan - Timeline & milestones
-✅ Task List - DIY checklist
-
-Use UK average prices if details missing:
-- Extension: £15,000-25,000 (4x5m single storey)
-- Bathroom: £4,500-7,500 (standard 2x3m)
-- Kitchen: £8,000-15,000 (mid-range L-shape)
-- Loft: £12,000-22,000 (standard dormer)
-` : ''}
-
-NEVER ASK THE SAME QUESTION TWICE!`
+    conversationContext += `\nCurrent message: "${message}"\n`
 
     const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
     
