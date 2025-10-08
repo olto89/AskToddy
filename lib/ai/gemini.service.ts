@@ -100,7 +100,7 @@ export class GeminiService {
   async generateContent(prompt: string): Promise<string> {
     // If no model is initialized, return intelligent fallback
     if (!this.model) {
-      console.log('🔄 No model available, using intelligent fallback')
+      console.log('🔄 No model available, using intelligent fallback for:', prompt.substring(0, 100) + '...')
       return this.getIntelligentFallback(prompt)
     }
 
@@ -136,16 +136,20 @@ export class GeminiService {
     const lowerPrompt = prompt.toLowerCase()
     
     // Detect project types and give appropriate responses
-    if (lowerPrompt.includes('bathroom')) {
-      return "For an accurate bathroom quote, I need:\n• Room size?\n• Quality level?\n• New layout?\n• Your location?\n\n💡 Typical cost: £4,500-7,500"
+    if (lowerPrompt.includes('extension') || lowerPrompt.includes('extend')) {
+      return "For an accurate extension quote, I need:\n• Size (e.g. 4m x 6m)?\n• Single or double storey?\n• Purpose (kitchen/living/bedroom)?\n• Your location?\n\n💡 Typical cost: £15,000-30,000"
+    }
+    
+    if (lowerPrompt.includes('loft') || lowerPrompt.includes('attic')) {
+      return "For an accurate loft quote, I need:\n• Loft size (e.g. 4m x 8m)?\n• Type (bedroom/office/bathroom)?\n• Dormer windows needed?\n• Your location?\n\n💡 Typical cost: £12,000-25,000"
     }
     
     if (lowerPrompt.includes('kitchen')) {
-      return "For an accurate kitchen quote, I need:\n• Room size?\n• Quality level?\n• New layout?\n• Your location?\n\n💡 Typical cost: £8,000-15,000"
+      return "For an accurate kitchen quote, I need:\n• Kitchen size (e.g. galley/L-shape/island)?\n• Quality level (budget/mid/high)?\n• New layout or keeping same?\n• Your location?\n\n💡 Typical cost: £8,000-15,000"
     }
     
-    if (lowerPrompt.includes('extension')) {
-      return "For an accurate extension quote, I need:\n• Size?\n• Single/double storey?\n• Type (kitchen/living)?\n• Your location?\n\n💡 Typical cost: £15,000-30,000"
+    if (lowerPrompt.includes('bathroom') || lowerPrompt.includes('bath')) {
+      return "For an accurate bathroom quote, I need:\n• Room size (e.g. 2m x 3m)?\n• Quality level (budget/mid/high)?\n• New layout or keeping same?\n• Your location?\n\n💡 Typical cost: £4,500-7,500"
     }
     
     // Tool hire queries

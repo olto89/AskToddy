@@ -323,6 +323,7 @@ export async function POST(request: NextRequest) {
     
     if (detectedProjectType && history.length === 0) {
       conversationContext += `PROJECT TYPE DETECTED: ${detectedProjectType} - Use the specific questions for this project type from the system prompt.\n\n`
+      console.log(`🎯 Project type detected: ${detectedProjectType} for message: "${message}"`)
     }
     
     if (imageUrls.length > 0) {
