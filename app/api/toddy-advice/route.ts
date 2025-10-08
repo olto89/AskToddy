@@ -330,25 +330,41 @@ export async function POST(request: NextRequest) {
       conversationContext += `IMAGES PROVIDED: User has uploaded ${imageUrls.length} image(s). Analyze these to understand the job and recommend appropriate tools.\n\n`
     }
     
+    // Count actual user messages (not including the initial greeting)
+    const userMessageCount = history.filter((msg: any) => msg.role === 'user').length
+    
+    // Check if user has provided project details (answers to questions)
+    const hasProvidedDetails = message.toLowerCase().match(/\d+m|\d+\s*x\s*\d+|single|double|storey|budget|mid|high|quality|bedroom|kitchen|living|office/) || 
+                               (userMessageCount >= 1 && message.length > 20)
+    
     conversationContext += `RESPOND AS TODDY - ABSOLUTE CRITICAL RULE:
 
-IF CONVERSATION HAS 2+ EXCHANGES: PROVIDE QUOTE NOW! NO MORE QUESTIONS!
+IF USER HAS SENT 2+ MESSAGES: PROVIDE QUOTE NOW! NO MORE QUESTIONS!
 
-Count the conversation turns:
-${history.length > 0 ? `CURRENT CONVERSATION LENGTH: ${history.length} exchanges` : 'FIRST MESSAGE'}
+Count the user messages:
+${userMessageCount > 0 ? `USER HAS SENT ${userMessageCount} MESSAGES` : 'FIRST USER MESSAGE'}
 
-${history.length >= 2 ? '⚠️ PROVIDE QUOTE NOW - NO MORE QUESTIONS ALLOWED!' : ''}
-${history.length === 1 ? '⚠️ NEXT RESPONSE MUST BE A QUOTE!' : ''}
+${userMessageCount >= 2 ? '⚠️ USER ALREADY ANSWERED QUESTIONS - PROVIDE QUOTE NOW - NO MORE QUESTIONS!' : ''}
+${userMessageCount === 1 ? '⚠️ USER ANSWERED ONCE - MUST PROVIDE QUOTE NOW!' : ''}
 
 MANDATORY FLOW:
 Turn 1: Ask questions
 Turn 2+: QUOTE with "±30% accuracy (upload photos for ±15%)"
 
-IF USER PROVIDED ANY DETAILS (size/quality/location): QUOTE IMMEDIATELY!
+${hasProvidedDetails ? `USER HAS PROVIDED PROJECT DETAILS - DO NOT ASK ANY MORE QUESTIONS!
+GENERATE A QUOTE IMMEDIATELY BASED ON THEIR ANSWERS!
 
-QUOTE FORMAT:
+Use these reasonable defaults for any missing info:
+- Size: Average UK room/extension size
+- Quality: Mid-range
+- Location: UK average pricing
+
+Based on the information provided, here's your quote:` : userMessageCount >= 1 ? 'USER ALREADY SENT AN ANSWER - PROVIDE QUOTE NOW!' : 'Ask for project details ONCE only'}
+
+QUOTE FORMAT WHEN USER HAS ANSWERED (MUST USE THIS):
 "**Quote:** £X-Y (inc VAT)
 **Breakdown:** Materials £X, Labour £Y  
+**Timeline:** X weeks
 **Accuracy:** ±30% (upload photos for ±15%)
 
 What would you like me to create?
@@ -356,7 +372,8 @@ What would you like me to create?
 📅 Project Plan - Timeline & milestones
 ✅ Task List - DIY checklist"
 
-NO EXCEPTIONS - PROVIDE QUOTES ON TURN 2+!`
+${userMessageCount >= 1 ? 'STOP ASKING QUESTIONS - PROVIDE QUOTE ABOVE!' : ''}
+NO EXCEPTIONS - NEVER ASK SAME QUESTIONS TWICE!`
 
     const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
     
