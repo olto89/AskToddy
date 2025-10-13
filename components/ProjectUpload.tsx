@@ -270,7 +270,7 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
             <input
               type="file"
               multiple
-              accept="image/*,video/*,.pdf"
+              accept="image/*,video/*,.pdf,application/pdf"
               onChange={handleImageSelect}
               className="hidden"
               id="image-upload"
