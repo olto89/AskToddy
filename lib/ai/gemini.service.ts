@@ -43,6 +43,8 @@ export class GeminiService {
   ]
 
   constructor(apiKey?: string) {
+    console.log('GeminiService constructor - API key provided:', !!apiKey, 'Key length:', apiKey?.length)
+    
     if (apiKey && apiKey !== 'your_gemini_api_key_here') {
       this.genAI = new GoogleGenerativeAI(apiKey)
       
@@ -53,6 +55,8 @@ export class GeminiService {
       }
       
       this.initializeModel()
+    } else {
+      console.error('GeminiService: No valid API key provided')
     }
   }
 
@@ -529,7 +533,10 @@ export class GeminiService {
   }
 
   async analyzeImagesForToolRecommendation(systemPrompt: string, imageUrls: string[]): Promise<string> {
+    console.log('analyzeImagesForToolRecommendation called with', imageUrls.length, 'images')
+    
     if (!this.model) {
+      console.error('Model not initialized - genAI:', !!this.genAI, 'model:', !!this.model)
       return "I'd love to analyze your images for tool recommendations, but I'm currently offline. Based on typical DIY projects, consider hiring from your local tool shop or HSS Hire for professional equipment."
     }
 
@@ -602,17 +609,50 @@ QUOTING PRIORITY:
 
 Respond as Toddy - provide detailed, accurate quotes based on what you can actually see and measure in the image.`
 
+      console.log(`Prepared ${imageParts.length} image parts for analysis`)
+      
       const contentParts = [{ text: analysisPrompt }]
       if (imageParts.length > 0) {
         contentParts.push(...imageParts)
+        console.log('Image parts details:', imageParts.map(part => ({
+          hasMimeType: !!part.inlineData?.mimeType,
+          mimeType: part.inlineData?.mimeType,
+          dataLength: part.inlineData?.data?.length || 0
+        })))
       }
 
+      console.log('Sending to Gemini model for analysis...')
       const result = await this.model.generateContent(contentParts)
       const response = await result.response
-      return response.text()
+      const responseText = response.text()
+      console.log('Gemini response received, length:', responseText.length)
+      return responseText
 
     } catch (error) {
-      console.error('Image analysis error:', error)
+      console.error('Image analysis error - Full details:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        imageCount: imageUrls.length,
+        imageTypes: imageUrls.map(url => {
+          if (url.startsWith('data:')) {
+            const mimeMatch = url.match(/data:([^;]+)/)
+            return mimeMatch ? mimeMatch[1] : 'unknown data URL'
+          }
+          return 'external URL'
+        })
+      })
+      
+      // Try to provide a more specific error message
+      if (error instanceof Error) {
+        if (error.message.includes('API key')) {
+          return "Configuration issue with AI service. Please check the system settings."
+        } else if (error.message.includes('model')) {
+          return "AI model temporarily unavailable. Please try again in a moment."
+        } else if (error.message.includes('size') || error.message.includes('large')) {
+          return "The images are too large for processing. Please try with smaller files or fewer pages."
+        }
+      }
+      
       return "Right then, I'm having trouble analyzing your images at the moment. Drop me the details of what you're looking to do and I'll sort you out with the proper tools for the job!"
     }
   }

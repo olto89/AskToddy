@@ -52,7 +52,7 @@ export async function convertPdfToImages(file: File, maxPages: number = 3): Prom
     for (let pageNum = 1; pageNum <= numPages; pageNum++) {
       try {
         const page = await pdf.getPage(pageNum)
-        const scale = 2.0 // Higher scale for better quality
+        const scale = 1.5 // Reduced scale to avoid size issues with Gemini
         const viewport = page.getViewport({ scale })
         
         // Create canvas
@@ -72,8 +72,9 @@ export async function convertPdfToImages(file: File, maxPages: number = 3): Prom
           viewport: viewport
         }).promise
 
-        // Convert canvas to data URL
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+        // Convert canvas to data URL with lower quality for smaller size
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6) // Reduced quality for smaller file size
+        console.log(`Page ${pageNum} converted, size: ${dataUrl.length} characters`)
         imageDataUrls.push(dataUrl)
         
         console.log(`Converted PDF page ${pageNum}/${numPages}`)
