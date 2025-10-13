@@ -23,10 +23,10 @@ export async function convertPdfToImages(file: File, maxPages: number = 3): Prom
     const pdfjsLib = await import('pdfjs-dist')
     console.log(`PDF.js version: ${pdfjsLib.version}`)
     
-    // Set up the worker with correct URL
-    const workerUrl = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
-    console.log(`Setting worker URL: ${workerUrl}`)
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl
+    // Use the worker file from the public folder
+    // This is the most reliable approach for Next.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+    console.log('PDF.js worker configured from public folder')
 
     console.log('Converting file to array buffer...')
     // Convert file to array buffer

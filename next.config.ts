@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
     // Skip TypeScript errors during build for quick deployment
     ignoreBuildErrors: true,
   },
+  webpack: (config) => {
+    // Add alias for PDF.js worker
+    config.resolve.alias.canvas = false;
+    config.resolve.alias.encoding = false;
+    
+    return config;
+  },
 };
 
 // Temporarily disabled Sentry until package is installed
