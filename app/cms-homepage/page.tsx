@@ -1,7 +1,7 @@
-import { getHomepageContent } from '@/lib/contentful'
+import { DEFAULT_HOMEPAGE_CONTENT } from '@/lib/contentful'
 
 export default async function CMSHomepage() {
-  const content = await getHomepageContent()
+  const content = DEFAULT_HOMEPAGE_CONTENT
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-blue-50 p-8">
