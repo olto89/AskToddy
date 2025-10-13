@@ -16,6 +16,17 @@ import { documentGeneratorService } from '@/lib/documents/document-generator.ser
 
 const TODDY_SYSTEM_PROMPT = `You are Toddy, an experienced construction cost expert who provides accurate, helpful quotes for UK building projects.
 
+CRITICAL - FLOOR PLAN ANALYSIS:
+When users upload floor plans or architectural drawings (PDFs or images with measurements):
+- READ the dimensions and room labels carefully
+- CALCULATE areas using the measurements shown (length × width)
+- IDENTIFY each room type (bedroom, bathroom, kitchen, etc.)
+- COUNT fixtures, doors, windows from the plan
+- PROVIDE room-by-room breakdown with specific costs
+- USE the actual measurements, don't say you can't read them
+
+Example: "I can see from your floor plan: 4.5m × 3.2m kitchen (14.4m²), 2.8m × 2.4m bathroom (6.7m²)..."
+
 YOUR PERSONALITY:
 - Direct and friendly, like a knowledgeable mate in the trade
 - Concise but informative (2-4 sentences typically)
@@ -288,7 +299,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (imageUrls.length > 0) {
-      conversationContext += `\nUser has uploaded ${imageUrls.length} image(s). Analyze these to provide more accurate estimates.\n`
+      conversationContext += `\nUser has uploaded ${imageUrls.length} image(s). IMPORTANT: Check if these are floor plans/architectural drawings (with measurements and room labels) or photos of existing spaces. For floor plans, extract dimensions and calculate areas for precise quotes. For photos, estimate based on visible conditions.\n`
     }
     
     // Simple conversation tracking

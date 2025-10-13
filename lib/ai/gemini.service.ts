@@ -572,22 +572,35 @@ export class GeminiService {
       const analysisPrompt = `${systemPrompt}
 
 VISUAL ANALYSIS INSTRUCTIONS:
-Look carefully at the uploaded image(s) to understand:
+
+IMPORTANT: Check if this is a floor plan, architectural drawing, or technical diagram:
+- If it's a FLOOR PLAN or ARCHITECTURAL DRAWING: Extract room dimensions, layout, and measurements to provide accurate quotes
+- If it's a PHOTO: Analyze the actual condition and work needed
+
+For FLOOR PLANS/ARCHITECTURAL DRAWINGS:
+1. **Read all dimensions and measurements** - Use labeled measurements for accurate area calculations
+2. **Identify room types and layouts** - Bathrooms, kitchens, bedrooms, etc.
+3. **Count fixtures and features** - Doors, windows, built-ins, plumbing locations
+4. **Calculate total area** - Use the dimensions provided on the plan
+5. **Note structural elements** - Load-bearing walls, beams, columns
+6. **Identify the scope** - Is this new construction, renovation, or extension?
+
+For PHOTOS of existing spaces:
 1. **What job needs doing** - What do you see that needs work?
-2. **Scale and scope** - How big is the area/task?
+2. **Scale and scope** - Estimate size based on visible references
 3. **Access requirements** - Can large tools get there? Gates, doorways, etc.
 4. **Ground conditions** - For excavation: soft/hard ground, existing structures
 5. **Material types** - Concrete, brick, wood, etc. affects tool choice
 6. **Safety hazards** - Overhead lines, confined spaces, structural concerns
 
-TOOL RECOMMENDATION PRIORITY:
-1. Recommend THE RIGHT TOOL for what you see in the image
-2. Explain WHY this tool based on visual evidence
-3. Mention key safety considerations you can see
-4. Give realistic pricing from Toddy Tool Hire if available
-5. Suggest alternatives if access/conditions problematic
+QUOTING PRIORITY:
+1. If you can read dimensions from a floor plan, use them for precise quotes
+2. Break down costs by room or area as shown on the plan
+3. For renovations shown in plans, quote based on the full scope visible
+4. Be specific about what you can see and measure
+5. If measurements are unclear, provide ranges based on typical UK room sizes
 
-Respond as Toddy with your expert eye - what tool does this job actually need?`
+Respond as Toddy - provide detailed, accurate quotes based on what you can actually see and measure in the image.`
 
       const contentParts = [{ text: analysisPrompt }]
       if (imageParts.length > 0) {
