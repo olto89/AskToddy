@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { convertPdfToImages, isPdfFile } from '@/lib/utils'
 
 interface ProjectData {
   description: string
@@ -16,6 +17,7 @@ interface FileError {
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/mpeg', 'video/quicktime', 'video/x-msvideo', 'video/webm']
+const ALLOWED_PDF_TYPES = ['application/pdf']
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 const MAX_VIDEO_SIZE = 200 * 1024 * 1024 // 200MB
 
@@ -37,9 +39,10 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
   const validateFile = (file: File): string | null => {
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
     const isVideo = ALLOWED_VIDEO_TYPES.includes(file.type)
+    const isPDF = ALLOWED_PDF_TYPES.includes(file.type)
     
-    if (!isImage && !isVideo) {
-      return `File type not supported. Please upload images (JPEG, PNG, GIF, WebP) or videos (MP4, MPEG, MOV, AVI, WebM).`
+    if (!isImage && !isVideo && !isPDF) {
+      return `File type not supported. Please upload images (JPEG, PNG, GIF, WebP), videos (MP4, MPEG, MOV, AVI, WebM), or PDF floor plans.`
     }
     
     if (isImage && file.size > MAX_FILE_SIZE) {
@@ -48,6 +51,10 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
     
     if (isVideo && file.size > MAX_VIDEO_SIZE) {
       return `Video file too large. Maximum size is 200MB.`
+    }
+    
+    if (isPDF && file.size > MAX_VIDEO_SIZE) {
+      return `PDF file too large. Maximum size is 200MB.`
     }
     
     return null
@@ -66,7 +73,12 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
           errors.push({ fileName: file.name, error })
         } else {
           validFiles.push(file)
-          const fileType = file.type.startsWith('video/') ? 'video' : 'image'
+          let fileType = 'image'
+          if (file.type.startsWith('video/')) {
+            fileType = 'video'
+          } else if (file.type === 'application/pdf') {
+            fileType = 'pdf'
+          }
           newPreviews.push({ 
             url: URL.createObjectURL(file), 
             type: fileType 
@@ -102,35 +114,76 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
 
     try {
       const uploadedImageUrls: string[] = []
+      const allImageDataUrls: string[] = []
 
+      // Process all files - convert PDFs to images, upload all files to storage
       for (let i = 0; i < projectData.images.length; i++) {
-        const image = projectData.images[i]
-        const fileExt = image.name.split('.').pop()
+        const file = projectData.images[i]
         const timestamp = Date.now()
-        const fileName = `${timestamp}-${i}-${image.name.replace(/[^a-zA-Z0-9]/g, '_')}`
-        const filePath = `project-images/${fileName}`
+        
+        if (isPdfFile(file)) {
+          // Convert PDF to images for AI analysis
+          try {
+            console.log('Converting PDF to images...')
+            const pdfImages = await convertPdfToImages(file, 3) // Convert first 3 pages
+            allImageDataUrls.push(...pdfImages)
+            console.log(`Converted PDF to ${pdfImages.length} images`)
+            
+            // Also upload the original PDF to storage
+            const fileName = `${timestamp}-${i}-${file.name.replace(/[^a-zA-Z0-9]/g, '_')}`
+            const filePath = `project-images/${fileName}`
 
-        const { data, error: uploadError } = await supabase.storage
-          .from('project-uploads')
-          .upload(filePath, image)
+            const { data, error: uploadError } = await supabase.storage
+              .from('project-uploads')
+              .upload(filePath, file)
 
-        if (uploadError) {
-          throw uploadError
-        }
+            if (uploadError) {
+              console.warn('Failed to upload PDF to storage:', uploadError)
+            } else {
+              const { data: urlData } = await supabase.storage
+                .from('project-uploads')
+                .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
 
-        // For private buckets, we need to create a signed URL or store the path
-        // Since we're using the anon key, we can access it via the authenticated URL
-        const { data: urlData } = await supabase.storage
-          .from('project-uploads')
-          .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
-
-        if (urlData?.signedUrl) {
-          uploadedImageUrls.push(urlData.signedUrl)
+              if (urlData?.signedUrl) {
+                uploadedImageUrls.push(urlData.signedUrl)
+              }
+            }
+          } catch (pdfError) {
+            console.error('Failed to process PDF:', pdfError)
+            alert('Failed to process PDF file. Please try uploading as images instead.')
+            return
+          }
         } else {
-          // Fallback: store the path to retrieve later
-          uploadedImageUrls.push(filePath)
+          // Handle regular image/video files
+          const fileName = `${timestamp}-${i}-${file.name.replace(/[^a-zA-Z0-9]/g, '_')}`
+          const filePath = `project-images/${fileName}`
+
+          const { data, error: uploadError } = await supabase.storage
+            .from('project-uploads')
+            .upload(filePath, file)
+
+          if (uploadError) {
+            throw uploadError
+          }
+
+          const { data: urlData } = await supabase.storage
+            .from('project-uploads')
+            .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+
+          if (urlData?.signedUrl) {
+            uploadedImageUrls.push(urlData.signedUrl)
+          } else {
+            uploadedImageUrls.push(filePath)
+          }
         }
       }
+
+      // For AI analysis, use converted PDF images + regular uploaded images
+      const imageUrlsForAnalysis = allImageDataUrls.length > 0 ? 
+        [...allImageDataUrls, ...uploadedImageUrls.filter(url => !url.includes('.pdf'))] : 
+        uploadedImageUrls
+
+      console.log(`Sending ${imageUrlsForAnalysis.length} images for analysis`)
 
       // Call AI analysis
       const analysisResponse = await fetch('/api/analyze', {
@@ -141,7 +194,7 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
         body: JSON.stringify({
           description: projectData.description,
           projectType: projectData.projectType,
-          imageUrls: uploadedImageUrls
+          imageUrls: imageUrlsForAnalysis
         })
       })
 
@@ -211,13 +264,13 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
 
         <div>
           <label className="block text-sm font-medium text-navy-800 mb-2">
-            Upload Images or Videos
+            Upload Images, Videos, or PDF Floor Plans
           </label>
           <div className="border-2 border-dashed border-primary-300 rounded-lg p-6 text-center bg-gradient-to-br from-primary-50 to-secondary-50">
             <input
               type="file"
               multiple
-              accept="image/*,video/*"
+              accept="image/*,video/*,.pdf"
               onChange={handleImageSelect}
               className="hidden"
               id="image-upload"
@@ -229,13 +282,13 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Add Images or Videos
+              Add Images, Videos, or PDFs
             </label>
             <p className="text-sm text-grey-700 mt-2">
-              Upload photos or videos of your project area
+              Upload photos, videos, or PDF floor plans of your project area
             </p>
             <p className="text-xs text-grey-600 mt-1">
-              Images: JPEG, PNG, GIF, WebP (max 50MB) | Videos: MP4, MOV, AVI, WebM (max 200MB)
+              Images: JPEG, PNG, GIF, WebP (max 50MB) | Videos: MP4, MOV, AVI, WebM (max 200MB) | PDFs: Floor plans (max 200MB)
             </p>
           </div>
 
@@ -265,6 +318,15 @@ export default function ProjectUpload({ onAnalysisComplete, onAnalysisStart }: P
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
+                      </div>
+                    </div>
+                  ) : preview.type === 'pdf' ? (
+                    <div className="w-full h-32 bg-red-50 border-2 border-red-200 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <svg className="w-8 h-8 text-red-500 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p className="text-xs text-red-700 font-medium">PDF Floor Plan</p>
                       </div>
                     </div>
                   ) : (

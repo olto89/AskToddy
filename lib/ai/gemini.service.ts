@@ -26,6 +26,8 @@ export interface ProjectAnalysis {
   safetyConsiderations: string[]
   requiresProfessional: boolean
   professionalReasons?: string[]
+  recommendedContractors?: any[]
+  contractorSearchLocation?: string
 }
 
 export class GeminiService {
@@ -174,17 +176,32 @@ export class GeminiService {
       const imageParts = []
       for (const url of imageUrls.slice(0, 4)) { // Limit to 4 images
         try {
-          const response = await fetch(url)
-          if (response.ok) {
-            const blob = await response.blob()
-            const arrayBuffer = await blob.arrayBuffer()
-            const base64 = Buffer.from(arrayBuffer).toString('base64')
-            imageParts.push({
-              inlineData: {
-                data: base64,
-                mimeType: blob.type
-              }
-            })
+          if (url.startsWith('data:')) {
+            // Handle data URLs (from converted PDFs)
+            const [mimeType, base64Data] = url.split(',')
+            const mimeTypeMatch = mimeType.match(/data:([^;]+)/)
+            if (mimeTypeMatch && base64Data) {
+              imageParts.push({
+                inlineData: {
+                  data: base64Data,
+                  mimeType: mimeTypeMatch[1]
+                }
+              })
+            }
+          } else {
+            // Handle regular URLs
+            const response = await fetch(url)
+            if (response.ok) {
+              const blob = await response.blob()
+              const arrayBuffer = await blob.arrayBuffer()
+              const base64 = Buffer.from(arrayBuffer).toString('base64')
+              imageParts.push({
+                inlineData: {
+                  data: base64,
+                  mimeType: blob.type
+                }
+              })
+            }
           }
         } catch (error) {
           console.warn('Failed to load image:', url, error)
@@ -520,17 +537,32 @@ export class GeminiService {
       const imageParts = []
       for (const url of imageUrls.slice(0, 4)) {
         try {
-          const response = await fetch(url)
-          if (response.ok) {
-            const blob = await response.blob()
-            const arrayBuffer = await blob.arrayBuffer()
-            const base64 = Buffer.from(arrayBuffer).toString('base64')
-            imageParts.push({
-              inlineData: {
-                data: base64,
-                mimeType: blob.type
-              }
-            })
+          if (url.startsWith('data:')) {
+            // Handle data URLs (from converted PDFs)
+            const [mimeType, base64Data] = url.split(',')
+            const mimeTypeMatch = mimeType.match(/data:([^;]+)/)
+            if (mimeTypeMatch && base64Data) {
+              imageParts.push({
+                inlineData: {
+                  data: base64Data,
+                  mimeType: mimeTypeMatch[1]
+                }
+              })
+            }
+          } else {
+            // Handle regular URLs
+            const response = await fetch(url)
+            if (response.ok) {
+              const blob = await response.blob()
+              const arrayBuffer = await blob.arrayBuffer()
+              const base64 = Buffer.from(arrayBuffer).toString('base64')
+              imageParts.push({
+                inlineData: {
+                  data: base64,
+                  mimeType: blob.type
+                }
+              })
+            }
           }
         } catch (error) {
           console.warn('Failed to load image:', url, error)
