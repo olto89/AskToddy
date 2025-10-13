@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import FeedbackModal from './FeedbackModal'
 import { trackEvents } from '@/lib/analytics/analytics.service'
+import { convertPdfToImages, isPdfFile } from '@/lib/utils'
 
 interface Message {
   id: string
@@ -97,12 +98,13 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
   const handleImageUpload = async (files: FileList) => {
     const validFiles = Array.from(files).filter(file => {
       const isValidImage = file.type.startsWith('image/') || file.type.startsWith('video/')
-      const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB limit
-      return isValidImage && isValidSize
+      const isValidPdf = isPdfFile(file)
+      const isValidSize = file.size <= (isValidPdf ? 200 * 1024 * 1024 : 10 * 1024 * 1024) // 200MB for PDF, 10MB for others
+      return (isValidImage || isValidPdf) && isValidSize
     })
 
     if (validFiles.length === 0) {
-      alert('Please upload valid image or video files under 10MB')
+      alert('Please upload valid image, video, or PDF files (PDFs up to 200MB, others up to 10MB)')
       return
     }
 
@@ -110,17 +112,43 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     trackEvents.imageUploaded(validFiles.length)
 
     const newImageUrls: string[] = []
+    let processedCount = 0
+    
     for (const file of validFiles.slice(0, 4)) { // Limit to 4 files
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          newImageUrls.push(e.target.result as string)
-          if (newImageUrls.length === validFiles.length) {
+      try {
+        if (isPdfFile(file)) {
+          // Convert PDF to images
+          const pdfImages = await convertPdfToImages(file, 3) // Convert first 3 pages
+          newImageUrls.push(...pdfImages)
+          processedCount++
+          
+          if (processedCount === validFiles.length) {
             setUploadedImages(prev => [...prev, ...newImageUrls])
           }
+        } else {
+          // Handle regular image/video files
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            if (e.target?.result) {
+              newImageUrls.push(e.target.result as string)
+              processedCount++
+              
+              if (processedCount === validFiles.length) {
+                setUploadedImages(prev => [...prev, ...newImageUrls])
+              }
+            }
+          }
+          reader.readAsDataURL(file)
+        }
+      } catch (error) {
+        console.error('Error processing file:', file.name, error)
+        alert(`Error processing ${file.name}. Please try again.`)
+        processedCount++
+        
+        if (processedCount === validFiles.length && newImageUrls.length > 0) {
+          setUploadedImages(prev => [...prev, ...newImageUrls])
         }
       }
-      reader.readAsDataURL(file)
     }
   }
 
@@ -630,7 +658,7 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
             ref={fileInputRef}
             type="file"
             multiple
-            accept="image/*,video/*"
+            accept="image/*,video/*,.pdf,application/pdf"
             onChange={(e) => e.target.files && handleImageUpload(e.target.files)}
             className="hidden"
           />
