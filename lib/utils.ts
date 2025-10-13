@@ -11,26 +11,37 @@ export function cn(...inputs: ClassValue[]) {
  */
 export async function convertPdfToImages(file: File, maxPages: number = 3): Promise<string[]> {
   try {
+    console.log(`Starting PDF conversion for: ${file.name}`)
+    
     // Check if we're in browser environment
     if (typeof window === 'undefined') {
       throw new Error('PDF processing only available in browser')
     }
 
+    console.log('Importing PDF.js library...')
     // Import PDF.js dynamically to avoid SSR issues
     const pdfjsLib = await import('pdfjs-dist')
+    console.log(`PDF.js version: ${pdfjsLib.version}`)
     
     // Set up the worker with correct URL
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+    const workerUrl = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+    console.log(`Setting worker URL: ${workerUrl}`)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl
 
+    console.log('Converting file to array buffer...')
     // Convert file to array buffer
     const arrayBuffer = await file.arrayBuffer()
+    console.log(`Array buffer size: ${arrayBuffer.byteLength} bytes`)
     
+    console.log('Loading PDF document...')
     // Load the PDF document with options
     const pdf = await pdfjsLib.getDocument({
       data: arrayBuffer,
       cMapUrl: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/cmaps/`,
       cMapPacked: true,
     }).promise
+    
+    console.log(`PDF loaded successfully. Pages: ${pdf.numPages}`)
     
     const numPages = Math.min(pdf.numPages, maxPages)
     const imageDataUrls: string[] = []

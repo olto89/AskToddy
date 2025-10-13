@@ -131,12 +131,25 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       try {
         if (isPdfFile(file)) {
           // Convert PDF to images
-          const pdfImages = await convertPdfToImages(file, 3) // Convert first 3 pages
-          newImageUrls.push(...pdfImages)
-          processedCount++
-          
-          if (processedCount === validFiles.length) {
-            setUploadedImages(prev => [...prev, ...newImageUrls])
+          console.log(`Processing PDF: ${file.name}, size: ${file.size} bytes`)
+          try {
+            const pdfImages = await convertPdfToImages(file, 3) // Convert first 3 pages
+            console.log(`Successfully converted PDF to ${pdfImages.length} images`)
+            newImageUrls.push(...pdfImages)
+            processedCount++
+            
+            if (processedCount === validFiles.length) {
+              setUploadedImages(prev => [...prev, ...newImageUrls])
+            }
+          } catch (pdfError) {
+            console.error(`Detailed PDF conversion error for ${file.name}:`, pdfError)
+            alert(`Error processing ${file.name}: ${pdfError.message || 'PDF conversion failed'}. Please try uploading the PDF as images instead.`)
+            processedCount++
+            
+            if (processedCount === validFiles.length && newImageUrls.length > 0) {
+              setUploadedImages(prev => [...prev, ...newImageUrls])
+            }
+            return // Exit early on PDF error
           }
         } else {
           // Handle regular image/video files
