@@ -47,10 +47,10 @@
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.62.0",
     "tailwind-merge": "^3.3.1",
-    "zod": "^4.0.17"
+    "zod": "^4.0.17",
+    "@google/generative-ai": "^0.24.1"
   },
   "devDependencies": {
-    "@google/generative-ai": "^0.24.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",

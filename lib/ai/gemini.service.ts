@@ -54,43 +54,34 @@ export class GeminiService {
         this.fallbackModels.unshift(primaryModel)
       }
       
-      this.initializeModel()
+      // Initialize model synchronously - we'll handle failures gracefully
+      this.initializeModelSync()
     } else {
       console.error('GeminiService: No valid API key provided')
     }
   }
-
-  private async initializeModel() {
-    if (!this.genAI) return
-
-    // Check if fallback is disabled via environment variable
-    const enableFallback = process.env.GEMINI_ENABLE_FALLBACK !== 'false'
-    
-    if (!enableFallback) {
-      // Use only the primary model if fallback is disabled
-      const primaryModel = this.fallbackModels[0]
-      try {
-        console.log(`Using primary model only: ${primaryModel}`)
-        this.model = this.genAI.getGenerativeModel({ model: primaryModel })
-        await this.model.generateContent('Test')
-        console.log(`✅ Successfully initialized ${primaryModel}`)
-        return
-      } catch (error) {
-        console.error(`❌ Primary model ${primaryModel} failed:`, (error as Error).message)
-        this.model = null
-        return
-      }
+  
+  private initializeModelSync() {
+    if (!this.genAI) {
+      console.error('Cannot initialize model - genAI is null')
+      return
     }
 
-    // Try each model in the fallback chain
-    for (const modelName of this.fallbackModels) {
+    // Try vision-capable models first for better image analysis
+    const visionModels = [
+      'gemini-1.5-flash',  // Most reliable for vision
+      'gemini-1.5-pro',    // Good vision capabilities
+    ]
+    
+    // Prioritize vision models
+    const orderedModels = [...visionModels, ...this.fallbackModels.filter(m => !visionModels.includes(m))]
+    
+    // Try each model in order
+    for (const modelName of orderedModels) {
       try {
-        console.log(`Trying Gemini model: ${modelName}`)
+        console.log(`Configuring Gemini model: ${modelName}`)
         this.model = this.genAI.getGenerativeModel({ model: modelName })
-        
-        // Test the model with a simple request
-        await this.model.generateContent('Test')
-        console.log(`✅ Successfully initialized ${modelName}`)
+        console.log(`✅ Model ${modelName} configured successfully`)
         return
       } catch (error) {
         console.log(`❌ Model ${modelName} failed:`, (error as Error).message)
@@ -98,9 +89,10 @@ export class GeminiService {
       }
     }
     
-    console.error('❌ ALL GEMINI MODELS FAILED - Using fallback responses')
+    console.error('❌ ALL GEMINI MODELS FAILED')
     this.model = null
   }
+
 
   async generateContent(prompt: string): Promise<string> {
     // If no model is initialized, return intelligent fallback
@@ -622,11 +614,30 @@ Respond as Toddy - provide detailed, accurate quotes based on what you can actua
       }
 
       console.log('Sending to Gemini model for analysis...')
-      const result = await this.model.generateContent(contentParts)
-      const response = await result.response
-      const responseText = response.text()
-      console.log('Gemini response received, length:', responseText.length)
-      return responseText
+      
+      try {
+        const result = await this.model.generateContent(contentParts)
+        const response = await result.response
+        const responseText = response.text()
+        console.log('Gemini response received, length:', responseText.length)
+        return responseText
+      } catch (imageError) {
+        console.error('Image analysis failed, trying text-only fallback:', imageError)
+        
+        // Try without images as fallback
+        try {
+          const textOnlyResult = await this.model.generateContent([{ text: analysisPrompt + '\n\nNote: Unable to process the uploaded images. Please describe what you see in the floor plan: room sizes, layout, and what work needs to be done.' }])
+          const textResponse = await textOnlyResult.response
+          return "I'm having trouble viewing your floor plan images directly, but I can still help! Please tell me:\n\n" +
+                 "• Room dimensions from the plan (e.g., 'kitchen is 4m x 3.5m')\n" +
+                 "• What rooms need work\n" +
+                 "• Type of renovation (full gut, cosmetic, extension)\n\n" +
+                 textResponse.text()
+        } catch (textError) {
+          console.error('Text-only fallback also failed:', textError)
+          throw imageError // Re-throw original error
+        }
+      }
 
     } catch (error) {
       console.error('Image analysis error - Full details:', {
