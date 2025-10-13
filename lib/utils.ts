@@ -90,7 +90,19 @@ export async function convertPdfToImages(file: File, maxPages: number = 3): Prom
  * Check if a file is a PDF
  */
 export function isPdfFile(file: File): boolean {
-  return file.type === 'application/pdf'
+  // Check MIME type first
+  if (file.type === 'application/pdf') {
+    return true
+  }
+  
+  // Fallback: check file extension if MIME type is missing/incorrect
+  const fileName = file.name.toLowerCase()
+  if (fileName.endsWith('.pdf')) {
+    console.log(`PDF detected by extension: ${file.name}, MIME type: ${file.type}`)
+    return true
+  }
+  
+  return false
 }
 
 /**

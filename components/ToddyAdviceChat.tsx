@@ -100,8 +100,21 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
       const isValidImage = file.type.startsWith('image/') || file.type.startsWith('video/')
       const isValidPdf = isPdfFile(file)
       const isValidSize = file.size <= (isValidPdf ? 200 * 1024 * 1024 : 10 * 1024 * 1024) // 200MB for PDF, 10MB for others
+      
+      // Debug logging
+      console.log(`File validation - ${file.name}:`, {
+        type: file.type,
+        size: file.size,
+        isValidImage,
+        isValidPdf,
+        isValidSize,
+        maxSize: isValidPdf ? 200 * 1024 * 1024 : 10 * 1024 * 1024
+      })
+      
       return (isValidImage || isValidPdf) && isValidSize
     })
+
+    console.log(`Valid files: ${validFiles.length} of ${files.length}`)
 
     if (validFiles.length === 0) {
       alert('Please upload valid image, video, or PDF files (PDFs up to 200MB, others up to 10MB)')
