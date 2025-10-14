@@ -34,11 +34,11 @@ export class GeminiService {
   private genAI: GoogleGenerativeAI | null = null
   private model: any = null
   private fallbackModels = [
-    'gemini-1.5-flash-latest',
-    'gemini-1.5-pro-latest',
-    'gemini-1.5-flash',
     'gemini-1.5-pro',
-    'gemini-pro'
+    'gemini-1.5-flash-8b',
+    'gemini-pro',
+    'models/gemini-1.5-pro',
+    'models/gemini-pro'
   ]
 
   constructor(apiKey?: string) {
@@ -71,8 +71,8 @@ export class GeminiService {
 
     // Try vision-capable models first for better image analysis
     const visionModels = [
-      'gemini-1.5-flash-latest',  // Most reliable for vision
-      'gemini-1.5-pro-latest',    // Good vision capabilities
+      'gemini-1.5-pro',  // Most reliable for vision
+      'gemini-1.5-flash-8b',    // Good vision capabilities
     ]
     
     // Prioritize vision models
