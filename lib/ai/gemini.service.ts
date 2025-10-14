@@ -110,7 +110,7 @@ export class GeminiService {
       
       // Try to reinitialize with a different model
       console.log('🔄 Attempting model fallback...')
-      await this.initializeModel()
+      this.initializeModelSync()
       
       if (this.model) {
         try {
