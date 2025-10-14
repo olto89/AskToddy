@@ -342,18 +342,21 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Toddy Advice error:', error)
     
-    // Sentry.captureException(error, {
-    //   tags: {
-    //     api_endpoint: 'toddy-advice'
-    //   },
-    //   extra: {
-    //     errorMessage: error instanceof Error ? error.message : 'Unknown error'
-    //   }
-    // })
+    // Return detailed error in development/debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorStack = error instanceof Error ? error.stack : ''
+    
+    console.error('Detailed error:', {
+      message: errorMessage,
+      stack: errorStack,
+      hasGeminiKey: !!process.env.GEMINI_API_KEY,
+      hasPublicGeminiKey: !!process.env.NEXT_PUBLIC_GEMINI_API_KEY
+    })
 
     return NextResponse.json(
       { 
         error: 'Failed to get advice',
+        errorDetails: errorMessage, // Include actual error for debugging
         response: "Sorry mate, I'm having technical difficulties. Try again in a moment!"
       },
       { status: 500 }

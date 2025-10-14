@@ -84,6 +84,11 @@ export class PricingService {
       return this.cache.get(cacheKey)
     }
 
+    // Return empty array if no client
+    if (!this.client) {
+      return []
+    }
+
     try {
       const query: any = {
         content_type: 'researchDataPoint',
@@ -130,6 +135,11 @@ export class PricingService {
       return this.cache.get(cacheKey)
     }
 
+    // Return empty array if no client
+    if (!this.client) {
+      return []
+    }
+
     try {
       const query: any = {
         content_type: 'baseRate',
@@ -170,6 +180,11 @@ export class PricingService {
     
     if (this.isCacheValid(cacheKey)) {
       return this.cache.get(cacheKey)
+    }
+
+    // Return null if no client
+    if (!this.client) {
+      return null
     }
 
     try {
