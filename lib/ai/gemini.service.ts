@@ -44,8 +44,11 @@ export class GeminiService {
 
   constructor(apiKey?: string) {
     console.log('GeminiService constructor - API key provided:', !!apiKey, 'Key length:', apiKey?.length)
+    console.log('Environment check - GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY)
+    console.log('Environment check - NEXT_PUBLIC_GEMINI_API_KEY exists:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY)
     
     if (apiKey && apiKey !== 'your_gemini_api_key_here') {
+      console.log('✅ Valid API key found, initializing GoogleGenerativeAI')
       this.genAI = new GoogleGenerativeAI(apiKey)
       
       // Use environment variable for primary model if available
@@ -57,7 +60,7 @@ export class GeminiService {
       // Initialize model synchronously - we'll handle failures gracefully
       this.initializeModelSync()
     } else {
-      console.error('GeminiService: No valid API key provided')
+      console.error('❌ GeminiService: No valid API key provided - API key:', apiKey)
     }
   }
   
@@ -97,9 +100,12 @@ export class GeminiService {
   async generateContent(prompt: string): Promise<string> {
     // If no model is initialized, return intelligent fallback
     if (!this.model) {
+      console.error('❌ GEMINI MODEL NOT INITIALIZED - using fallback')
       console.log('🔄 No model available, using intelligent fallback for:', prompt.substring(0, 100) + '...')
       return this.getIntelligentFallback(prompt)
     }
+
+    console.log('✅ Using Gemini AI model for response')
 
     try {
       const result = await this.model.generateContent(prompt)
@@ -124,6 +130,7 @@ export class GeminiService {
       }
       
       // Final fallback - intelligent response based on prompt
+      console.error('❌ ALL GEMINI MODELS FAILED - using fallback responses')
       console.log('🔄 All models failed, using intelligent fallback responses')
       return this.getIntelligentFallback(prompt)
     }
