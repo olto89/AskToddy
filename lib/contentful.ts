@@ -10,14 +10,16 @@ export const CONTENT_TYPES = {
   AI_PROMPT: 'aiPrompt'
 } as const
 
-// Initialize Contentful client
-const client = createClient({
-  space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
-  accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN || '',
-  environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master',
-  // Add cache control
-  host: 'cdn.contentful.com'
-})
+// Initialize Contentful client only if credentials exist
+const client = process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID && process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN
+  ? createClient({
+      space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+      accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
+      environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master',
+      // Add cache control
+      host: 'cdn.contentful.com'
+    })
+  : null
 
 // Type definitions for your content
 export interface HomepageContent {
@@ -102,7 +104,7 @@ export const DEFAULT_HOMEPAGE_CONTENT: HomepageContent = {
 // Fetch homepage content with automatic fallback
 export async function getHomepageContent(): Promise<HomepageContent> {
   // If Contentful is not configured, return defaults immediately
-  if (!isContentfulConfigured()) {
+  if (!isContentfulConfigured() || !client) {
     console.log('Contentful not configured, using default content')
     return DEFAULT_HOMEPAGE_CONTENT
   }
@@ -139,6 +141,7 @@ export async function getHomepageContent(): Promise<HomepageContent> {
 
 // Fetch upload form content
 export async function getUploadFormContent(): Promise<UploadFormContent | null> {
+  if (!client) return null
   try {
     const entries = await client.getEntries({
       content_type: CONTENT_TYPES.UPLOAD_FORM,
@@ -169,6 +172,7 @@ export async function getUploadFormContent(): Promise<UploadFormContent | null> 
 
 // Fetch pricing tiers
 export async function getPricingTiers(): Promise<PricingTier[]> {
+  if (!client) return []
   try {
     const entries = await client.getEntries({
       content_type: CONTENT_TYPES.PRICING_TIER,
@@ -193,6 +197,7 @@ export async function getPricingTiers(): Promise<PricingTier[]> {
 
 // Fetch UI text by key
 export async function getUIText(key: string): Promise<string | null> {
+  if (!client) return null
   try {
     const entries = await client.getEntries({
       content_type: CONTENT_TYPES.UI_TEXT,
@@ -213,6 +218,7 @@ export async function getUIText(key: string): Promise<string | null> {
 
 // Fetch all UI texts
 export async function getAllUITexts(): Promise<Record<string, string>> {
+  if (!client) return {}
   try {
     const entries = await client.getEntries({
       content_type: CONTENT_TYPES.UI_TEXT
@@ -235,6 +241,7 @@ export async function getAllUITexts(): Promise<Record<string, string>> {
 
 // Fetch AI prompts
 export async function getAIPrompt(promptType: string): Promise<string | null> {
+  if (!client) return null
   try {
     const entries = await client.getEntries({
       content_type: CONTENT_TYPES.AI_PROMPT,
