@@ -11,14 +11,19 @@ export async function GET(request: NextRequest) {
     const { GoogleGenerativeAI } = await import('@google/generative-ai')
     const genAI = new GoogleGenerativeAI(apiKey)
     
-    // Test various model names
+    // Test various model names including newer ones
     const modelsToTest = [
+      'gemini-2.0-flash-exp',
+      'gemini-1.5-flash-002',
+      'gemini-1.5-pro-002', 
+      'gemini-1.5-flash-001',
+      'gemini-1.5-pro-001',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-pro-latest',
+      'gemini-exp-1206',
       'gemini-1.5-pro',
-      'gemini-1.5-flash-8b', 
       'gemini-pro',
-      'gemini-1.5-flash',
-      'models/gemini-1.5-pro',
-      'models/gemini-pro'
+      'text-bison-001'
     ]
     
     const results: any[] = []
