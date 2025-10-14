@@ -316,7 +316,18 @@ export async function POST(request: NextRequest) {
     
     conversationContext += `\nCurrent message: "${message}"\n`
 
-    const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
+    // Log environment status for debugging
+    console.log('API Route - GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY)
+    console.log('API Route - NEXT_PUBLIC_GEMINI_API_KEY exists:', !!process.env.NEXT_PUBLIC_GEMINI_API_KEY)
+    
+    // Try both possible environment variables
+    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY
+    
+    if (!apiKey) {
+      console.error('No Gemini API key found in environment variables')
+    }
+    
+    const geminiService = new GeminiService(apiKey)
     
     // Use enhanced method for image analysis if images provided
     if (imageUrls.length > 0) {

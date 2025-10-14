@@ -41,7 +41,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const geminiService = new GeminiService(process.env.GEMINI_API_KEY)
+    // Try both possible environment variables
+    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY
+    const geminiService = new GeminiService(apiKey)
     
     if (isFollowUp && previousAnalysis) {
       // Handle follow-up questions
