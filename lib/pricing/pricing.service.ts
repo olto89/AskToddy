@@ -56,11 +56,21 @@ export class PricingService {
   private readonly CACHE_TTL = 15 * 60 * 1000 // 15 minutes
 
   constructor() {
-    this.client = createClient({
-      space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
-      accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN || '',
-      environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master',
-    })
+    // Only create client if credentials exist
+    try {
+      if (process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID && process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN) {
+        this.client = createClient({
+          space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+          accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
+          environment: process.env.NEXT_PUBLIC_CONTENTFUL_ENVIRONMENT || 'master',
+        })
+      } else {
+        this.client = null
+      }
+    } catch (error) {
+      console.error('Failed to initialize Contentful client in pricing service:', error)
+      this.client = null
+    }
   }
 
   private isCacheValid(key: string): boolean {
