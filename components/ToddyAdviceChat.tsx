@@ -286,6 +286,9 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
     setIsLoading(true)
 
     try {
+      // Count total user messages for proper conversation tracking
+      const totalUserMessages = messages.filter(m => m.role === 'user').length + 1
+      
       const response = await fetch('/api/toddy-advice', {
         method: 'POST',
         headers: {
@@ -294,7 +297,8 @@ export default function ToddyAdviceChat({ className = '' }: ToddyAdviceChatProps
         body: JSON.stringify({
           message: input.trim(),
           history: messages.slice(-6),
-          imageUrls: currentImages
+          imageUrls: currentImages,
+          totalMessageCount: totalUserMessages
         })
       })
 

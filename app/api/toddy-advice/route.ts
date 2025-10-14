@@ -141,7 +141,7 @@ REMEMBER: SHORT AND DIRECT. NO EXPLANATIONS.`
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { message, history = [], imageUrls = [] } = body
+    const { message, history = [], imageUrls = [], totalMessageCount } = body
 
     if (!message) {
       return NextResponse.json(
@@ -307,19 +307,20 @@ export async function POST(request: NextRequest) {
     }
     
     // Track conversation stage for proper flow
-    const userMessageCount = history.filter((msg: any) => msg.role === 'user').length
+    // Use totalMessageCount if provided (from frontend), otherwise count from history
+    const actualMessageCount = totalMessageCount || (history.filter((msg: any) => msg.role === 'user').length + 1)
     
     // Add context about conversation stage - enforce the 3-message rule
-    if (userMessageCount === 0) {
+    if (actualMessageCount === 1) {
       conversationContext += `\n**CONVERSATION STAGE: First Message**
 - Ask your 4 clarification questions (size, location, quality, specifics)\n`
-    } else if (userMessageCount === 1) {
+    } else if (actualMessageCount === 2) {
       conversationContext += `\n**CONVERSATION STAGE: Second Message**
 - If they gave good details: Provide full quote, plan, and task list
 - If details are vague: Ask ONE specific clarification (then provide quote next message)
 - Remember to end with: "Upload floor plans and photos for a more accurate quote"\n`
     } else {
-      conversationContext += `\n**CONVERSATION STAGE: Third+ Message (${userMessageCount + 1})**
+      conversationContext += `\n**CONVERSATION STAGE: Third+ Message (message ${actualMessageCount})**
 - MUST provide quote, plan, and task list (NO MORE QUESTIONS)
 - Use whatever information you have, make assumptions for the rest
 - End with: "Upload floor plans and photos for a more accurate quote"\n`
