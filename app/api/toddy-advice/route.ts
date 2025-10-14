@@ -16,6 +16,14 @@ import { documentGeneratorService } from '@/lib/documents/document-generator.ser
 
 const TODDY_SYSTEM_PROMPT = `You are Toddy, an experienced construction cost expert who provides accurate, helpful quotes for UK building projects.
 
+CONVERSATION LOGIC - STRICT RULES:
+1. FIRST RESPONSE: Ask 4 clarification questions (size, location, quality level, specific requirements)
+2. SECOND RESPONSE: 
+   - If they answered with good details → Provide quote, plan, and task list
+   - If details are vague → Ask ONE more specific clarification question
+3. THIRD RESPONSE: ALWAYS provide quote, plan, and task list (no more questions)
+4. ALWAYS end quotes with: "Upload floor plans and photos for a more accurate quote"
+
 CRITICAL - FLOOR PLAN ANALYSIS:
 When users upload floor plans or architectural drawings (PDFs or images with measurements):
 - READ the dimensions and room labels carefully
@@ -32,17 +40,13 @@ YOUR PERSONALITY:
 - Concise but informative (2-4 sentences typically)
 - Always helpful - if someone asks about a project, help them understand costs
 
-CONVERSATION FLOW:
-1. When someone mentions a project (bathroom, kitchen, extension, etc.), briefly ask for key details you need
-2. Once they provide ANY information, give them a quote based on what you know
-3. If they want more accuracy, suggest they can share photos or more details
-4. Always end quotes by offering to create documents
-
-PROVIDING QUOTES:
-- Use the information given, make reasonable assumptions for the rest
-- Show price ranges to account for unknowns
-- Break down costs simply: materials, labour, timeline
-- Mention accuracy level and how to improve it
+PROVIDING QUOTES - ALWAYS INCLUDE:
+1. **Quote:** £X,XXX-£XX,XXX (inc VAT)
+2. **Breakdown:** Materials £X,XXX, Labour £X,XXX
+3. **Timeline:** X-X weeks
+4. **Project Plan:** Week-by-week breakdown
+5. **Task List:** Key steps to complete
+6. **Note:** "Upload floor plans and photos for a more accurate quote"
 
 EXAMPLE INTERACTIONS:
 
@@ -302,16 +306,23 @@ export async function POST(request: NextRequest) {
       conversationContext += `\nUser has uploaded ${imageUrls.length} image(s). IMPORTANT: Check if these are floor plans/architectural drawings (with measurements and room labels) or photos of existing spaces. For floor plans, extract dimensions and calculate areas for precise quotes. For photos, estimate based on visible conditions.\n`
     }
     
-    // Simple conversation tracking
-    const conversationLength = history.filter((msg: any) => msg.role === 'user').length
+    // Track conversation stage for proper flow
+    const userMessageCount = history.filter((msg: any) => msg.role === 'user').length
     
-    // Add context about conversation stage
-    if (conversationLength === 0) {
-      conversationContext += `\nThis is the user's first message about this project.\n`
-    } else if (conversationLength === 1) {
-      conversationContext += `\nThe user has provided initial information. Now provide a quote based on what you know.\n`
+    // Add context about conversation stage - enforce the 3-message rule
+    if (userMessageCount === 0) {
+      conversationContext += `\n**CONVERSATION STAGE: First Message**
+- Ask your 4 clarification questions (size, location, quality, specifics)\n`
+    } else if (userMessageCount === 1) {
+      conversationContext += `\n**CONVERSATION STAGE: Second Message**
+- If they gave good details: Provide full quote, plan, and task list
+- If details are vague: Ask ONE specific clarification (then provide quote next message)
+- Remember to end with: "Upload floor plans and photos for a more accurate quote"\n`
     } else {
-      conversationContext += `\nThis is an ongoing conversation. The user has already provided information - work with what you have.\n`
+      conversationContext += `\n**CONVERSATION STAGE: Third+ Message (${userMessageCount + 1})**
+- MUST provide quote, plan, and task list (NO MORE QUESTIONS)
+- Use whatever information you have, make assumptions for the rest
+- End with: "Upload floor plans and photos for a more accurate quote"\n`
     }
     
     conversationContext += `\nCurrent message: "${message}"\n`
