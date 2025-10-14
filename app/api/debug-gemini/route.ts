@@ -19,21 +19,45 @@ export async function GET(request: NextRequest) {
   try {
     const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY
     
+    // Test direct Gemini import
+    let directGeminiTest = 'not tested'
+    try {
+      const { GoogleGenerativeAI } = await import('@google/generative-ai')
+      directGeminiTest = 'import successful'
+      
+      if (apiKey) {
+        const genAI = new GoogleGenerativeAI(apiKey)
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        directGeminiTest = 'model creation successful'
+      }
+    } catch (err) {
+      directGeminiTest = `import failed: ${err instanceof Error ? err.message : 'unknown'}`
+    }
+    
     const debugInfo = {
       hasGeminiKey: !!process.env.GEMINI_API_KEY,
       hasPublicGeminiKey: !!process.env.NEXT_PUBLIC_GEMINI_API_KEY,
       apiKeyLength: apiKey?.length || 0,
-      apiKeyStartsWith: apiKey?.substring(0, 10) || 'none'
+      apiKeyStartsWith: apiKey?.substring(0, 10) || 'none',
+      directGeminiTest
     }
 
     // Test creating GeminiService
     logs.push('Creating GeminiService...')
     const geminiService = new GeminiService(apiKey)
     
+    // Check internal state
+    const hasGenAI = !!(geminiService as any).genAI
+    const hasModel = !!(geminiService as any).model
+    
+    logs.push(`GeminiService state - genAI: ${hasGenAI}, model: ${hasModel}`)
+    
     // Test simple generation
     logs.push('Testing generateContent...')
     const testPrompt = 'You are Toddy. Someone says "extension building costs". Give a conversational response.'
     const response = await geminiService.generateContent(testPrompt)
+    
+    logs.push(`Response received, length: ${response.length}`)
     
     // Restore console
     console.log = originalConsoleLog
