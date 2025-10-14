@@ -228,8 +228,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Build conversation context
+    // Build conversation context - START WITH HISTORY SO AI SEES IT FIRST
     let conversationContext = TODDY_SYSTEM_PROMPT + '\n\n'
+    
+    // Put conversation history FIRST so AI pays attention to it
+    if (history.length > 0) {
+      conversationContext += '**PREVIOUS CONVERSATION (READ THIS FIRST!):**\n'
+      history.forEach((msg: any) => {
+        conversationContext += `${msg.role === 'user' ? 'User' : 'Toddy'}: ${msg.content}\n`
+      })
+      conversationContext += '\n**Based on the above conversation, the user has now said:** "' + message + '"\n'
+      conversationContext += '**Respond appropriately based on what information they have already provided.**\n\n'
+    }
     
     // Add construction costing context (HIGHEST PRIORITY)
     if (costingContext) {
@@ -293,14 +303,7 @@ export async function POST(request: NextRequest) {
       conversationContext += 'CONTRACTOR CONTEXT: User has specifically asked for contractor recommendations. Provide the contractor list above.\n\n'
     }
     
-    // Add recent history for context
-    if (history.length > 0) {
-      conversationContext += 'Recent conversation:\n'
-      history.slice(-4).forEach((msg: any) => {
-        conversationContext += `${msg.role === 'user' ? 'User' : 'Toddy'}: ${msg.content}\n`
-      })
-      conversationContext += '\n'
-    }
+    // History already added at the beginning - don't duplicate
 
     if (imageUrls.length > 0) {
       conversationContext += `\nUser has uploaded ${imageUrls.length} image(s). IMPORTANT: Check if these are floor plans/architectural drawings (with measurements and room labels) or photos of existing spaces. For floor plans, extract dimensions and calculate areas for precise quotes. For photos, estimate based on visible conditions.\n`
@@ -326,7 +329,10 @@ export async function POST(request: NextRequest) {
 - End with: "Upload floor plans and photos for a more accurate quote"\n`
     }
     
-    conversationContext += `\nCurrent message: "${message}"\n`
+    // Current message already added in conversation history section if history exists
+    if (history.length === 0) {
+      conversationContext += `\nUser's message: "${message}"\n`
+    }
 
     // Log environment status for debugging
     console.log('API Route - GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY)
