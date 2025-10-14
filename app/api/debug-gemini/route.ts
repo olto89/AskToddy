@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import GeminiService from '@/lib/ai/gemini.service'
 
 export async function GET(request: NextRequest) {
+  // Capture console logs
+  const logs: string[] = []
+  const originalConsoleLog = console.log
+  const originalConsoleError = console.error
+  
+  console.log = (...args) => {
+    logs.push('LOG: ' + args.join(' '))
+    originalConsoleLog(...args)
+  }
+  console.error = (...args) => {
+    logs.push('ERROR: ' + args.join(' '))
+    originalConsoleError(...args)
+  }
+  
   try {
     const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY
     
@@ -13,16 +27,23 @@ export async function GET(request: NextRequest) {
     }
 
     // Test creating GeminiService
+    logs.push('Creating GeminiService...')
     const geminiService = new GeminiService(apiKey)
     
     // Test simple generation
+    logs.push('Testing generateContent...')
     const testPrompt = 'You are Toddy. Someone says "extension building costs". Give a conversational response.'
     const response = await geminiService.generateContent(testPrompt)
+    
+    // Restore console
+    console.log = originalConsoleLog
+    console.error = originalConsoleError
     
     return NextResponse.json({
       debugInfo,
       testResponse: response,
       isUsingFallback: response.includes('For an accurate extension quote, I need'),
+      logs,
       timestamp: new Date().toISOString()
     })
   } catch (error) {
